@@ -3,6 +3,7 @@ import notesapp from "@/public/notesapp.png";
 import tetris from "@/public/Tetris.png";
 import yoom from "@/public/yoom.png";
 import infinitecraft from "@/public/infinitecraft.png";
+import zennotes from "@/public/zennotes.png";
 
 export const links = [
   {
@@ -29,12 +30,36 @@ export const links = [
 
 export const projectsData = [
   {
+    title: "Zen Notes",
+    description:
+    "A notion like notes taking app with markdown support. Supports collaboration & real-time updates as well as AI summarization & translation",
+    tags: ["Next.js", "Firebase", "Cloudfare", 'Clerk', "LiveBlocks"],
+    imageUrl: zennotes,
+    redirectURL: "https://zen-notes-keshav.vercel.app/",
+  },
+  {
+    title: "Infinite Craft",
+    description:
+      "A merge and craft game made using GBT-4o to have infinite possibilities. Create any item by combining any two items.",
+    tags: ["Next.js", "Open-AI", "Tailwind", "Framer", "LangChain"],
+    imageUrl: infinitecraft,
+    redirectURL: "https://infinite-craft-nine.vercel.app/",
+  },
+  {
     title: "ClonePen- A CodePen Clone",
     description:
       "I created a clone of CodePen. It has features like saving pens, editing pens, viewing pens and deleting pens.",
     tags: ["ReactJS", "TypeScript", "Firebase", "Tailwind"],
     imageUrl: clonepen,
     redirectURL: "https://codepen-clone-dae8e.web.app/home",
+  },
+  {
+    title: "Tetris Game",
+    description:
+      "A Tetris game made in react with proper game mechanics. Has easy of live features such as piece preview and pause/resume.",
+    tags: ["React", "Next.js", "Tailwind", "Framer"],
+    imageUrl: tetris,
+    redirectURL: "https://tetris-keshav-madhav.netlify.app/",
   },
   {
     title: "A notes app",
@@ -51,22 +76,6 @@ export const projectsData = [
     tags: ["React", "Next.js", "stream.io", "Tailwind", "Clerk"],
     imageUrl: yoom,
     redirectURL: "https://zoom-clone-black-sigma.vercel.app/",
-  },
-  {
-    title: "Infinite Craft",
-    description:
-      "A merge and craft game made using GBT-4o to have infinite possibilities. Create any item by combining any two items.",
-    tags: ["Next.js", "Open-AI", "Tailwind", "Framer", "LangChain"],
-    imageUrl: infinitecraft,
-    redirectURL: "https://tetris-keshav-madhav.netlify.app/",
-  },
-  {
-    title: "Tetris Game",
-    description:
-      "A Tetris game made in react with the help of react hooks. It has features like start, pause, resume and restart.",
-    tags: ["React", "Next.js", "Tailwind", "Framer"],
-    imageUrl: tetris,
-    redirectURL: "https://tetris-keshav-madhav.netlify.app/",
   },
 ] as const;
 

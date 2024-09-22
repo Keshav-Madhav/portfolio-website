@@ -4,6 +4,7 @@ import tetris from "@/public/Tetris.png";
 import yoom from "@/public/yoom.png";
 import infinitecraft from "@/public/infinitecraft.png";
 import zennotes from "@/public/zennotes.png";
+import fizzi from "@/public/fizzi.png";
 
 export const links = [
   {
@@ -38,6 +39,14 @@ export const projectsData = [
     redirectURL: "https://zen-notes-keshav.vercel.app/",
   },
   {
+    title: "Fizzi - Soda for Gutsy People",
+    description:
+      "An immersive 3D landing page for Fizzi Soda using ThreeJS, featuring interactive animations and seamless content management.",
+    tags: ["Next.js", "TS", "Tailwind", "GSAP", "React-Fiber", "Prismic"],
+    imageUrl: fizzi,
+    redirectURL: "https://fizzi-drinks.vercel.app/",
+  },
+  {
     title: "Infinite Craft",
     description:
       "A merge and craft game made using GBT-4o to have infinite possibilities. Create any item by combining any two items.",
@@ -61,14 +70,14 @@ export const projectsData = [
     imageUrl: tetris,
     redirectURL: "https://tetris-keshav-madhav.netlify.app/",
   },
-  {
-    title: "A notes app",
-    description:
-      "A notes app where you can create, edit and delete notes. You can also add voice notes and video notes.",
-    tags: ["React", "TypeScript", "Tailwind", "Zustand", "Framer"],
-    imageUrl: notesapp,
-    redirectURL: "https://a-notes-app.netlify.app/",
-  },
+  // {
+  //   title: "A notes app",
+  //   description:
+  //     "A notes app where you can create, edit and delete notes. You can also add voice notes and video notes.",
+  //   tags: ["React", "TypeScript", "Tailwind", "Zustand", "Framer"],
+  //   imageUrl: notesapp,
+  //   redirectURL: "https://a-notes-app.netlify.app/",
+  // },
   {
     title: "Yoom - Video Meetings",
     description:
@@ -82,6 +91,7 @@ export const projectsData = [
 export const skillsData = [
   "HTML",
   "CSS",
+  "Python",
   "JavaScript",
   "TypeScript",
   "React",
@@ -91,6 +101,11 @@ export const skillsData = [
   "Tailwind",
   "Redux",
   "Zustand",
-  "Python",
   "Framer Motion",
+  "GSAP",
+  "Three.js",
+  "Prismic CMS", 
+  "Firebase",
+  "MongoDB",
+  "Convex "
 ] as const;

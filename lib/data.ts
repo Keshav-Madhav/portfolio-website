@@ -5,6 +5,7 @@ import yoom from "@/public/yoom.png";
 import infinitecraft from "@/public/infinitecraft.png";
 import zennotes from "@/public/zennotes.png";
 import fizzi from "@/public/fizzi.png";
+import brainfuck from "@/public/brainfuck.png";
 
 export const links = [
   {
@@ -45,6 +46,14 @@ export const projectsData = [
     tags: ["Next.js", "TS", "Tailwind", "GSAP", "React-Fiber", "Prismic"],
     imageUrl: fizzi,
     redirectURL: "https://fizzi-drinks.vercel.app/",
+  },
+  {
+    title: "BrainFuck Interpreter",
+    description:
+      "An interpreter for an extension of the brainfuck programming language made in javascript. Engineered and optimized to perform 1Billion operations in under 6 seconds.",
+    tags: ["Vanilla JS", "Web-Workers"],
+    imageUrl: brainfuck,
+    redirectURL: "https://github.com/Keshav-Madhav/Making-BF2",
   },
   {
     title: "Infinite Craft",

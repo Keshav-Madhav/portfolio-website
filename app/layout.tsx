@@ -1,17 +1,43 @@
-import Header from "@/components/header";
+import type { Metadata } from "next";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Inter } from "next/font/google";
-import ActiveSectionContextProvider from "@/context/active-section-context";
+
+import Nav from "@/components/nav";
 import Footer from "@/components/footer";
-import ThemeSwitch from "@/components/theme-switch";
-import ThemeContextProvider from "@/context/theme-context";
+import Backdrop from "@/components/backdrop";
+import LenisProvider from "@/components/lenis-provider";
+import ClickSpark from "@/components/ui/click-spark";
+import ActiveSectionContextProvider from "@/context/active-section-context";
 import { Toaster } from "react-hot-toast";
 
-const inter = Inter({ subsets: ["latin"] });
+const sans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
-export const metadata = {
-  title: "Keshav | Personal Portfolio",
-  description: "Keshav is a front-end engineer with 2+ years of experience.",
+const display = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Keshav Madhav — AI Engineer",
+  description:
+    "Keshav Madhav — AI Engineer at VerbaFlo. Building agentic systems, retrieval pipelines, and the interfaces that make them legible.",
+  openGraph: {
+    title: "Keshav Madhav — AI Engineer",
+    description:
+      "AI Engineer at VerbaFlo. Agentic systems, retrieval, evals, and blazing-fast tooling.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -20,23 +46,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="!scroll-smooth">
-      <body
-        className={`${inter.className} bg-gray-50 text-gray-950 relative pt-28 sm:pt-36 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90`}
-      >
-        <div className="bg-[#fbe2e3] absolute top-[-6rem] -z-10 right-[11rem] h-[31.25rem] w-[31.25rem] rounded-full blur-[10rem] sm:w-[68.75rem] dark:bg-[#946263]"></div>
-        <div className="bg-[#dbd7fb] absolute top-[-1rem] -z-10 left-[-35rem] h-[31.25rem] w-[50rem] rounded-full blur-[10rem] sm:w-[68.75rem] md:left-[-33rem] lg:left-[-28rem] xl:left-[-15rem] 2xl:left-[-5rem] dark:bg-[#676394]"></div>
-
-        <ThemeContextProvider>
+    <html
+      lang="en"
+      className={`${sans.variable} ${display.variable} ${mono.variable}`}
+    >
+      <body className="font-sans antialiased selection:bg-accent/40 relative">
+        <Backdrop />
+        <ClickSpark />
+        <LenisProvider>
           <ActiveSectionContextProvider>
-            <Header />
-            {children}
+            <Nav />
+            <main>{children}</main>
             <Footer />
-
-            <Toaster position="top-right" />
-            <ThemeSwitch />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: "hsl(222 18% 8%)",
+                  color: "hsl(220 15% 96%)",
+                  border: "1px solid hsl(220 13% 18%)",
+                },
+              }}
+            />
           </ActiveSectionContextProvider>
-        </ThemeContextProvider>
+        </LenisProvider>
       </body>
     </html>
   );

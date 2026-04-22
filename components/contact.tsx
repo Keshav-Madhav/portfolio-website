@@ -1,74 +1,160 @@
 "use client";
 
-import React from "react";
-import SectionHeading from "./section-heading";
 import { motion } from "framer-motion";
-import { useSectionInView } from "@/lib/hooks";
-import { sendEmail } from "@/actions/sendEmail";
-import SubmitBtn from "./submit-btn";
 import toast from "react-hot-toast";
+import { Copy, Mail, ArrowUpRight } from "lucide-react";
+import SectionHeading from "./ui/section-heading";
+import SubmitBtn from "./submit-btn";
+import { sendEmail } from "@/actions/sendEmail";
+import { profile } from "@/lib/data";
+import { useSectionInView } from "@/lib/hooks";
 
 export default function Contact() {
-  const { ref } = useSectionInView("Contact");
+  const { ref } = useSectionInView("Contact", 0.3);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      toast.success("Email copied");
+    } catch {
+      toast.error("Copy failed — please grab it manually");
+    }
+  };
 
   return (
-    <motion.section
-      id="contact"
+    <section
       ref={ref}
-      className="mb-20 sm:mb-28 w-[min(100%,38rem)] text-center"
-      initial={{
-        opacity: 0,
-      }}
-      whileInView={{
-        opacity: 1,
-      }}
-      transition={{
-        duration: 1,
-      }}
-      viewport={{
-        once: true,
-      }}
+      id="contact"
+      className="relative mx-auto w-full max-w-6xl px-6 py-24 sm:py-32"
     >
-      <SectionHeading>Contact me</SectionHeading>
+      <SectionHeading
+        eyebrow="04 / Let's build"
+        title={
+          <>
+            Have a problem that
+            <br />
+            <span className="text-gradient">smells interesting?</span>
+          </>
+        }
+        description="I'm always up for a conversation about agentic systems, retrieval infra, or building real products on top of LLMs. The faster path is email."
+      />
 
-      <p className="text-gray-700 -mt-6 dark:text-white/80">
-        Please contact me directly at{" "}
-        <a className="underline" href="mailto:keshav2552003@gmail.com">
-          keshav2552003@gmail.com
-        </a>{" "}
-        or through this form.
-      </p>
+      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        {/* Left: info card */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative overflow-hidden rounded-3xl border border-edge bg-surface/40 p-8 backdrop-blur"
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-gradient-to-br from-violet-500/40 to-transparent blur-3xl"
+          />
+          <div className="relative">
+            <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted">
+              Direct
+            </div>
+            <button
+              onClick={copyEmail}
+              className="group mt-2 flex w-full items-center justify-between gap-4 rounded-2xl border border-edge bg-canvas/60 px-4 py-3.5 text-left transition hover:border-violet-500/40"
+            >
+              <span className="flex items-center gap-3">
+                <Mail className="h-4 w-4 text-muted" />
+                <span className="font-mono text-sm text-ink">
+                  {profile.email}
+                </span>
+              </span>
+              <Copy className="h-4 w-4 text-muted transition group-hover:text-ink" />
+            </button>
 
-      <form
-        className="mt-10 flex flex-col dark:text-black"
-        action={async (formData) => {
-          const { data, error } = await sendEmail(formData);
+            <div className="mt-6 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted">
+              Alternate
+            </div>
+            <a
+              href={`mailto:${profile.altEmail}`}
+              className="mt-2 flex items-center gap-3 font-mono text-sm text-muted transition hover:text-ink"
+            >
+              {profile.altEmail}
+            </a>
 
-          if (error) {
-            toast.error(error);
-            return;
-          }
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              <a
+                href={profile.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between rounded-xl border border-edge bg-canvas/40 px-4 py-3 text-sm transition hover:border-violet-500/40"
+              >
+                <span className="text-ink">GitHub</span>
+                <ArrowUpRight className="h-4 w-4 text-muted transition group-hover:text-ink" />
+              </a>
+              <a
+                href={profile.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between rounded-xl border border-edge bg-canvas/40 px-4 py-3 text-sm transition hover:border-violet-500/40"
+              >
+                <span className="text-ink">LinkedIn</span>
+                <ArrowUpRight className="h-4 w-4 text-muted transition group-hover:text-ink" />
+              </a>
+            </div>
 
-          toast.success("Email sent successfully!");
-        }}
-      >
-        <input
-          className="h-14 px-4 rounded-lg borderBlack dark:bg-white dark:bg-opacity-80 dark:focus:bg-opacity-100 transition-all dark:outline-none"
-          name="senderEmail"
-          type="email"
-          required
-          maxLength={500}
-          placeholder="Your email"
-        />
-        <textarea
-          className="h-52 my-3 rounded-lg borderBlack p-4 dark:bg-white dark:bg-opacity-80 dark:focus:bg-opacity-100 transition-all dark:outline-none"
-          name="message"
-          placeholder="Your message"
-          required
-          maxLength={5000}
-        />
-        <SubmitBtn />
-      </form>
-    </motion.section>
+            <div className="mt-8 border-t border-edge pt-6">
+              <p className="text-xs leading-relaxed text-muted">
+                Based in {profile.location}. Typical response within 24h.
+                I take on a small number of outside projects each year — ping
+                me and let&apos;s see.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Right: form */}
+        <motion.form
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          action={async (formData) => {
+            const { error } = await sendEmail(formData);
+            if (error) {
+              toast.error(error);
+              return;
+            }
+            toast.success("Sent — talk soon");
+          }}
+          className="rounded-3xl border border-edge bg-surface/40 p-6 backdrop-blur sm:p-8"
+        >
+          <div className="mb-5">
+            <label className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted">
+              Your email
+            </label>
+            <input
+              name="senderEmail"
+              type="email"
+              required
+              maxLength={500}
+              placeholder="you@domain.com"
+              className="mt-2 w-full rounded-xl border border-edge bg-canvas/60 px-4 py-3 text-sm text-ink outline-none transition placeholder:text-muted/60 focus:border-violet-500/50 focus:bg-canvas"
+            />
+          </div>
+          <div className="mb-5">
+            <label className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted">
+              Message
+            </label>
+            <textarea
+              name="message"
+              required
+              maxLength={5000}
+              rows={7}
+              placeholder="What are you building? What's the rough shape of the problem?"
+              className="mt-2 w-full resize-none rounded-xl border border-edge bg-canvas/60 px-4 py-3 text-sm text-ink outline-none transition placeholder:text-muted/60 focus:border-violet-500/50 focus:bg-canvas"
+            />
+          </div>
+          <SubmitBtn />
+        </motion.form>
+      </div>
+    </section>
   );
 }

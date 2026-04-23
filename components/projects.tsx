@@ -136,6 +136,7 @@ function FeaturedCard({
     <div
       ref={ref}
       onMouseMove={onMove}
+      data-spirit
       className={cn(
         "group relative isolate flex h-full flex-col overflow-hidden rounded-3xl border border-edge bg-surface/40 backdrop-blur transition",
         "hover:border-edge/0",
@@ -297,7 +298,7 @@ function CompactCard({
       className="perspective-card"
     >
       <TiltedCard intensity={4} className="h-full">
-        <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-edge bg-surface/40 p-5 transition hover:border-edge/40 hover:bg-surface/60">
+        <div data-spirit className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-edge bg-surface/40 p-5 transition hover:border-edge/40 hover:bg-surface/60">
           {/* Image / art — clickable if there's a primary link */}
           {primary ? (
             <a

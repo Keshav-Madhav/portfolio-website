@@ -9,6 +9,7 @@ export default function SubmitBtn() {
 
   return (
     <button
+      data-spirit="button"
       type="submit"
       disabled={pending}
       className="group inline-flex h-11 items-center gap-2 rounded-full border border-edge bg-ink px-6 text-sm font-medium text-canvas transition hover:scale-[1.02] disabled:opacity-70"

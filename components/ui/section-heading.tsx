@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import { cn } from "@/lib/cn";
 
 export default function SectionHeading({
@@ -16,6 +17,8 @@ export default function SectionHeading({
   align?: "left" | "center";
   className?: string;
 }) {
+  const { ref, inView } = useInView({ threshold: 0.4, triggerOnce: true });
+
   return (
     <div
       className={cn(
@@ -37,11 +40,15 @@ export default function SectionHeading({
         </motion.div>
       )}
       <motion.h2
+        ref={ref}
         initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0)" }}
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-5xl"
+        className={cn(
+          "heading-paint font-display text-3xl font-semibold tracking-tight text-ink sm:text-5xl",
+          inView && "in-view"
+        )}
       >
         {title}
       </motion.h2>

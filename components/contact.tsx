@@ -42,6 +42,7 @@ export default function Contact() {
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         {/* Left: info card */}
         <motion.div
+          data-spirit
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}

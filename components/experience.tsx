@@ -65,6 +65,7 @@ function ExperienceEntry({
 
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <a
+          data-spirit="inline"
           href={entry.companyUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -90,6 +91,7 @@ function ExperienceEntry({
         {entry.highlights.map((h, i) => (
           <motion.div
             key={h.title}
+            data-spirit
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.4 }}

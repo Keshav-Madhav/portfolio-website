@@ -52,6 +52,7 @@ function InternalCard({
 
   return (
     <div
+      data-spirit
       className={cn(
         "group relative flex h-full flex-col overflow-hidden rounded-3xl border border-edge bg-surface/60 p-6 backdrop-blur transition hover:border-edge/0",
         a.shadow

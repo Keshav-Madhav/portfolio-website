@@ -109,6 +109,7 @@ export default function Hero() {
       >
         <Magnetic>
           <Link
+            data-spirit="button"
             href="#contact"
             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-edge bg-ink px-6 py-3 text-sm font-medium text-canvas transition hover:scale-[1.02]"
           >
@@ -119,6 +120,7 @@ export default function Hero() {
 
         <Magnetic>
           <a
+            data-spirit="button"
             href={profile.resume}
             download
             className="group inline-flex items-center gap-2 rounded-full border border-edge bg-surface/60 px-6 py-3 text-sm font-medium text-ink backdrop-blur transition hover:border-violet-500/40 hover:bg-surface"
@@ -143,6 +145,7 @@ export default function Hero() {
 
       {/* Stat strip */}
       <motion.div
+        data-spirit="stats"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, delay: 0.45 }}

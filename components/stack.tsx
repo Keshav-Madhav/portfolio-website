@@ -34,6 +34,7 @@ export default function Stack() {
         {stack.map((group, gi) => (
           <motion.div
             key={group.group}
+            data-spirit
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -76,7 +77,10 @@ export default function Stack() {
 
       {/* Education + misc */}
       <div className="mt-16 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-edge bg-surface/40 p-6 backdrop-blur">
+        <div
+          data-spirit
+          className="rounded-2xl border border-edge bg-surface/40 p-6 backdrop-blur"
+        >
           <div className="flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-muted">
             <GraduationCap className="h-3.5 w-3.5" />
             Education
@@ -89,7 +93,10 @@ export default function Stack() {
             {education.period} · {education.location}
           </p>
         </div>
-        <div className="rounded-2xl border border-edge bg-surface/40 p-6 backdrop-blur">
+        <div
+          data-spirit
+          className="rounded-2xl border border-edge bg-surface/40 p-6 backdrop-blur"
+        >
           <div className="flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-muted">
             <MapPin className="h-3.5 w-3.5" />
             Based in

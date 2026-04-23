@@ -7,22 +7,29 @@ import {
   useTransform,
   useReducedMotion,
 } from "framer-motion";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
+/**
+ * TiltedCard — very subtle 3D tilt effect with spirit-like glow on hover.
+ * Tilt is intentionally minimal to avoid cheesy effects.
+ */
 export default function TiltedCard({
   children,
   className,
-  intensity = 10,
-  scaleOnHover = 1.01,
+  intensity = 2, // Very subtle tilt
+  scaleOnHover = 1.005, // Barely noticeable scale
+  glowOnHover = true,
 }: {
   children: React.ReactNode;
   className?: string;
   intensity?: number;
   scaleOnHover?: number;
+  glowOnHover?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+  const [isHovered, setIsHovered] = useState(false);
 
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
@@ -31,13 +38,10 @@ export default function TiltedCard({
   const rotateX = useTransform(my, [-0.5, 0.5], [intensity, -intensity]);
   const scale = useMotionValue(1);
 
-  const sRotateX = useSpring(rotateX, { stiffness: 220, damping: 22 });
-  const sRotateY = useSpring(rotateY, { stiffness: 220, damping: 22 });
-  const sScale = useSpring(scale, { stiffness: 260, damping: 24 });
-
-  // Glare position
-  const glareX = useTransform(mx, [-0.5, 0.5], ["0%", "100%"]);
-  const glareY = useTransform(my, [-0.5, 0.5], ["0%", "100%"]);
+  // Very soft springs for graceful movement
+  const sRotateX = useSpring(rotateX, { stiffness: 120, damping: 30 });
+  const sRotateY = useSpring(rotateY, { stiffness: 120, damping: 30 });
+  const sScale = useSpring(scale, { stiffness: 180, damping: 30 });
 
   const onMove = (e: React.MouseEvent) => {
     if (reduce || !ref.current) return;
@@ -47,13 +51,17 @@ export default function TiltedCard({
   };
 
   const onEnter = () => {
-    if (!reduce) scale.set(scaleOnHover);
+    if (!reduce) {
+      scale.set(scaleOnHover);
+      setIsHovered(true);
+    }
   };
 
   const onLeave = () => {
     mx.set(0);
     my.set(0);
     scale.set(1);
+    setIsHovered(false);
   };
 
   return (
@@ -68,16 +76,21 @@ export default function TiltedCard({
         scale: reduce ? 1 : sScale,
         transformStyle: "preserve-3d",
       }}
-      className={cn("relative will-change-transform", className)}
+      className={cn(
+        "relative will-change-transform rounded-[inherit]",
+        className
+      )}
     >
       {children}
-      {!reduce && (
-        <motion.span
+      {/* Glow overlay - inherits border-radius from parent */}
+      {glowOnHover && !reduce && (
+        <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500 hover:opacity-100"
-          style={{
-            background: `radial-gradient(240px circle at ${glareX.get?.() ?? "50%"} ${glareY.get?.() ?? "50%"}, rgba(255,255,255,0.08), transparent 60%)`,
-          }}
+          className={cn(
+            "pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-500",
+            "shadow-[0_0_0_1px_rgba(165,180,252,0.12),0_8px_32px_-8px_rgba(165,180,252,0.2),0_0_48px_-12px_rgba(165,243,252,0.12)]",
+            isHovered ? "opacity-100" : "opacity-0"
+          )}
         />
       )}
     </motion.div>

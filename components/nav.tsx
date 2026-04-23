@@ -19,13 +19,39 @@ export default function Nav() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4 sm:pt-6">
+      {/* SVG filter for liquid glass effect */}
+      <svg className="absolute h-0 w-0" aria-hidden>
+        <defs>
+          <filter id="liquid-glass" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.01"
+              numOctaves="2"
+              result="noise"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="noise"
+              scale="2"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </defs>
+      </svg>
+      
       <motion.div
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "flex items-center gap-2 rounded-full border border-edge bg-canvas/60 p-1.5 backdrop-blur-xl transition-all",
-          scrolled && "shadow-[0_8px_40px_-12px_rgba(0,0,0,0.8)]"
+          "nav-glass relative flex items-center gap-2 rounded-full p-1.5 transition-all",
+          // Crystal clear glass - minimal blur, almost invisible
+          "border border-white/[0.06]",
+          "bg-transparent",
+          "backdrop-blur-[2px]",
+          // When scrolled, very subtle tint appears
+          scrolled && "bg-black/[0.02] border-white/[0.08] backdrop-blur-[4px] shadow-[0_2px_16px_-4px_rgba(0,0,0,0.2)]"
         )}
       >
         <Link
@@ -36,8 +62,8 @@ export default function Nav() {
           }}
           className="group ml-2 mr-1 flex items-center gap-2 pr-2 font-display text-sm font-semibold text-ink"
         >
-          <span className="relative flex h-6 w-6 items-center justify-center rounded-full border border-edge bg-surface">
-            <span className="h-2 w-2 rounded-full bg-violet-400 shadow-[0_0_12px_rgba(167,139,250,0.8)]" />
+          <span className="relative flex h-6 w-6 items-center justify-center rounded-full border border-white/[0.08]">
+            <span className="h-2 w-2 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.6)]" />
           </span>
           <span className="hidden sm:inline">km.</span>
         </Link>
@@ -71,7 +97,7 @@ export default function Nav() {
                         stiffness: 350,
                         damping: 30,
                       }}
-                      className="absolute inset-0 rounded-full bg-surface"
+                      className="absolute inset-0 rounded-full bg-white/[0.05]"
                     />
                   )}
                 </li>

@@ -26,7 +26,7 @@ export default function Stack() {
             <br /> systems I know cold.
           </>
         }
-        description="I'm not precious about the stack — I'll use whatever's right. But these are the ones I've actually shipped with."
+        description="I'm not precious about the stack. I'll use whatever's right. But these are the ones I've actually shipped with."
       />
 
       {/* Groups */}

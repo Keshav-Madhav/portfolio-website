@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Download, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowUpRight, Download, Github, Linkedin, Mail, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import Magnetic from "./ui/magnetic";
 import ShinyText from "./ui/shiny-text";
@@ -22,7 +21,7 @@ const rotating = [
 
 export default function Hero() {
   const { ref } = useSectionInView("Work", 0.2);
-  const reduce = useReducedMotion();
+  useReducedMotion();
   const [rotIdx, setRotIdx] = useState(0);
 
   useEffect(() => {
@@ -50,7 +49,6 @@ export default function Hero() {
           <span className="relative h-2 w-2 rounded-full bg-emerald-400" />
         </span>
         <span className="text-ink/80">
-          Currently —{" "}
           <span className="text-muted">AI Engineer @ </span>
           <a
             href="https://www.verbaflo.ai/"
@@ -82,7 +80,7 @@ export default function Hero() {
         className="mt-8 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl"
       >
         I&apos;m an AI engineer building the agentic stack at{" "}
-        <span className="text-ink">VerbaFlo</span> — orchestrators, retrieval,
+        <span className="text-ink">VerbaFlo</span>: orchestrators, retrieval,
         tracing, and the tooling that makes all of it debuggable. Previously
         founding front-end at <span className="text-ink">PrudentBit</span>.
       </motion.p>
@@ -110,7 +108,19 @@ export default function Hero() {
         <Magnetic>
           <Link
             data-spirit="button"
-            href="#contact"
+            data-spirit-first
+            href="/about"
+            className="group inline-flex items-center gap-2 rounded-full border border-violet-500/40 bg-violet-500/10 px-5 py-2.5 text-sm font-medium text-violet-300 backdrop-blur transition hover:border-violet-500/60 hover:bg-violet-500/20"
+          >
+            <User className="h-4 w-4" />
+            <span>About me</span>
+          </Link>
+        </Magnetic>
+
+        <Magnetic>
+          <Link
+            data-spirit="button"
+            href="/#contact"
             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-edge bg-ink px-6 py-3 text-sm font-medium text-canvas transition hover:scale-[1.02]"
           >
             <span>Get in touch</span>
@@ -166,31 +176,6 @@ export default function Hero() {
         ))}
       </motion.div>
 
-      {/* Avatar floating */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="pointer-events-none absolute right-4 top-24 hidden md:block lg:right-12"
-      >
-        <div className="relative">
-          <div className="absolute -inset-6 -z-10 rounded-full bg-aurora opacity-30 blur-3xl" />
-          <motion.div
-            animate={reduce ? undefined : { y: [0, -10, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="relative h-32 w-32 overflow-hidden rounded-full border border-edge bg-surface shadow-[0_30px_80px_-30px_rgba(124,58,237,0.6)] lg:h-40 lg:w-40"
-          >
-            <Image
-              src="/keshav.jpeg"
-              alt="Keshav"
-              fill
-              sizes="160px"
-              className="object-cover"
-              priority
-            />
-          </motion.div>
-        </div>
-      </motion.div>
     </section>
   );
 }

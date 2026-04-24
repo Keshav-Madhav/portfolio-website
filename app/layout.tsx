@@ -11,6 +11,7 @@ import SpiritGuide from "@/components/ui/spirit-guide";
 import ParticleField from "@/components/ui/particle-field";
 import ScrollProgress from "@/components/ui/scroll-progress";
 import VelocityTilt from "@/components/ui/velocity-tilt";
+import FlowField from "@/components/ui/flow-field";
 import ActiveSectionContextProvider from "@/context/active-section-context";
 import { Toaster } from "react-hot-toast";
 
@@ -33,11 +34,11 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Keshav Madhav — AI Engineer",
+  title: "Keshav Madhav | AI Engineer",
   description:
-    "Keshav Madhav — AI Engineer at VerbaFlo. Building agentic systems, retrieval pipelines, and the interfaces that make them legible.",
+    "Keshav Madhav, AI Engineer at VerbaFlo. Building agentic systems, retrieval pipelines, and the interfaces that make them legible.",
   openGraph: {
-    title: "Keshav Madhav — AI Engineer",
+    title: "Keshav Madhav | AI Engineer",
     description:
       "AI Engineer at VerbaFlo. Agentic systems, retrieval, evals, and blazing-fast tooling.",
     type: "website",
@@ -56,6 +57,7 @@ export default function RootLayout({
     >
       <body className="font-sans antialiased selection:bg-accent/40 relative">
         <Backdrop />
+        <FlowField />
         <ParticleField />
         <ScrollProgress />
         <VelocityTilt />

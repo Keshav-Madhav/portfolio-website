@@ -26,10 +26,11 @@ import cookieTutorial from "@/public/cookie-tutorial.png";
 import cookieEasterEgg from "@/public/cookie-easter-egg.png";
 
 export const nav = [
-  { name: "Work", hash: "#work" },
-  { name: "Projects", hash: "#projects" },
-  { name: "Stack", hash: "#stack" },
-  { name: "Contact", hash: "#contact" },
+  { name: "About", hash: "/about", isPage: true },
+  { name: "Work", hash: "/#work" },
+  { name: "Projects", hash: "/#projects" },
+  { name: "Stack", hash: "/#stack" },
+  { name: "Contact", hash: "/#contact" },
 ] as const;
 
 export const profile = {
@@ -47,14 +48,29 @@ export const profile = {
   twitter: "",
   tagline:
     "Engineering agentic systems, blazing-fast interfaces, and the glue between them.",
-  bio:
-    "I build production agentic pipelines — tool-calling orchestrators, text-to-SQL, retrieval over vector stores — and I care a lot about the interface humans use to watch those systems think. I moved from a founding front-end engineer role into full-stack AI, and I like living at that seam: where a well-designed UI makes an LLM system legible and debuggable.",
+  bio: "I build production agentic pipelines (tool-calling orchestrators, text-to-SQL, retrieval over vector stores) and I care a lot about the interface humans use to watch those systems think. I moved from a founding front-end engineer role into full-stack AI, and I like living at that seam: where a well-designed UI makes an LLM system legible and debuggable.",
+  extendedBio: {
+    intro:
+      "I'm Keshav Madhav — an AI engineer who started as a front-end engineer and grew into building agentic systems end-to-end. I care deeply about both the infrastructure that makes LLMs useful and the interfaces that make them understandable.",
+    current:
+      "Currently at VerbaFlo, I own core pieces of the agentic AI stack: orchestration logic, retrieval pipelines (Milvus/Zilliz + hybrid search), text-to-SQL with Pydantic-validated schemas, and the internal debugging tools the team uses daily.",
+    past: "Before that, I was the founding front-end engineer at PrudentBit, where I built the entire Immune product suite (Immunefiles, Immunevault, ImmuneShare) from scratch — end-to-end encrypted storage and sharing with a migration to Next.js 14 that cut load times in half.",
+    sideProjects:
+      "Outside of work, I've shipped 90+ public repositories — games, simulations, creative-coding experiments, and developer tools. Highlights include a VS Code extension for live Jinja2 rendering (10K+ installs), an N-body gravity sandbox, a Cookie Clicker remake that went too far, and contributions to Axon (a knowledge-graph engine for codebases).",
+    philosophy:
+      "I believe the best AI systems are the ones you can actually see thinking. That's why I spend as much time on tracing, eval harnesses, and debuggable UIs as I do on the pipelines themselves.",
+  },
   stats: [
     { label: "Years shipping", value: "3+" },
     { label: "AI pipeline stages owned", value: "6" },
     { label: "VS Code ext. installs", value: "10K+" },
-    { label: "Side projects", value: "30+" },
+    { label: "Side projects", value: "90+" },
   ],
+  githubStats: {
+    repos: 98,
+    joinedYear: 2022,
+    followers: 8,
+  },
 } as const;
 
 // Highlighted, company-wide tools I shipped at VerbaFlo.
@@ -65,7 +81,7 @@ export const vfInternal = [
     title: "Conversation Simulation",
     subtitle: "QA harness for real chat traffic",
     description:
-      "A desktop replay engine that autonomously runs live user conversations through the current stack — Router, FAQ, Text2SQL, PMS, bot analysis — end to end. Catches regressions, diffs responses run-over-run, and surfaces per-stage latency before anything touches prod.",
+      "A desktop replay engine that autonomously runs live user conversations through the current stack (Router, FAQ, Text2SQL, PMS, bot analysis) end to end. Catches regressions, diffs responses run-over-run, and surfaces per-stage latency before anything touches prod.",
     bullets: [
       "Parallel replay of thousands of real transcripts against any branch",
       "Stage-level diffs (Router / FAQ / SQL / Summary) with side-by-side outputs",
@@ -78,7 +94,7 @@ export const vfInternal = [
     title: "Unified Debugging MCP",
     subtitle: "One server, every agentic IDE",
     description:
-      "A company-wide MCP server that plugs into Claude Code, Cursor, Codex, Windsurf, Antigravity, and Cowork. Hand it a ClickUp ticket and it walks every system we run — Kibana traces, MongoDB, Elasticsearch, span history — to debug with full context.",
+      "A company-wide MCP server that plugs into Claude Code, Cursor, Codex, Windsurf, Antigravity, and Cowork. Hand it a ClickUp ticket and it walks every system we run (Kibana traces, MongoDB, Elasticsearch, span history) to debug with full context.",
     bullets: [
       "Single MCP surface across every AI-native editor the team uses",
       "ClickUp → full RCA session: ticket → conversation → trace → spans → code",
@@ -91,10 +107,10 @@ export const vfInternal = [
     title: "In-house Tracing + LLM Playground",
     subtitle: "Our own Opik, built for our pipeline",
     description:
-      "A full observability stack for our LLM pipeline — faster and purpose-built. Span-level querying, diff views across runs, and a playground that replays any trace through any model with prompt edits via a custom LiteLLM wrapper.",
+      "A full observability stack for our LLM pipeline, faster and purpose-built. Span-level querying, diff views across runs, and a playground that replays any trace through any model with prompt edits via a custom LiteLLM wrapper.",
     bullets: [
       "Blazing UI for span search, filtering, and run comparison",
-      "Prompt-edit playground — rerun any historical call through any model",
+      "Prompt-edit playground: rerun any historical call through any model",
       "Custom LiteLLM wrapper lets one surface hit every internal & public model",
     ],
     accent: "emerald",
@@ -105,8 +121,8 @@ export const experience = [
   {
     company: "VerbaFlo",
     companyUrl: "https://www.verbaflo.ai/",
-    role: "AI Engineer — SDE-1",
-    period: "Aug 2025 — Present",
+    role: "AI Engineer, SDE-1",
+    period: "Aug 2025 to Present",
     location: "Gurgaon, IN",
     summary:
       "Own core pieces of the agentic AI stack: orchestration, retrieval, evaluation, and the internal tooling the rest of the company debugs against.",
@@ -119,12 +135,12 @@ export const experience = [
       {
         title: "Vector + RAG infra",
         detail:
-          "Manage and tune Zilliz / Milvus vector stores that back a high-throughput RAG pipeline — chunking, embedding, hybrid search, and reranking — for FAQ and knowledge retrieval.",
+          "Manage and tune Zilliz / Milvus vector stores that back a high-throughput RAG pipeline (chunking, embedding, hybrid search, and reranking) for FAQ and knowledge retrieval.",
       },
       {
         title: "Automated campaigns",
         detail:
-          "Took ownership of the AI-driven campaign systems — call, WhatsApp, and email — letting customers target thousands of users with model-generated, personalized flows.",
+          "Took ownership of the AI-driven campaign systems (call, WhatsApp, and email), letting customers target thousands of users with model-generated, personalized flows.",
       },
     ],
   },
@@ -132,7 +148,7 @@ export const experience = [
     company: "PrudentBit",
     companyUrl: "https://prudentbit.com/",
     role: "Founding Front-End Engineer",
-    period: "Aug 2023 — Aug 2025",
+    period: "Aug 2023 to Aug 2025",
     location: "Noida, IN (hybrid)",
     summary:
       "Employee #1 on the front-end. Designed and shipped the full surface area of the Immune* product suite from zero.",
@@ -140,12 +156,12 @@ export const experience = [
       {
         title: "Immune product suite",
         detail:
-          "Led front-end for Immunefiles, Immunevault, and ImmuneShare — end-to-end encrypted storage, vaulting, and sharing.",
+          "Led front-end for Immunefiles, Immunevault, and ImmuneShare: end-to-end encrypted storage, vaulting, and sharing.",
       },
       {
         title: "SSR migration, 200% faster",
         detail:
-          "Migrated Immunefiles from React 18 SPA to Next.js 14 App Router with SSR, ISR, and edge caching — cut load times roughly in half and doubled perceived performance.",
+          "Migrated Immunefiles from React 18 SPA to Next.js 14 App Router with SSR, ISR, and edge caching. Cut load times roughly in half and doubled perceived performance.",
       },
       {
         title: "Live admin dashboard",
@@ -155,7 +171,7 @@ export const experience = [
       {
         title: "Cross-platform integrations",
         detail:
-          "Shipped Immunefiles apps for Microsoft Teams, Outlook, and Gmail — same core, adapted UIs.",
+          "Shipped Immunefiles apps for Microsoft Teams, Outlook, and Gmail. Same core, adapted UIs.",
       },
     ],
   },
@@ -169,7 +185,7 @@ export const projects = [
     title: "Grid Math",
     kind: "Creative Coding · Desktop",
     description:
-      "A generative math-art engine — spirals, vortexes, field equations, live audio reactivity, and a desktop wallpaper mode that puts all of it behind your icons. Native shell via Electron with a custom renderer; the web build lets you play with the same equations in-browser.",
+      "A generative math-art engine: spirals, vortexes, field equations, live audio reactivity, and a desktop wallpaper mode that puts all of it behind your icons. Native shell via Electron with a custom renderer; the web build lets you play with the same equations in-browser.",
     stack: ["Electron", "Canvas", "JavaScript"],
     accent: "violet",
     featured: true,
@@ -197,7 +213,7 @@ export const projects = [
     title: "Live Jinja Renderer",
     kind: "Open Source · VS Code",
     description:
-      "A VS Code / Cursor extension that renders real Python Jinja2 templates live as you type — via Pyodide, with JSON / YAML / TOML variable files, context-aware highlighting, output search, and markdown + mermaid support. Crossed 10K installs on Open VSX.",
+      "A VS Code / Cursor extension that renders real Python Jinja2 templates live as you type. Powered by Pyodide, with JSON / YAML / TOML variable files, context-aware highlighting, output search, and markdown + mermaid support. Crossed 10K installs on Open VSX.",
     stack: ["TypeScript", "VS Code API", "Pyodide", "Jinja2"],
     accent: "amber",
     featured: true,
@@ -221,7 +237,7 @@ export const projects = [
   },
   {
     slug: "cookie-clicker",
-    title: "Cookie Clicker — Reimagined",
+    title: "Cookie Clicker Reimagined",
     kind: "Game · Systems · Animation",
     description:
       "A from-scratch remake that went too far. Full prestige tree with physics + camera controls, per-baker story modals, a newspaper-statistics modal, a 30+ song music library, 15+ minigames, a fully-animated tutorial system, and a grandmapocalypse-grade pile of easter eggs and achievements.",
@@ -231,7 +247,7 @@ export const projects = [
     stat: null,
     image: cookieMain,
     gallery: [
-      { src: cookieMain, caption: "Main UI — cookie, rows, shop" },
+      { src: cookieMain, caption: "Main UI: cookie, rows, shop" },
       { src: cookieBakerReturn, caption: "Baker Returns offline report" },
       { src: cookiePrestige, caption: "Prestige tree · physics + camera" },
       { src: cookieNewspaper, caption: "Newspaper statistics" },
@@ -257,7 +273,7 @@ export const projects = [
     title: "Space Sandbox",
     kind: "Simulation · Graphics",
     description:
-      "An N-body gravity playground — from a handful of planets orbiting a black hole to 21,000 bodies at 30fps. Includes a space-probe mode for exploring local gravity potential, heatmaps, grid warping, and vector fields. All Canvas + WebGL, no engine.",
+      "An N-body gravity playground: from a handful of planets orbiting a black hole to 21,000 bodies at 30fps. Includes a space-probe mode for exploring local gravity potential, heatmaps, grid warping, and vector fields. All Canvas + WebGL, no engine.",
     stack: ["WebGL", "Canvas", "Vanilla JS"],
     accent: "indigo",
     featured: true,
@@ -285,7 +301,7 @@ export const projects = [
     title: "Axon",
     kind: "Open Source · Contributor",
     description:
-      "Harsh Kedia's knowledge-graph engine for codebases — indexes a repo into a structural graph and exposes it via MCP + a Sigma.js dashboard. I contributed physics and render improvements on the force-directed graph so large graphs stay readable at scale.",
+      "Harsh Kedia's knowledge-graph engine for codebases. Indexes a repo into a structural graph and exposes it via MCP + a Sigma.js dashboard. I contributed physics and render improvements on the force-directed graph so large graphs stay readable at scale.",
     stack: ["TypeScript", "Sigma.js", "WebGL", "Python", "MCP"],
     accent: "cyan",
     featured: true,
@@ -305,7 +321,7 @@ export const projects = [
     title: "Zen Notes",
     kind: "Full-stack · AI",
     description:
-      "Real-time collaborative notes with Notion-like editing, multi-cursor presence, and built-in AI powered by Cloudflare Workers — summarize, translate, and chat over your notes.",
+      "Real-time collaborative notes with Notion-like editing, multi-cursor presence, and built-in AI powered by Cloudflare Workers. Summarize, translate, and chat over your notes.",
     stack: ["Next.js", "Cloudflare Workers", "LiveBlocks", "Clerk", "Firebase"],
     accent: "violet",
     featured: false,
@@ -339,7 +355,7 @@ export const projects = [
     title: "Chatter",
     kind: "Full-stack · Realtime",
     description:
-      "End-to-end chat platform — DMs, groups, typing indicators, file sharing, and LiveKit-powered video/audio calls. Convex for primary state, Supabase for media.",
+      "End-to-end chat platform: DMs, groups, typing indicators, file sharing, and LiveKit-powered video/audio calls. Convex for primary state, Supabase for media.",
     stack: ["Next.js", "Convex", "Supabase", "Pusher", "Clerk", "LiveKit"],
     accent: "cyan",
     featured: false,
@@ -356,7 +372,7 @@ export const projects = [
     title: "BF Language Interpreter",
     kind: "Performance · Compilers",
     description:
-      "Hand-tuned BrainFuck interpreter in vanilla JS — 1B ops in ~6 seconds on a single Web Worker thread. Custom JIT-style translation, tape prefetching, and loop fusion.",
+      "Hand-tuned BrainFuck interpreter in vanilla JS. Runs 1B ops in ~6 seconds on a single Web Worker thread. Custom JIT-style translation, tape prefetching, and loop fusion.",
     stack: ["Vanilla JS", "Web Workers"],
     accent: "emerald",
     featured: false,
@@ -373,7 +389,7 @@ export const projects = [
     title: "Raycaster FPS",
     kind: "Game · Graphics",
     description:
-      "A Wolfenstein-style raycast shooter in vanilla JS — custom fog-of-war, per-cell boundary maps, and a cost-aware dynamic lighting system. Built entirely on Canvas.",
+      "A Wolfenstein-style raycast shooter in vanilla JS with custom fog-of-war, per-cell boundary maps, and a cost-aware dynamic lighting system. Built entirely on Canvas.",
     stack: ["Canvas", "Vanilla JS", "Raycasting"],
     accent: "amber",
     featured: false,
@@ -392,7 +408,7 @@ export const projects = [
     title: "3D Spatial Sim (Boids + N-Body)",
     kind: "Simulation · 3D",
     description:
-      "3D flocking + N-body gravity sim with playback, presets, color grading, and export-to-video with aggressive compression — so the output doubles as a generative video source.",
+      "3D flocking + N-body gravity sim with playback, presets, color grading, and export-to-video with aggressive compression. The output doubles as a generative video source.",
     stack: ["WebGL", "Vanilla JS"],
     accent: "rose",
     featured: false,
@@ -411,7 +427,7 @@ export const projects = [
     title: "Live Jinja (Web)",
     kind: "Open Source · Tool",
     description:
-      "The same real-Python Jinja2 renderer as the VS Code extension, but as a zero-install web app — edit templates and variables side-by-side, with instant rendering via Pyodide.",
+      "The same real-Python Jinja2 renderer as the VS Code extension, but as a zero-install web app. Edit templates and variables side-by-side, with instant rendering via Pyodide.",
     stack: ["TypeScript", "Pyodide", "Jinja2"],
     accent: "amber",
     featured: false,
@@ -445,7 +461,7 @@ export const projects = [
     title: "Yoom Video Meetings",
     kind: "Full-stack",
     description:
-      "Video-calling app with instant, scheduled, and recorded meetings — built on stream.io with Clerk auth.",
+      "Video-calling app with instant, scheduled, and recorded meetings. Built on stream.io with Clerk auth.",
     stack: ["Next.js", "stream.io", "Clerk", "Tailwind"],
     accent: "rose",
     featured: false,
@@ -559,7 +575,7 @@ export const stack = [
 
 export const education = {
   school: "Sushant University",
-  degree: "B.Tech Computer Science — AI / ML specialization",
-  period: "2021 — 2025",
+  degree: "B.Tech Computer Science, AI / ML specialization",
+  period: "2021 to 2025",
   location: "Gurgaon, IN",
 } as const;

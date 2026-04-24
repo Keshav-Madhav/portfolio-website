@@ -17,7 +17,7 @@ export default function Contact() {
       await navigator.clipboard.writeText(profile.email);
       toast.success("Email copied");
     } catch {
-      toast.error("Copy failed — please grab it manually");
+      toast.error("Copy failed, please grab it manually");
     }
   };
 
@@ -104,7 +104,7 @@ export default function Contact() {
             <div className="mt-8 border-t border-edge pt-6">
               <p className="text-xs leading-relaxed text-muted">
                 Based in {profile.location}. Typical response within 24h.
-                I take on a small number of outside projects each year — ping
+                I take on a small number of outside projects each year, so ping
                 me and let&apos;s see.
               </p>
             </div>
@@ -123,7 +123,7 @@ export default function Contact() {
               toast.error(error);
               return;
             }
-            toast.success("Sent — talk soon");
+            toast.success("Sent! Talk soon");
           }}
           className="rounded-3xl border border-edge bg-surface/40 p-6 backdrop-blur sm:p-8"
         >

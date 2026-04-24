@@ -6,9 +6,9 @@ export default function Backdrop() {
   const reduce = useReducedMotion();
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      {/* Grid */}
-      <div className="absolute inset-0 bg-grid mask-fade-edges opacity-60" />
+    <div className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
+      {/* Base canvas color - since body is transparent */}
+      <div className="absolute inset-0 bg-[hsl(222_20%_5%)]" />
 
       {/* Aurora blob top */}
       <motion.div

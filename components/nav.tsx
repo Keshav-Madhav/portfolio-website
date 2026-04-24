@@ -55,7 +55,7 @@ export default function Nav() {
         )}
       >
         <Link
-          href="#home"
+          href="/"
           onClick={() => {
             setActiveSection("Work");
             setTimeOfLastClick(Date.now());
@@ -71,15 +71,20 @@ export default function Nav() {
         <nav>
           <ul className="flex items-center gap-0.5">
             {nav.map((link) => {
-              const isActive = activeSection === link.name;
+              const isPage = "isPage" in link && link.isPage;
+              const isActive = !isPage && activeSection === link.name;
               return (
                 <li key={link.hash} className="relative">
                   <Link
                     href={link.hash}
-                    onClick={() => {
-                      setActiveSection(link.name);
-                      setTimeOfLastClick(Date.now());
-                    }}
+                    onClick={
+                      isPage
+                        ? undefined
+                        : () => {
+                            setActiveSection(link.name);
+                            setTimeOfLastClick(Date.now());
+                          }
+                    }
                     className={cn(
                       "relative z-10 block rounded-full px-3 py-1.5 text-xs font-medium transition sm:px-4 sm:text-sm",
                       isActive

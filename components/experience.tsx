@@ -25,7 +25,7 @@ export default function Experience() {
             and what I built there.
           </>
         }
-        description="A short, honest log of the two roles that shaped how I build — one front-of-house, one brain-of-house."
+        description="A short, honest log of two roles that shaped how I build: one front-of-house, one brain-of-house."
       />
 
       <div className="relative">

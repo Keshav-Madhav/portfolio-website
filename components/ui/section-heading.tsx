@@ -22,7 +22,7 @@ export default function SectionHeading({
   return (
     <div
       className={cn(
-        "mb-12 flex flex-col gap-3",
+        "mb-16 flex flex-col",
         align === "center" && "items-center text-center",
         className
       )}
@@ -33,7 +33,7 @@ export default function SectionHeading({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted"
+          className="mb-6 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted"
         >
           <span className="h-[1px] w-8 bg-gradient-to-r from-transparent to-muted/60" />
           {eyebrow}
@@ -46,7 +46,7 @@ export default function SectionHeading({
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "heading-paint font-display text-3xl font-semibold tracking-tight text-ink sm:text-5xl",
+          "heading-paint font-display text-3xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-5xl",
           inView && "in-view"
         )}
       >
@@ -58,7 +58,7 @@ export default function SectionHeading({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="max-w-2xl text-base text-muted sm:text-lg"
+          className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg"
         >
           {description}
         </motion.p>

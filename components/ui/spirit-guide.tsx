@@ -258,6 +258,13 @@ function visibleItems(): HTMLElement[] {
       return inSafeZone && hasEnoughVisible && r.width > 20;
     })
     .sort((a, b) => {
+      // Prioritize elements with data-spirit-first
+      const aFirst = a.hasAttribute("data-spirit-first");
+      const bFirst = b.hasAttribute("data-spirit-first");
+      if (aFirst && !bFirst) return -1;
+      if (!aFirst && bFirst) return 1;
+      
+      // Then sort by position
       const ra = a.getBoundingClientRect();
       const rb = b.getBoundingClientRect();
       if (Math.abs(ra.top - rb.top) > 40) return ra.top - rb.top;
@@ -380,6 +387,306 @@ export default function SpiritGuide() {
     let movementStartT = 0;        // When continuous movement began
     let lastMoveT = 0;             // Last mouse move timestamp
     let isMovingSustained = false; // True if moving for INTERRUPT_THRESHOLD_MS
+    
+    // ========================================================================
+    // CURSOR PATTERN DETECTION - For reactive tricks
+    // ========================================================================
+    const cursorHistory: { x: number; y: number; t: number }[] = [];
+    const HISTORY_LENGTH = 30;
+    const HISTORY_TIME_WINDOW = 800; // ms
+    let lastTrickTime = 0;
+    const TRICK_COOLDOWN = 3000;
+    
+    // Trick state
+    let trickActive = false;
+    let trickType: "none" | "revolve" | "shake" | "bounce" | "spin" | "wiggle" | "nuzzle" | "hop" = "none";
+    let trickStartTime = 0;
+    let trickDuration = 0;
+    let trickData: { centerX?: number; centerY?: number; angle?: number; startX?: number; startY?: number; targetX?: number; targetY?: number } = {};
+    
+    // Random idle tricks
+    let lastIdleTrickTime = 0;
+    const IDLE_TRICK_COOLDOWN = 6000;
+    
+    // Nuzzle state - when orb gets close to cursor
+    let nuzzleChance = 0;
+    const NUZZLE_THRESHOLD = 50; // Distance to start considering nuzzle
+    
+    function detectCursorPattern(): "circle" | "shake" | "none" {
+      const now = performance.now();
+      // Filter to recent history
+      const recent = cursorHistory.filter(p => now - p.t < HISTORY_TIME_WINDOW);
+      if (recent.length < 10) return "none";
+      
+      // Detect shake: rapid left-right reversals
+      let reversals = 0;
+      let lastDx = 0;
+      for (let i = 1; i < recent.length; i++) {
+        const dx = recent[i].x - recent[i-1].x;
+        if (Math.abs(dx) > 3) { // Minimum movement threshold
+          if (lastDx !== 0 && Math.sign(dx) !== Math.sign(lastDx)) {
+            reversals++;
+          }
+          lastDx = dx;
+        }
+      }
+      if (reversals >= 5) return "shake";
+      
+      // Detect circle: check if points form a rough circle
+      // Calculate center of mass
+      const cx = recent.reduce((s, p) => s + p.x, 0) / recent.length;
+      const cy = recent.reduce((s, p) => s + p.y, 0) / recent.length;
+      
+      // Calculate average radius and check consistency
+      const radii = recent.map(p => Math.hypot(p.x - cx, p.y - cy));
+      const avgR = radii.reduce((s, r) => s + r, 0) / radii.length;
+      if (avgR < 30) return "none"; // Circle too small
+      
+      const radiusVariance = radii.reduce((s, r) => s + Math.abs(r - avgR), 0) / radii.length;
+      if (radiusVariance < avgR * 0.35) { // Points are roughly equidistant from center
+        // Check for angle progression (actually moving in a circle)
+        let totalAngle = 0;
+        for (let i = 1; i < recent.length; i++) {
+          const a1 = Math.atan2(recent[i-1].y - cy, recent[i-1].x - cx);
+          const a2 = Math.atan2(recent[i].y - cy, recent[i].x - cx);
+          let da = a2 - a1;
+          if (da > Math.PI) da -= 2 * Math.PI;
+          if (da < -Math.PI) da += 2 * Math.PI;
+          totalAngle += da;
+        }
+        if (Math.abs(totalAngle) > Math.PI * 0.8) return "circle"; // At least ~half a circle
+      }
+      
+      return "none";
+    }
+    
+    function startTrick(type: typeof trickType) {
+      const now = performance.now();
+      if (now - lastTrickTime < TRICK_COOLDOWN) return;
+      
+      trickActive = true;
+      trickType = type;
+      trickStartTime = now;
+      lastTrickTime = now;
+      
+      switch (type) {
+        case "revolve":
+          trickDuration = 1200;
+          trickData = { 
+            centerX: pos.x, 
+            centerY: pos.y, 
+            angle: 0,
+            startX: pos.x,
+            startY: pos.y
+          };
+          showBubble(pickRandom(MESSAGES.trick_revolve), "joy");
+          break;
+        case "shake":
+          trickDuration = 800;
+          trickData = { startX: pos.x, startY: pos.y };
+          showBubble(pickRandom(MESSAGES.trick_shake), "startled");
+          break;
+        case "bounce":
+          trickDuration = 1000;
+          trickData = { startY: pos.y };
+          showBubble(pickRandom(MESSAGES.trick_bounce), "joy", true);
+          break;
+        case "wiggle":
+          trickDuration = 600;
+          trickData = { startX: pos.x };
+          showBubble(pickRandom(MESSAGES.trick_wiggle), "mischief");
+          break;
+        case "spin":
+          trickDuration = 800;
+          squashTarget = { x: 0.7, y: 1.3 };
+          showBubble(pickRandom(MESSAGES.trick_spin), "wonder");
+          break;
+        case "nuzzle":
+          trickDuration = 1000;
+          trickData = { startX: pos.x, startY: pos.y, targetX: cursor.x, targetY: cursor.y };
+          showBubble(pickRandom(MESSAGES.trick_nuzzle), "love");
+          break;
+        case "hop":
+          trickDuration = 600;
+          trickData = { startX: pos.x, startY: pos.y };
+          showBubble(pickRandom(MESSAGES.trick_hop), "joy");
+          break;
+      }
+    }
+    
+    function updateTrick(now: number) {
+      if (!trickActive) return;
+      
+      const elapsed = now - trickStartTime;
+      const progress = Math.min(1, elapsed / trickDuration);
+      
+      switch (trickType) {
+        case "revolve": {
+          // Orbit around the starting point
+          const revolutions = 1.5;
+          const angle = progress * Math.PI * 2 * revolutions;
+          const radius = 40 * (1 - progress * 0.3); // Spiral inward slightly
+          const eased = Math.sin(progress * Math.PI); // Smooth start/end
+          
+          target.x = trickData.startX! + Math.cos(angle) * radius * eased;
+          target.y = trickData.startY! + Math.sin(angle) * radius * eased;
+          
+          // Squash/stretch based on direction
+          const stretchAmount = 0.15 * eased;
+          squashTarget = {
+            x: 1 + Math.cos(angle) * stretchAmount,
+            y: 1 + Math.sin(angle) * stretchAmount
+          };
+          break;
+        }
+        case "shake": {
+          // Rapid left-right vibration like a confused pet
+          const intensity = Math.sin(progress * Math.PI); // Fade in/out
+          const frequency = 25; // Very fast shake
+          const amplitude = 12 * intensity;
+          const shakeX = Math.sin(elapsed * 0.001 * frequency * Math.PI * 2) * amplitude;
+          
+          target.x = trickData.startX! + shakeX;
+          target.y = trickData.startY!;
+          
+          // Squash horizontally during shake
+          squashTarget = {
+            x: 1 + Math.abs(Math.sin(elapsed * 0.001 * frequency * Math.PI * 2)) * 0.15 * intensity,
+            y: 1 - Math.abs(Math.sin(elapsed * 0.001 * frequency * Math.PI * 2)) * 0.1 * intensity
+          };
+          break;
+        }
+        case "bounce": {
+          // Triple bounce with decreasing height
+          const bouncePhase = progress * 3; // 3 bounces
+          const bounceNum = Math.floor(bouncePhase);
+          const bounceProgress = bouncePhase - bounceNum;
+          const bounceHeight = 50 * Math.pow(0.5, bounceNum); // Each bounce half as high
+          
+          // Parabolic arc for each bounce
+          const y = -4 * bounceProgress * (1 - bounceProgress) * bounceHeight;
+          target.y = trickData.startY! + y;
+          
+          // Squash on landing, stretch at peak
+          if (bounceProgress < 0.1 || bounceProgress > 0.9) {
+            squashTarget = { x: 1.2, y: 0.8 }; // Landing squash
+          } else if (bounceProgress > 0.4 && bounceProgress < 0.6) {
+            squashTarget = { x: 0.85, y: 1.2 }; // Peak stretch
+          } else {
+            squashTarget = { x: 1, y: 1 };
+          }
+          break;
+        }
+        case "wiggle": {
+          // Side-to-side happy wiggle
+          const wiggleIntensity = Math.sin(progress * Math.PI);
+          const wiggleX = Math.sin(elapsed * 0.02) * 8 * wiggleIntensity;
+          target.x = trickData.startX! + wiggleX;
+          
+          // Cute tilt effect via squash
+          squashTarget = {
+            x: 1 + Math.sin(elapsed * 0.02) * 0.1 * wiggleIntensity,
+            y: 1 - Math.sin(elapsed * 0.02) * 0.05 * wiggleIntensity
+          };
+          break;
+        }
+        case "spin": {
+          // Rapid squash/stretch rotation effect
+          const spinProgress = Math.sin(progress * Math.PI);
+          const spinAngle = progress * Math.PI * 4; // 2 full rotations
+          squashTarget = {
+            x: 1 + Math.cos(spinAngle) * 0.25 * spinProgress,
+            y: 1 + Math.sin(spinAngle) * 0.25 * spinProgress
+          };
+          break;
+        }
+        case "nuzzle": {
+          // Cute nuzzle toward cursor - move close then rub side to side
+          const nuzzlePhase = progress * 3;
+          if (nuzzlePhase < 1) {
+            // Approach cursor
+            const approachT = nuzzlePhase;
+            const eased = approachT * approachT * (3 - 2 * approachT);
+            target.x = trickData.startX! + (trickData.targetX! - trickData.startX!) * 0.7 * eased;
+            target.y = trickData.startY! + (trickData.targetY! - trickData.startY!) * 0.7 * eased;
+          } else {
+            // Side-to-side nuzzle
+            const nuzzleT = (nuzzlePhase - 1) / 2;
+            const nuzzleIntensity = Math.sin(nuzzleT * Math.PI);
+            const nuzzleX = Math.sin(nuzzleT * Math.PI * 6) * 8 * nuzzleIntensity;
+            target.x = trickData.startX! + (trickData.targetX! - trickData.startX!) * 0.7 + nuzzleX;
+            target.y = trickData.startY! + (trickData.targetY! - trickData.startY!) * 0.7;
+            
+            // Squish during nuzzle
+            squashTarget = {
+              x: 1 + Math.sin(nuzzleT * Math.PI * 6) * 0.1,
+              y: 1 - Math.abs(Math.sin(nuzzleT * Math.PI * 6)) * 0.05
+            };
+          }
+          break;
+        }
+        case "hop": {
+          // Quick little hop in place
+          const hopProgress = progress;
+          const hopHeight = 30;
+          const y = -4 * hopProgress * (1 - hopProgress) * hopHeight;
+          target.y = trickData.startY! + y;
+          
+          // Squash before, stretch at peak, squash on land
+          if (hopProgress < 0.15) {
+            squashTarget = { x: 1.15, y: 0.85 }; // Wind up
+          } else if (hopProgress < 0.25) {
+            squashTarget = { x: 0.85, y: 1.2 }; // Launch stretch
+          } else if (hopProgress > 0.75 && hopProgress < 0.9) {
+            squashTarget = { x: 0.9, y: 1.1 }; // Coming down
+          } else if (hopProgress > 0.9) {
+            squashTarget = { x: 1.2, y: 0.8 }; // Land squash
+          } else {
+            squashTarget = { x: 0.9, y: 1.1 }; // In air
+          }
+          break;
+        }
+      }
+      
+      if (progress >= 1) {
+        trickActive = false;
+        trickType = "none";
+        squashTarget = { x: 1, y: 1 };
+      }
+    }
+    
+    function maybeDoIdleTrick(now: number) {
+      if (trickActive || celebrationActive) return;
+      if (now - lastIdleTrickTime < IDLE_TRICK_COOLDOWN) return;
+      if (behavior.id === "grand_tour" || behavior.id === "explorer") return;
+      
+      // Check for nuzzle opportunity when escorting cursor
+      if (behavior.id === "escort" && cursor.seen) {
+        const distToCursor = Math.hypot(pos.x - cursor.x, pos.y - cursor.y);
+        if (distToCursor < NUZZLE_THRESHOLD) {
+          nuzzleChance += 0.002; // Build up nuzzle chance while close
+          if (Math.random() < nuzzleChance && now - lastIdleTrickTime > 4000) {
+            startTrick("nuzzle");
+            lastIdleTrickTime = now;
+            nuzzleChance = 0;
+            return;
+          }
+        } else {
+          nuzzleChance = Math.max(0, nuzzleChance - 0.001);
+        }
+      }
+      
+      // Random chance for idle tricks
+      if (Math.random() < 0.006) { // Small chance each frame when idle
+        const tricks: (typeof trickType)[] = ["bounce", "wiggle", "spin", "hop", "hop"];
+        startTrick(tricks[Math.floor(Math.random() * tricks.length)]);
+        lastIdleTrickTime = now;
+      }
+    }
+    
+    function pickRandom<T>(arr: T[]): T {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
 
     // Scroll tracking
     let lastScrollT = 0;
@@ -399,6 +706,79 @@ export default function SpiritGuide() {
     // Behavior state
     let behavior: Behavior = makeDrifter(performance.now(), cursor);
     let behaviorEndsAt = performance.now() + BEHAVIOR_MIN_MS + Math.random() * BEHAVIOR_RNG_MS;
+
+    // Speech bubble state
+    const bubbleEl = el.querySelector("[data-bubble]") as HTMLElement | null;
+    const bubbleIconEl = el.querySelector("[data-bubble-icon]") as HTMLElement | null;
+    const bubbleTextEl = el.querySelector("[data-bubble-text]") as HTMLElement | null;
+    const sparkleEl = el.querySelector("[data-sparkles]") as HTMLElement | null;
+    let bubbleVisible = false;
+    let bubbleHideAt = 0;
+    let lastBubbleTime = 0;
+    const BUBBLE_COOLDOWN = 3500; // Min time between bubbles
+    const BUBBLE_DURATION = 2400; // How long bubble stays visible
+
+    // Squash and stretch state - Pixar-style deformation
+    let squashStretch = { x: 1, y: 1 };
+    let squashTarget = { x: 1, y: 1 };
+    let lastVelMagnitude = 0;
+    
+    // Celebration state
+    let celebrationActive = false;
+    let celebrationEnd = 0;
+
+    function showBubble(text: string, expression: keyof typeof EXPRESSIONS | keyof typeof EXPRESSION_MAP = "none", withSparkles = false) {
+      if (!bubbleEl || !bubbleIconEl || !bubbleTextEl) return;
+      const now = performance.now();
+      if (now - lastBubbleTime < BUBBLE_COOLDOWN) return;
+      
+      // Map old icon names to new expressions
+      const expr = (expression in EXPRESSION_MAP) 
+        ? EXPRESSION_MAP[expression as keyof typeof EXPRESSION_MAP] 
+        : expression as keyof typeof EXPRESSIONS;
+      
+      bubbleTextEl.textContent = text;
+      bubbleIconEl.innerHTML = EXPRESSIONS[expr] || "";
+      
+      // Add bounce animation class
+      bubbleEl.classList.remove("bounce-in");
+      void bubbleEl.offsetWidth; // Force reflow for re-animation
+      bubbleEl.classList.add("visible", "bounce-in");
+      
+      bubbleVisible = true;
+      bubbleHideAt = now + BUBBLE_DURATION;
+      lastBubbleTime = now;
+      
+      // Trigger sparkle celebration if requested
+      if (withSparkles) {
+        triggerCelebration();
+      }
+    }
+
+    function hideBubble() {
+      if (!bubbleEl) return;
+      bubbleEl.classList.remove("visible", "bounce-in");
+      bubbleVisible = false;
+    }
+    
+    function triggerCelebration() {
+      if (!sparkleEl) return;
+      celebrationActive = true;
+      celebrationEnd = performance.now() + 1200;
+      sparkleEl.classList.add("active");
+      
+      // Quick happy bounce on orb
+      squashTarget = { x: 0.85, y: 1.25 };
+      setTimeout(() => {
+        squashTarget = { x: 1.15, y: 0.9 };
+        setTimeout(() => {
+          squashTarget = { x: 0.95, y: 1.08 };
+          setTimeout(() => {
+            squashTarget = { x: 1, y: 1 };
+          }, 100);
+        }, 120);
+      }, 80);
+    }
 
     // Breathing - multiple layered oscillations
     const breath = {
@@ -554,6 +934,9 @@ export default function SpiritGuide() {
               b.element.setAttribute("data-spirit-touched", "true");
               b.phase = "hold";
               b.phaseStart = now;
+              // Expressive reaction on arrival
+              const arrivalExpressions: (keyof typeof EXPRESSIONS)[] = ["wonder", "joy", "mischief"];
+              showBubble(pickRandom(MESSAGES.explorer_arrive), pickRandom(arrivalExpressions));
             }
           } else if (b.phase === "hold") {
             target.x = p.x;
@@ -629,6 +1012,13 @@ export default function SpiritGuide() {
                 b.current = active;
                 b.phase = "hold";
                 b.phaseStart = now;
+                // Expressive tour arrival messages
+                if (b.idx === 0) {
+                  showBubble(pickRandom(MESSAGES.tour_first), "joy", true); // First item gets sparkle celebration
+                } else if (Math.random() < 0.5) {
+                  const tourExpressions: (keyof typeof EXPRESSIONS)[] = ["joy", "wonder", "mischief", "wink"];
+                  showBubble(pickRandom(MESSAGES.tour_item), pickRandom(tourExpressions));
+                }
               }
               break;
             }
@@ -689,6 +1079,12 @@ export default function SpiritGuide() {
                     vel.x += (-dy / len) * side * 0.6;
                     vel.y += (dx / len) * side * 0.6;
                   }
+                  // ANTICIPATION: Squash before jumping to next item (like winding up)
+                  squashTarget = { x: 1.1, y: 0.88 };
+                  setTimeout(() => {
+                    squashTarget = { x: 0.9, y: 1.15 }; // Stretch as we launch
+                    setTimeout(() => squashTarget = { x: 1, y: 1 }, 200);
+                  }, 100);
                   b.phase = "approach";
                   b.phaseStart = now;
                 }
@@ -705,15 +1101,26 @@ export default function SpiritGuide() {
 
               const dist = Math.hypot(anchor.x - pos.x, anchor.y - pos.y);
               if (dist < 70 || phaseDt > 3000) {
-                // Celebration bounce! Quick scale pulse to hint completion
-                scaleTarget = 1.25;
+                // BIG celebration! Pixar-style joy burst on tour completion
+                scaleTarget = 1.35;
                 opacityTarget = 1.0;
                 setEmotion("happy");
+                showBubble(pickRandom(MESSAGES.tour_complete), "joy", true); // Sparkle burst celebration!
+                // Extended celebration sequence - multiple bounces like Pixar characters
+                setTimeout(() => {
+                  scaleTarget = 1.1;
+                  squashTarget = { x: 1.12, y: 0.9 };
+                }, 300);
+                setTimeout(() => {
+                  scaleTarget = 1.2;
+                  squashTarget = { x: 0.9, y: 1.15 };
+                }, 500);
                 setTimeout(() => {
                   scaleTarget = 1.0;
+                  squashTarget = { x: 1, y: 1 };
                   opacityTarget = 0.85;
                   setEmotion("calm");
-                }, 400);
+                }, 800);
                 
                 behaviorEndsAt = now;
                 lastTourEnd = now;
@@ -747,6 +1154,7 @@ export default function SpiritGuide() {
             vel.x += b.dir.x * 6;
             vel.y += b.dir.y * 6;
             b.impulseApplied = true;
+            showBubble(pickRandom(MESSAGES.startled), "startled");
           }
           target.x = pos.x;
           target.y = pos.y;
@@ -805,25 +1213,33 @@ export default function SpiritGuide() {
         const timeSinceCursor = now - lastCursorT;
         if (timeSinceCursor > 3000 && timeSinceCursor < 8000) {
           setEmotion("sad");
+          // Lonely message with sleepy/bored expression
+          if (timeSinceCursor > 4500 && timeSinceCursor < 4800 && !bubbleVisible && !trickActive) {
+            showBubble(pickRandom(MESSAGES.lonely), "sleepy");
+          }
         } else if (timeSinceCursor > 8000) {
           setEmotion("calm");
         }
       }
 
       // ======== Introduction behavior (first-time hint) ========
-      // Target the stats bar specifically for the intro
+      // Target elements with data-spirit-first, or fall back to stats bar
       if (!introCompleted && !introScheduled && now > INTRO_DELAY_MS) {
         if (behavior.id !== "grand_tour" && behavior.id !== "explorer") {
-          // Find the stats bar specifically
-          const statsEl = document.querySelector<HTMLElement>('[data-spirit="stats"]');
-          if (statsEl) {
-            const rect = statsEl.getBoundingClientRect();
-            // Only if stats bar is visible
+          // First, look for explicitly marked first item
+          let introTarget = document.querySelector<HTMLElement>('[data-spirit-first]');
+          // Fall back to stats bar if no first item found
+          if (!introTarget) {
+            introTarget = document.querySelector<HTMLElement>('[data-spirit="stats"]');
+          }
+          if (introTarget) {
+            const rect = introTarget.getBoundingClientRect();
+            // Only if target is visible
             if (rect.bottom > 50 && rect.top < window.innerHeight - 50) {
               const introExplorer: ExplorerB = {
                 id: "explorer",
                 since: now,
-                element: statsEl,
+                element: introTarget,
                 phase: "approach",
                 phaseStart: now,
               };
@@ -884,8 +1300,35 @@ export default function SpiritGuide() {
         idleStart = now;
       }
 
+      // ======== Speech bubble logic ========
+      // Hide bubble if time's up
+      if (bubbleVisible && now > bubbleHideAt) {
+        hideBubble();
+      }
+
+      // Helper messages when idle (before grand tour triggers)
+      const idleTime = now - idleStart;
+      if (!bubbleVisible && !trickActive && idleTime > 3000 && idleTime < 4000 && behavior.id === "drifter") {
+        const helperExpressions: (keyof typeof EXPRESSIONS)[] = ["wink", "joy", "think", "mischief", "wonder"];
+        showBubble(pickRandom(MESSAGES.idle_helper), pickRandom(helperExpressions));
+      }
+
+      // Playful when cursor approaches - expressive reactions
+      if (!bubbleVisible && !trickActive && cursorApproaching && behavior.id === "escort" && Math.random() < 0.03) {
+        const playfulExpressions: (keyof typeof EXPRESSIONS)[] = ["joy", "wink", "love", "mischief"];
+        showBubble(pickRandom(MESSAGES.playful_approach), pickRandom(playfulExpressions));
+      }
+
       // ======== Apply current behavior ========
       applyBehavior(behavior, now);
+      
+      // ======== Tricks system ========
+      if (trickActive) {
+        updateTrick(now);
+      } else {
+        // Maybe do a random idle trick
+        maybeDoIdleTrick(now);
+      }
 
       // ======== Perlin noise for organic drift ========
       noiseTime += 0.00025 * dtNorm;
@@ -961,11 +1404,57 @@ export default function SpiritGuide() {
       // Update emotion colors
       updateEmotionVisuals(now, dtNorm);
 
+      // ======== Squash and Stretch Physics ========
+      // Calculate velocity-based deformation (Pixar-style)
+      const velMagnitude = Math.hypot(vel.x, vel.y);
+      const velChange = velMagnitude - lastVelMagnitude;
+      lastVelMagnitude = velMagnitude;
+      
+      // Moving fast = stretch in direction of movement
+      if (velMagnitude > 2 && !celebrationActive) {
+        const stretchAmount = Math.min(velMagnitude * 0.03, 0.2);
+        
+        // Stretch along movement direction, squash perpendicular
+        if (Math.abs(vel.y) > Math.abs(vel.x)) {
+          // Vertical movement - stretch vertically
+          squashTarget.y = 1 + stretchAmount;
+          squashTarget.x = 1 - stretchAmount * 0.5;
+        } else {
+          // Horizontal movement - stretch horizontally
+          squashTarget.x = 1 + stretchAmount;
+          squashTarget.y = 1 - stretchAmount * 0.5;
+        }
+      } else if (!celebrationActive) {
+        // Return to normal when slow
+        squashTarget = { x: 1, y: 1 };
+      }
+      
+      // Impact squash - when velocity suddenly decreases (landing)
+      if (velChange < -1.5 && !celebrationActive) {
+        squashTarget = { x: 1.15, y: 0.85 };
+        setTimeout(() => {
+          squashTarget = { x: 0.95, y: 1.05 };
+          setTimeout(() => squashTarget = { x: 1, y: 1 }, 100);
+        }, 80);
+      }
+      
+      // Smooth squash/stretch interpolation
+      const squashLerp = 0.12;
+      squashStretch.x += (squashTarget.x - squashStretch.x) * squashLerp;
+      squashStretch.y += (squashTarget.y - squashStretch.y) * squashLerp;
+      
+      // Clear celebration sparkles when done
+      if (celebrationActive && now > celebrationEnd) {
+        celebrationActive = false;
+        if (sparkleEl) sparkleEl.classList.remove("active");
+      }
+
       // ======== Apply to DOM ========
       const finalScale = scale * breathScale;
       const finalOpacity = Math.max(0.15, Math.min(1, opacity * breathOpacity * emotionState.intensity));
 
-      el.style.transform = `translate3d(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px, 0) scale(${finalScale.toFixed(4)})`;
+      // Apply squash/stretch to the orb transform
+      el.style.transform = `translate3d(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px, 0) scale(${(finalScale * squashStretch.x).toFixed(4)}, ${(finalScale * squashStretch.y).toFixed(4)})`;
       el.style.opacity = finalOpacity.toFixed(3);
       
       // Update emotion colors via CSS custom properties
@@ -1014,6 +1503,24 @@ export default function SpiritGuide() {
       cursor.seen = true;
       lastMoveT = now;
       lastCursorT = now;
+      
+      // Track cursor history for pattern detection
+      cursorHistory.push({ x: e.clientX, y: e.clientY, t: now });
+      if (cursorHistory.length > HISTORY_LENGTH) {
+        cursorHistory.shift();
+      }
+      
+      // Check for cursor patterns when we have enough data
+      if (cursorHistory.length >= 15 && !trickActive && behavior.id === "escort") {
+        const pattern = detectCursorPattern();
+        if (pattern === "circle") {
+          startTrick("revolve");
+          cursorHistory.length = 0; // Clear history after detecting
+        } else if (pattern === "shake") {
+          startTrick("shake");
+          cursorHistory.length = 0;
+        }
+      }
     }
     
     // Hover detection for spirit items - orb is attracted to hovered items
@@ -1092,6 +1599,7 @@ export default function SpiritGuide() {
     return () => {
       cancelAnimationFrame(raf);
       clearTouched();
+      hideBubble();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("click", onClick);
@@ -1109,8 +1617,231 @@ export default function SpiritGuide() {
       aria-hidden
       className="spirit-orb pointer-events-none fixed left-0 top-0 z-[45] will-change-transform"
     >
+      {/* Sparkle celebration burst */}
+      <div 
+        className="spirit-sparkles-container" 
+        data-sparkles
+        dangerouslySetInnerHTML={{ __html: SPARKLE_BURST }}
+      />
       <div className="spirit-orb-halo" />
-      <div className="spirit-orb-core" />
+      <div className="spirit-orb-core" data-core />
+      {/* Speech bubble with expressive face */}
+      <div className="spirit-bubble" data-bubble>
+        <div className="spirit-bubble-content">
+          <span className="spirit-face-container" data-bubble-icon />
+          <span className="spirit-bubble-text" data-bubble-text />
+        </div>
+      </div>
     </div>
   );
 }
+
+// ============================================================================
+// EXPRESSIVE FACE SYSTEM - Pixar-inspired emotional expressions
+// ============================================================================
+
+// Animated face expressions for the speech bubble - these feel ALIVE
+const EXPRESSIONS = {
+  // Joyful celebration - big smile with sparkly eyes
+  joy: `<svg viewBox="0 0 24 24" class="spirit-face spirit-face-joy">
+    <circle cx="12" cy="12" r="10" fill="hsl(var(--spirit-hue, 48) 90% 65%)" class="face-bg"/>
+    <ellipse cx="8" cy="10" rx="1.8" ry="2.2" fill="#222" class="eye-left"/>
+    <ellipse cx="16" cy="10" rx="1.8" ry="2.2" fill="#222" class="eye-right"/>
+    <circle cx="7" cy="9" r="0.8" fill="#fff" class="sparkle"/>
+    <circle cx="15" cy="9" r="0.8" fill="#fff" class="sparkle"/>
+    <path d="M7 14.5q5 4 10 0" stroke="#222" stroke-width="1.8" fill="none" stroke-linecap="round" class="mouth"/>
+  </svg>`,
+  
+  // Wide-eyed wonder/curiosity
+  wonder: `<svg viewBox="0 0 24 24" class="spirit-face spirit-face-wonder">
+    <circle cx="12" cy="12" r="10" fill="hsl(var(--spirit-hue, 280) 75% 70%)" class="face-bg"/>
+    <circle cx="8" cy="10" r="2.5" fill="#fff" class="eye-white"/>
+    <circle cx="16" cy="10" r="2.5" fill="#fff" class="eye-white"/>
+    <circle cx="8" cy="10" r="1.5" fill="#222" class="pupil"/>
+    <circle cx="16" cy="10" r="1.5" fill="#222" class="pupil"/>
+    <circle cx="7.2" cy="9.2" r="0.6" fill="#fff" class="sparkle"/>
+    <circle cx="15.2" cy="9.2" r="0.6" fill="#fff" class="sparkle"/>
+    <ellipse cx="12" cy="15.5" rx="2" ry="1.5" fill="#222" class="mouth"/>
+  </svg>`,
+  
+  // Playful wink
+  wink: `<svg viewBox="0 0 24 24" class="spirit-face spirit-face-wink">
+    <circle cx="12" cy="12" r="10" fill="hsl(var(--spirit-hue, 190) 85% 68%)" class="face-bg"/>
+    <ellipse cx="8" cy="10" rx="1.8" ry="2" fill="#222" class="eye-left"/>
+    <path d="M14 10q2 0 4 0" stroke="#222" stroke-width="2" stroke-linecap="round" class="wink-eye"/>
+    <circle cx="7" cy="9" r="0.7" fill="#fff" class="sparkle"/>
+    <path d="M8 14q4 3 8 0" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round" class="mouth"/>
+  </svg>`,
+  
+  // Startled/surprised - eyebrows up, mouth open
+  startled: `<svg viewBox="0 0 24 24" class="spirit-face spirit-face-startled">
+    <circle cx="12" cy="12" r="10" fill="hsl(55 95% 75%)" class="face-bg"/>
+    <path d="M5 7l4 1" stroke="#222" stroke-width="1.5" stroke-linecap="round" class="brow"/>
+    <path d="M19 7l-4 1" stroke="#222" stroke-width="1.5" stroke-linecap="round" class="brow"/>
+    <circle cx="8" cy="11" r="2.2" fill="#fff" class="eye-white"/>
+    <circle cx="16" cy="11" r="2.2" fill="#fff" class="eye-white"/>
+    <circle cx="8" cy="11" r="1.2" fill="#222" class="pupil"/>
+    <circle cx="16" cy="11" r="1.2" fill="#222" class="pupil"/>
+    <ellipse cx="12" cy="16" rx="2.5" ry="2" fill="#222" class="mouth"/>
+  </svg>`,
+  
+  // Sleepy/content - soft smile, droopy eyes
+  sleepy: `<svg viewBox="0 0 24 24" class="spirit-face spirit-face-sleepy">
+    <circle cx="12" cy="12" r="10" fill="hsl(var(--spirit-hue, 32) 70% 72%)" class="face-bg"/>
+    <path d="M6 10q2 1 4 0" stroke="#222" stroke-width="2" stroke-linecap="round" class="eye-left"/>
+    <path d="M14 10q2 1 4 0" stroke="#222" stroke-width="2" stroke-linecap="round" class="eye-right"/>
+    <path d="M9 15q3 2 6 0" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round" class="mouth"/>
+  </svg>`,
+  
+  // Mischievous grin - one eyebrow raised
+  mischief: `<svg viewBox="0 0 24 24" class="spirit-face spirit-face-mischief">
+    <circle cx="12" cy="12" r="10" fill="hsl(var(--spirit-hue, 320) 85% 70%)" class="face-bg"/>
+    <path d="M5 8l4 0" stroke="#222" stroke-width="1.5" stroke-linecap="round" class="brow"/>
+    <path d="M15 7l4 1.5" stroke="#222" stroke-width="1.5" stroke-linecap="round" class="brow-raised"/>
+    <ellipse cx="8" cy="11" rx="1.5" ry="1.8" fill="#222" class="eye"/>
+    <ellipse cx="16" cy="10" rx="1.5" ry="1.8" fill="#222" class="eye"/>
+    <circle cx="7" cy="10" r="0.6" fill="#fff" class="sparkle"/>
+    <path d="M7 15q5 3 10 -1" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round" class="mouth"/>
+  </svg>`,
+  
+  // Heart eyes - pure love
+  love: `<svg viewBox="0 0 24 24" class="spirit-face spirit-face-love">
+    <circle cx="12" cy="12" r="10" fill="hsl(350 85% 70%)" class="face-bg"/>
+    <path d="M5.5 10.5c0-2 3-3 3.5 0 .5-3 3.5-2 3.5 0 0 2-3.5 4-3.5 4s-3.5-2-3.5-4z" fill="#e11d48" class="heart-eye"/>
+    <path d="M11.5 10.5c0-2 3-3 3.5 0 .5-3 3.5-2 3.5 0 0 2-3.5 4-3.5 4s-3.5-2-3.5-4z" fill="#e11d48" class="heart-eye"/>
+    <path d="M8 16q4 2 8 0" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round" class="mouth"/>
+  </svg>`,
+  
+  // Thinking/pondering - looking up
+  think: `<svg viewBox="0 0 24 24" class="spirit-face spirit-face-think">
+    <circle cx="12" cy="12" r="10" fill="hsl(var(--spirit-hue, 280) 65% 72%)" class="face-bg"/>
+    <circle cx="8" cy="9" r="2" fill="#fff" class="eye-white"/>
+    <circle cx="16" cy="9" r="2" fill="#fff" class="eye-white"/>
+    <circle cx="9" cy="8" r="1" fill="#222" class="pupil"/>
+    <circle cx="17" cy="8" r="1" fill="#222" class="pupil"/>
+    <path d="M10 15q2 0.5 4 0" stroke="#222" stroke-width="1.5" fill="none" stroke-linecap="round" class="mouth"/>
+  </svg>`,
+  
+  // None - empty for text-only
+  none: "",
+};
+
+// Sparkle burst SVG for celebrations
+const SPARKLE_BURST = `<svg viewBox="0 0 40 40" class="spirit-sparkles">
+  <g class="sparkle-group">
+    <circle cx="20" cy="4" r="2" fill="currentColor" class="sp sp1"/>
+    <circle cx="32" cy="8" r="1.5" fill="currentColor" class="sp sp2"/>
+    <circle cx="36" cy="20" r="2" fill="currentColor" class="sp sp3"/>
+    <circle cx="32" cy="32" r="1.5" fill="currentColor" class="sp sp4"/>
+    <circle cx="20" cy="36" r="2" fill="currentColor" class="sp sp5"/>
+    <circle cx="8" cy="32" r="1.5" fill="currentColor" class="sp sp6"/>
+    <circle cx="4" cy="20" r="2" fill="currentColor" class="sp sp7"/>
+    <circle cx="8" cy="8" r="1.5" fill="currentColor" class="sp sp8"/>
+  </g>
+</svg>`;
+
+// Map old icon names to new expressions for backward compatibility
+const EXPRESSION_MAP: Record<string, keyof typeof EXPRESSIONS> = {
+  sparkle: "joy",
+  question: "think",
+  exclaim: "startled",
+  eye: "wonder",
+  wave: "wink",
+  arrow: "mischief",
+  zap: "startled",
+  dots: "sleepy",
+  heart: "love",
+  twinkle: "joy",
+  check: "joy",
+  none: "none",
+};
+
+// ============================================================================
+// EXPANDED MESSAGE ARRAYS - Tons of variety to never feel repetitive!
+// ============================================================================
+
+const MESSAGES = {
+  // Tricks
+  trick_revolve: [
+    "wheee!", "loop-de-loop!", "spinning~", "dizzy!", "round we go!",
+    "weeeee!", "orbit!", "wooooo!", "circles!", "whirl!",
+  ],
+  trick_shake: [
+    "brrrrr!", "shakeshake!", "wobble!", "huh?!", "???",
+    "whatwhat!", "confused!", "eek!", "jitters!", "bzzt!",
+  ],
+  trick_bounce: [
+    "boing!", "bounce!", "hop hop!", "weee!", "spring!",
+    "jump!", "bouncyyy!", "bop!", "hippity!", "sproing!",
+  ],
+  trick_wiggle: [
+    "wiggle~", "hehe", "wobbly!", "sway~", "dance!",
+    "shimmy!", "groove~", "jiggly!", "wiggly!", "wobwob!",
+  ],
+  trick_spin: [
+    "whoooosh!", "zoom!", "twirl!", "spinny!", "fast!",
+    "vroom!", "whirl!", "swirl!", "twist!", "wheeee!",
+  ],
+  trick_nuzzle: [
+    "cuddle~", "snuggle!", "*nuzzle*", "cozy~", "warm!",
+    "love you!", "comfy~", "*purr*", "hehe~", "safe!",
+  ],
+  trick_hop: [
+    "hop!", "boing!", "up!", "jump!", "leap!",
+    "wheee!", "sproing!", "yip!", "hup!", "bounce!",
+  ],
+  
+  // Tour/exploration arrivals
+  tour_first: [
+    "look!", "hey!", "here!", "ooh!", "check this!",
+    "psst!", "yo!", "tada!", "this one!", "see!",
+  ],
+  tour_item: [
+    "nice!", "ooh", "cool!", "wow", "neat!",
+    "whoa", "sweet!", "oooh", "look!", "fancy!",
+    "hehe", "yay!", "pretty!", "shiny!", "fun!",
+  ],
+  tour_complete: [
+    "yay!", "done!", "woohoo!", "tada!", "finished!",
+    "all done!", "wheee!", "hurray!", "yayyy!", "complete!",
+  ],
+  
+  // Explorer arrivals (single item exploration)
+  explorer_arrive: [
+    "ooh!", "found it!", "here!", "aha!", "look!",
+    "hmm!", "interesting!", "neat!", "what's this?", "curious!",
+  ],
+  
+  // Idle/helper messages
+  idle_helper: [
+    "psst~", "hey!", "over here!", "hmm?", "hello?",
+    "yoohoo!", "hi!", "notice me!", "peek!", "boo!",
+    "hiii", "yo!", "look~", "heyyy", "ahem!",
+  ],
+  
+  // Playful cursor approach
+  playful_approach: [
+    "hiii~", "found me!", "yay!", "hello!", "hi there!",
+    "ooh friend!", "hey you!", "hehe!", "hewwo!", "hai!",
+    "you found me!", "boop!", "meep!", "nya~", "owo!",
+  ],
+  
+  // Lonely/bored messages
+  lonely: [
+    "...", "bored", "lonely", "hmph", "zzz",
+    "sigh", "alone", "*yawn*", "sleepy", "waiting...",
+    "hello?", "anyone?", "*sniff*", "miss you", "come back",
+  ],
+  
+  // Startled messages
+  startled: [
+    "!", "eek!", "woah!", "yikes!", "ahh!",
+    "!!!", "gasp!", "oh no!", "whoa!", "huh?!",
+  ],
+  
+  // Random happy expressions
+  happy: [
+    "yay!", "hehe!", "happy!", "wheee!", "woo!",
+    "yayyy!", "excited!", "fun!", "joy!", "weeee!",
+  ],
+};

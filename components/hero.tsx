@@ -110,7 +110,7 @@ export default function Hero() {
             data-spirit="button"
             data-spirit-first
             href="/about"
-            className="group inline-flex items-center gap-2 rounded-full border border-violet-500/40 bg-violet-500/10 px-5 py-2.5 text-sm font-medium text-violet-300 backdrop-blur transition hover:border-violet-500/60 hover:bg-violet-500/20"
+            className="group inline-flex min-h-[44px] items-center gap-2 rounded-full border border-violet-500/40 bg-violet-500/10 px-5 py-2.5 text-sm font-medium text-violet-300 backdrop-blur transition hover:border-violet-500/60 hover:bg-violet-500/20 sm:px-6 sm:py-3"
           >
             <User className="h-4 w-4" />
             <span>About me</span>
@@ -121,7 +121,7 @@ export default function Hero() {
           <Link
             data-spirit="button"
             href="/#contact"
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-edge bg-ink px-6 py-3 text-sm font-medium text-canvas transition hover:scale-[1.02]"
+            className="group relative inline-flex min-h-[44px] items-center gap-2 overflow-hidden rounded-full border border-edge bg-ink px-5 py-2.5 text-sm font-medium text-canvas transition hover:scale-[1.02] sm:px-6 sm:py-3"
           >
             <span>Get in touch</span>
             <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -133,7 +133,7 @@ export default function Hero() {
             data-spirit="button"
             href={profile.resume}
             download
-            className="group inline-flex items-center gap-2 rounded-full border border-edge bg-surface/60 px-6 py-3 text-sm font-medium text-ink backdrop-blur transition hover:border-violet-500/40 hover:bg-surface"
+            className="group inline-flex min-h-[44px] items-center gap-2 rounded-full border border-edge bg-surface/60 px-5 py-2.5 text-sm font-medium text-ink backdrop-blur transition hover:border-violet-500/40 hover:bg-surface sm:px-6 sm:py-3"
           >
             <span>Résumé</span>
             <Download className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
@@ -159,17 +159,17 @@ export default function Hero() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, delay: 0.45 }}
-        className="mt-20 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-edge bg-edge/60 sm:grid-cols-4"
+        className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-edge bg-edge/60 sm:mt-20 sm:grid-cols-4"
       >
         {profile.stats.map((s) => (
           <div
             key={s.label}
-            className="bg-canvas/80 px-5 py-5 backdrop-blur-sm"
+            className="bg-canvas/80 px-3 py-4 backdrop-blur-sm sm:px-5 sm:py-5"
           >
-            <div className="font-display text-2xl font-semibold text-ink sm:text-3xl">
+            <div className="font-display text-xl font-semibold text-ink sm:text-3xl">
               {s.value}
             </div>
-            <div className="mt-1 font-mono text-[0.68rem] uppercase tracking-widest text-muted">
+            <div className="mt-1 font-mono text-[0.6rem] uppercase tracking-widest text-muted sm:text-[0.68rem]">
               {s.label}
             </div>
           </div>
@@ -196,7 +196,7 @@ function IconLink({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={label}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-edge bg-surface/60 text-muted backdrop-blur transition hover:border-violet-500/50 hover:text-ink"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-edge bg-surface/60 text-muted backdrop-blur transition hover:border-violet-500/50 hover:text-ink"
       >
         {children}
       </a>

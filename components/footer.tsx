@@ -8,16 +8,16 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative mx-auto mt-20 w-full max-w-6xl px-6 pb-10">
+    <footer className="relative mx-auto mt-16 w-full max-w-6xl px-4 pb-8 sm:mt-20 sm:px-6 sm:pb-10">
       <div className="mb-10 h-px w-full bg-gradient-to-r from-transparent via-edge to-transparent" />
 
       <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link
             href="#home"
-            className="inline-flex items-center gap-2 font-display text-xl font-semibold text-ink"
+            className="inline-flex min-h-[44px] items-center gap-2 font-display text-lg font-semibold text-ink sm:text-xl"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-edge bg-surface">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-edge bg-surface sm:h-7 sm:w-7">
               <span className="h-2 w-2 rounded-full bg-violet-400" />
             </span>
             Keshav Madhav
@@ -45,7 +45,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mt-10 flex flex-col items-start justify-between gap-2 border-t border-edge pt-6 text-xs text-muted sm:flex-row sm:items-center">
+      <div className="mt-8 flex flex-col items-start justify-between gap-3 border-t border-edge pt-5 text-xs text-muted sm:mt-10 sm:flex-row sm:items-center sm:gap-2 sm:pt-6">
         <p>
           © {year} Keshav Madhav. Built with Next.js, Framer Motion, Lenis and
           spite for bad dashboards.
@@ -73,7 +73,7 @@ function FootLink({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-edge bg-surface/60 text-muted transition hover:border-violet-500/40 hover:text-ink"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-edge bg-surface/60 text-muted transition hover:border-violet-500/40 hover:text-ink"
     >
       {children}
     </a>

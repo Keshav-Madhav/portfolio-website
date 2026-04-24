@@ -60,9 +60,9 @@ export default function Nav() {
             setActiveSection("Work");
             setTimeOfLastClick(Date.now());
           }}
-          className="group ml-2 mr-1 flex items-center gap-2 pr-2 font-display text-sm font-semibold text-ink"
+          className="group ml-1 mr-1 flex min-h-[44px] items-center gap-2 px-1.5 font-display text-sm font-semibold text-ink sm:ml-2 sm:pr-2"
         >
-          <span className="relative flex h-6 w-6 items-center justify-center rounded-full border border-white/[0.08]">
+          <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.08] sm:h-6 sm:w-6">
             <span className="h-2 w-2 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.6)]" />
           </span>
           <span className="hidden sm:inline">km.</span>
@@ -86,7 +86,7 @@ export default function Nav() {
                           }
                     }
                     className={cn(
-                      "relative z-10 block rounded-full px-3 py-1.5 text-xs font-medium transition sm:px-4 sm:text-sm",
+                      "relative z-10 block min-h-[44px] rounded-full px-3 py-3 text-xs font-medium transition sm:px-4 sm:py-2 sm:text-sm",
                       isActive
                         ? "text-ink"
                         : "text-muted hover:text-ink"

@@ -30,7 +30,7 @@ export default function Projects() {
     <section
       ref={ref}
       id="projects"
-      className="relative mx-auto w-full max-w-6xl px-6 py-24 sm:py-32"
+      className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-32"
     >
       <SectionHeading
         eyebrow="02 / Selected work"
@@ -44,7 +44,7 @@ export default function Projects() {
       />
 
       {/* Featured bento */}
-      <div className="grid gap-4 sm:grid-cols-6 sm:auto-rows-[minmax(220px,auto)]">
+      <div className="grid gap-3 sm:gap-4 sm:grid-cols-6 sm:auto-rows-[minmax(220px,auto)]">
         {featured.map((p, i) => (
           <motion.div
             key={p.slug}
@@ -66,10 +66,10 @@ export default function Projects() {
       </div>
 
       {/* Rest grid */}
-      <h3 className="mt-24 mb-6 font-mono text-[0.72rem] uppercase tracking-[0.25em] text-muted">
+      <h3 className="mt-16 mb-4 font-mono text-[0.68rem] uppercase tracking-[0.25em] text-muted sm:mt-24 sm:mb-6 sm:text-[0.72rem]">
         More builds
       </h3>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {rest.map((p) => (
           <CompactCard
             key={p.slug}
@@ -157,7 +157,7 @@ function FeaturedCard({
 
       {/* Gallery in top half for gallery projects */}
       {hasGallery && (
-        <div className="relative mx-4 mt-4 aspect-[16/9] overflow-hidden rounded-2xl border border-edge/80 bg-canvas">
+        <div className="relative mx-3 mt-3 aspect-[16/9] overflow-hidden rounded-xl border border-edge/80 bg-canvas sm:mx-4 sm:mt-4 sm:rounded-2xl">
           <ImageCycler
             images={[...project.gallery!]}
             className="h-full w-full"
@@ -166,7 +166,7 @@ function FeaturedCard({
         </div>
       )}
 
-      <div className="relative flex flex-1 flex-col p-6 sm:p-8">
+      <div className="relative flex flex-1 flex-col p-4 sm:p-6 lg:p-8">
         <div className="flex items-start justify-between gap-4">
           <span className="inline-flex items-center gap-2 rounded-full border border-edge bg-canvas/50 px-3 py-1 font-mono text-[0.62rem] uppercase tracking-widest text-muted">
             <span className={cn("h-1.5 w-1.5 rounded-full", a.dot)} />
@@ -183,13 +183,13 @@ function FeaturedCard({
             href={primary.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="group/title mt-5 inline-flex items-start gap-2 font-display text-2xl font-semibold tracking-tight text-ink transition hover:text-violet-200 sm:text-3xl"
+            className="group/title mt-4 inline-flex min-h-[44px] items-start gap-2 font-display text-xl font-semibold tracking-tight text-ink transition hover:text-violet-200 sm:mt-5 sm:text-2xl lg:text-3xl"
           >
             <span>{project.title}</span>
-            <ArrowUpRight className="mt-1 h-5 w-5 shrink-0 text-muted transition group-hover/title:-translate-y-0.5 group-hover/title:translate-x-0.5 group-hover/title:text-ink" />
+            <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-muted transition group-hover/title:-translate-y-0.5 group-hover/title:translate-x-0.5 group-hover/title:text-ink sm:h-5 sm:w-5" />
           </a>
         ) : (
-          <h3 className="mt-5 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          <h3 className="mt-4 font-display text-xl font-semibold tracking-tight text-ink sm:mt-5 sm:text-2xl lg:text-3xl">
             {project.title}
           </h3>
         )}
@@ -215,27 +215,27 @@ function FeaturedCard({
             ))}
           </ul>
 
-          {project.links.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {project.links.map((l, idx) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "group/l inline-flex items-center gap-1 rounded-full border px-3 py-1 font-mono text-[0.65rem] uppercase tracking-wider transition",
-                    idx === 0
-                      ? "border-ink/70 bg-ink/10 text-ink hover:bg-ink/20"
-                      : "border-edge bg-canvas/40 text-muted hover:border-edge/40 hover:text-ink"
-                  )}
-                >
-                  {l.label}
-                  <ArrowUpRight className="h-3 w-3 transition group-hover/l:-translate-y-0.5 group-hover/l:translate-x-0.5" />
-                </a>
-              ))}
-            </div>
-          )}
+{project.links.length > 0 && (
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              {project.links.map((l, idx) => (
+                                <a
+                                  key={l.href}
+                                  href={l.href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={cn(
+                                    "group/l inline-flex min-h-[44px] items-center gap-1 rounded-full border px-4 py-2 font-mono text-[0.65rem] uppercase tracking-wider transition sm:min-h-0 sm:px-3 sm:py-1",
+                                    idx === 0
+                                      ? "border-ink/70 bg-ink/10 text-ink hover:bg-ink/20"
+                                      : "border-edge bg-canvas/40 text-muted hover:border-edge/40 hover:text-ink"
+                                  )}
+                                >
+                                  {l.label}
+                                  <ArrowUpRight className="h-3 w-3 transition group-hover/l:-translate-y-0.5 group-hover/l:translate-x-0.5" />
+                                </a>
+                              ))}
+                            </div>
+                          )}
         </div>
 
         {/* Abstract corner art for text-only cards WITHOUT a stat (rare) */}
@@ -254,24 +254,24 @@ function StatHero({
 }) {
   const a = accentMap[accent];
   return (
-    <div className="mt-5 flex items-end justify-between overflow-hidden rounded-2xl border border-edge bg-canvas/60 p-4">
+    <div className="mt-4 flex items-end justify-between overflow-hidden rounded-xl border border-edge bg-canvas/60 p-3 sm:mt-5 sm:rounded-2xl sm:p-4">
       <div>
         <div
           className={cn(
-            "font-display text-4xl font-semibold leading-none sm:text-5xl",
+            "font-display text-3xl font-semibold leading-none sm:text-4xl lg:text-5xl",
             a.text
           )}
         >
           {stat.value}
         </div>
-        <div className="mt-1.5 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-muted">
+        <div className="mt-1 font-mono text-[0.58rem] uppercase tracking-[0.2em] text-muted sm:mt-1.5 sm:text-[0.62rem]">
           {stat.label}
         </div>
       </div>
       <div
         aria-hidden
         className={cn(
-          "h-14 w-14 rounded-full bg-gradient-to-br opacity-70 blur-md",
+          "h-10 w-10 rounded-full bg-gradient-to-br opacity-70 blur-md sm:h-14 sm:w-14",
           a.glow
         )}
       />
@@ -298,7 +298,7 @@ function CompactCard({
       className="perspective-card"
     >
       <TiltedCard intensity={4} className="h-full">
-        <div data-spirit className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-edge bg-surface/40 p-5 transition hover:border-edge/40 hover:bg-surface/60">
+        <div data-spirit className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-edge bg-surface/40 p-4 transition hover:border-edge/40 hover:bg-surface/60 sm:rounded-2xl sm:p-5">
           {/* Image / art — clickable if there's a primary link */}
           {primary ? (
             <a
@@ -346,13 +346,13 @@ function CompactCard({
               href={primary.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group/title mt-1.5 flex items-start justify-between gap-2 font-display text-lg font-medium text-ink transition hover:text-violet-200"
+              className="group/title mt-1.5 flex min-h-[44px] items-start justify-between gap-2 font-display text-base font-medium text-ink transition hover:text-violet-200 sm:text-lg"
             >
               <span>{project.title}</span>
               <ArrowUpRight className="h-4 w-4 shrink-0 text-muted transition group-hover/title:-translate-y-0.5 group-hover/title:translate-x-0.5 group-hover/title:text-ink" />
             </a>
           ) : (
-            <h4 className="mt-1.5 font-display text-lg font-medium text-ink">
+            <h4 className="mt-1.5 font-display text-base font-medium text-ink sm:text-lg">
               {project.title}
             </h4>
           )}
@@ -373,7 +373,7 @@ function CompactCard({
           </div>
 
           {project.links.length > 1 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
+            <div className="mt-3 flex flex-wrap gap-2">
               {project.links.map((l, idx) => (
                 <a
                   key={l.href}
@@ -381,7 +381,7 @@ function CompactCard({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
-                    "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[0.58rem] uppercase tracking-wider transition",
+                    "inline-flex min-h-[40px] items-center gap-1 rounded-full border px-3 py-1.5 font-mono text-[0.58rem] uppercase tracking-wider transition sm:min-h-0 sm:px-2 sm:py-0.5",
                     idx === 0
                       ? "border-ink/60 bg-ink/10 text-ink hover:bg-ink/20"
                       : "border-edge bg-canvas/40 text-muted hover:border-edge/40 hover:text-ink"

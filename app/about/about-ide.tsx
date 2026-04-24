@@ -63,7 +63,7 @@ export default function AboutIDE() {
   };
 
   return (
-    <div className="h-[calc(100vh-5rem)] pt-20 pb-6 px-4 sm:px-6">
+    <div className="h-[calc(100vh-4rem)] min-h-[500px] pt-16 pb-4 px-3 sm:h-[calc(100vh-5rem)] sm:pt-20 sm:pb-6 sm:px-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -71,15 +71,15 @@ export default function AboutIDE() {
         className="mx-auto h-full max-w-6xl flex flex-col overflow-hidden rounded-xl border border-edge bg-surface/60 backdrop-blur-sm"
       >
         {/* Title bar */}
-        <div className="flex items-center justify-between border-b border-edge bg-canvas/80 px-4 py-2.5 shrink-0">
+        <div className="flex items-center justify-between border-b border-edge bg-canvas/80 px-3 py-2 shrink-0 sm:px-4 sm:py-2.5">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
-              <span className="h-3 w-3 rounded-full bg-red-500/80" />
-              <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
-              <span className="h-3 w-3 rounded-full bg-green-500/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-red-500/80 sm:h-3 sm:w-3" />
+              <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/80 sm:h-3 sm:w-3" />
+              <span className="h-2.5 w-2.5 rounded-full bg-green-500/80 sm:h-3 sm:w-3" />
             </div>
-            <span className="ml-3 font-mono text-xs text-muted">
-              ~/keshav-madhav/{fileNames[activeFile]}
+            <span className="ml-2 font-mono text-[10px] text-muted sm:ml-3 sm:text-xs">
+              ~/{fileNames[activeFile]}
             </span>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-xs text-muted font-mono">
@@ -116,19 +116,20 @@ export default function AboutIDE() {
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col min-h-0 min-w-0">
             {/* Tabs */}
-            <div className="flex items-center gap-px border-b border-edge bg-canvas/60 overflow-x-auto shrink-0">
+            <div className="flex items-center gap-px border-b border-edge bg-canvas/60 overflow-x-auto shrink-0 scrollbar-none">
               {Object.entries(fileNames).map(([id, name]) => (
                 <button
                   key={id}
                   onClick={() => setActiveFile(id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 text-xs font-mono transition-colors whitespace-nowrap ${
+                  className={`flex min-h-[44px] items-center gap-1 px-2.5 py-2.5 text-[10px] font-mono transition-colors whitespace-nowrap sm:gap-1.5 sm:px-3 sm:py-2 sm:text-xs ${
                     activeFile === id
                       ? "bg-surface/80 text-ink border-t-2 border-t-violet-500"
                       : "text-muted hover:text-ink hover:bg-surface/40"
                   }`}
                 >
-                  <File className="h-3 w-3" />
-                  {name}
+                  <File className="h-3 w-3 shrink-0" />
+                  <span className="hidden xs:inline sm:inline">{name}</span>
+                  <span className="xs:hidden sm:hidden">{name.split('.')[0]}</span>
                 </button>
               ))}
             </div>
@@ -149,19 +150,19 @@ export default function AboutIDE() {
         </div>
 
         {/* Status bar */}
-        <div className="flex items-center justify-between border-t border-edge bg-canvas/80 px-4 py-1.5 text-[10px] text-muted font-mono shrink-0">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between border-t border-edge bg-canvas/80 px-3 py-1 text-[9px] text-muted font-mono shrink-0 sm:px-4 sm:py-1.5 sm:text-[10px]">
+          <div className="flex items-center gap-3 sm:gap-4">
             <span className="flex items-center gap-1">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 sm:h-2 sm:w-2" />
               Ready
             </span>
             <span className="hidden sm:inline">Ln 1, Col 1</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {/* View mode toggle */}
             <button
               onClick={() => setViewMode(viewMode === "raw" ? "rendered" : "raw")}
-              className={`flex items-center gap-1.5 px-2 py-0.5 rounded transition-colors ${
+              className={`flex min-h-[36px] items-center gap-1 px-2 py-1 rounded transition-colors sm:min-h-0 sm:gap-1.5 sm:py-0.5 ${
                 viewMode === "rendered" 
                   ? "bg-violet-500/20 text-violet-300" 
                   : "hover:bg-surface/60 hover:text-ink"
@@ -212,7 +213,7 @@ function FileTreeItem({
         <button
           onClick={() => onFolderToggle(item.id)}
           style={{ paddingLeft }}
-          className="flex w-full items-center gap-1.5 py-1 pr-2 text-xs text-muted hover:bg-surface/60 hover:text-ink transition-colors font-mono"
+          className="flex min-h-[36px] w-full items-center gap-1.5 py-1.5 pr-2 text-xs text-muted hover:bg-surface/60 hover:text-ink transition-colors font-mono"
         >
           <ChevronRight
             className={`h-3 w-3 transition-transform ${isExpanded ? "rotate-90" : ""}`}
@@ -247,7 +248,7 @@ function FileTreeItem({
     <button
       onClick={() => onFileClick(item.id)}
       style={{ paddingLeft: paddingLeft + 16 }}
-      className={`flex w-full items-center gap-1.5 py-1 pr-2 text-xs transition-colors font-mono ${
+      className={`flex min-h-[36px] w-full items-center gap-1.5 py-1.5 pr-2 text-xs transition-colors font-mono ${
         isActive
           ? "bg-violet-500/15 text-violet-300"
           : "text-muted hover:bg-surface/60 hover:text-ink"
@@ -286,7 +287,7 @@ function EditorContent({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.15 }}
-        className="p-4 sm:p-6 max-w-2xl"
+        className="p-3 sm:p-6 max-w-2xl"
       >
         <RenderedContent activeFile={activeFile} onFileClick={onFileClick} />
       </motion.div>
@@ -609,7 +610,7 @@ function NavCard({
   return (
     <button
       onClick={onClick}
-      className={`group flex items-center gap-2 rounded-lg border border-edge/60 bg-surface/30 transition-colors hover:border-violet-500/40 hover:bg-surface/50 text-left ${
+      className={`group flex min-h-[44px] items-center gap-2 rounded-lg border border-edge/60 bg-surface/30 transition-colors hover:border-violet-500/40 hover:bg-surface/50 text-left ${
         small ? "px-3 py-2" : "p-3"
       }`}
     >
@@ -675,7 +676,7 @@ function ContactCard({
     <a
       href={href}
       {...props}
-      className="group flex items-center gap-3 rounded-lg border border-edge/60 bg-surface/30 p-3 transition-colors hover:border-violet-500/40 hover:bg-surface/50"
+      className="group flex min-h-[48px] items-center gap-3 rounded-lg border border-edge/60 bg-surface/30 p-3 transition-colors hover:border-violet-500/40 hover:bg-surface/50"
     >
       <div>
         <p className="text-xs text-muted">{label}</p>

@@ -25,7 +25,7 @@ export default function Contact() {
     <section
       ref={ref}
       id="contact"
-      className="relative mx-auto w-full max-w-6xl px-6 py-24 sm:py-32"
+      className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-32"
     >
       <SectionHeading
         eyebrow="04 / Let's build"
@@ -47,7 +47,7 @@ export default function Contact() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-3xl border border-edge bg-surface/40 p-8 backdrop-blur"
+          className="relative overflow-hidden rounded-2xl border border-edge bg-surface/40 p-5 backdrop-blur sm:rounded-3xl sm:p-8"
         >
           <div
             aria-hidden
@@ -59,7 +59,7 @@ export default function Contact() {
             </div>
             <button
               onClick={copyEmail}
-              className="group mt-2 flex w-full items-center justify-between gap-4 rounded-2xl border border-edge bg-canvas/60 px-4 py-3.5 text-left transition hover:border-violet-500/40"
+              className="group mt-2 flex min-h-[48px] w-full items-center justify-between gap-3 rounded-xl border border-edge bg-canvas/60 px-3 py-3 text-left transition hover:border-violet-500/40 sm:gap-4 sm:rounded-2xl sm:px-4 sm:py-3.5"
             >
               <span className="flex items-center gap-3">
                 <Mail className="h-4 w-4 text-muted" />
@@ -75,17 +75,17 @@ export default function Contact() {
             </div>
             <a
               href={`mailto:${profile.altEmail}`}
-              className="mt-2 flex items-center gap-3 font-mono text-sm text-muted transition hover:text-ink"
+              className="mt-2 flex min-h-[44px] items-center gap-3 font-mono text-sm text-muted transition hover:text-ink"
             >
               {profile.altEmail}
             </a>
 
-            <div className="mt-8 grid grid-cols-2 gap-3">
+            <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-3">
               <a
                 href={profile.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center justify-between rounded-xl border border-edge bg-canvas/40 px-4 py-3 text-sm transition hover:border-violet-500/40"
+                className="group flex min-h-[48px] items-center justify-between rounded-lg border border-edge bg-canvas/40 px-3 py-2.5 text-sm transition hover:border-violet-500/40 sm:rounded-xl sm:px-4 sm:py-3"
               >
                 <span className="text-ink">GitHub</span>
                 <ArrowUpRight className="h-4 w-4 text-muted transition group-hover:text-ink" />
@@ -94,7 +94,7 @@ export default function Contact() {
                 href={profile.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center justify-between rounded-xl border border-edge bg-canvas/40 px-4 py-3 text-sm transition hover:border-violet-500/40"
+                className="group flex min-h-[48px] items-center justify-between rounded-lg border border-edge bg-canvas/40 px-3 py-2.5 text-sm transition hover:border-violet-500/40 sm:rounded-xl sm:px-4 sm:py-3"
               >
                 <span className="text-ink">LinkedIn</span>
                 <ArrowUpRight className="h-4 w-4 text-muted transition group-hover:text-ink" />
@@ -125,7 +125,7 @@ export default function Contact() {
             }
             toast.success("Sent! Talk soon");
           }}
-          className="rounded-3xl border border-edge bg-surface/40 p-6 backdrop-blur sm:p-8"
+          className="rounded-2xl border border-edge bg-surface/40 p-5 backdrop-blur sm:rounded-3xl sm:p-8"
         >
           <div className="mb-5">
             <label className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-muted">
@@ -137,7 +137,7 @@ export default function Contact() {
               required
               maxLength={500}
               placeholder="you@domain.com"
-              className="mt-2 w-full rounded-xl border border-edge bg-canvas/60 px-4 py-3 text-sm text-ink outline-none transition placeholder:text-muted/60 focus:border-violet-500/50 focus:bg-canvas"
+              className="mt-2 w-full rounded-lg border border-edge bg-canvas/60 px-3 py-3 text-sm text-ink outline-none transition placeholder:text-muted/60 focus:border-violet-500/50 focus:bg-canvas sm:rounded-xl sm:px-4"
             />
           </div>
           <div className="mb-5">
@@ -148,9 +148,9 @@ export default function Contact() {
               name="message"
               required
               maxLength={5000}
-              rows={7}
+              rows={6}
               placeholder="What are you building? What's the rough shape of the problem?"
-              className="mt-2 w-full resize-none rounded-xl border border-edge bg-canvas/60 px-4 py-3 text-sm text-ink outline-none transition placeholder:text-muted/60 focus:border-violet-500/50 focus:bg-canvas"
+              className="mt-2 w-full resize-none rounded-lg border border-edge bg-canvas/60 px-3 py-3 text-sm text-ink outline-none transition placeholder:text-muted/60 focus:border-violet-500/50 focus:bg-canvas sm:rounded-xl sm:px-4"
             />
           </div>
           <SubmitBtn />

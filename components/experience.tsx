@@ -14,7 +14,7 @@ export default function Experience() {
     <section
       ref={ref}
       id="work"
-      className="relative mx-auto w-full max-w-6xl px-6 py-24 sm:py-32"
+      className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-32"
     >
       <SectionHeading
         eyebrow="01 / Experience"
@@ -31,10 +31,10 @@ export default function Experience() {
       <div className="relative">
         <div
           aria-hidden
-          className="absolute left-[0.65rem] top-2 bottom-2 w-px bg-gradient-to-b from-transparent via-edge to-transparent sm:left-[0.95rem]"
+          className="absolute left-[0.45rem] top-2 bottom-2 w-px bg-gradient-to-b from-transparent via-edge to-transparent sm:left-[0.95rem]"
         />
 
-        <div className="flex flex-col gap-20 sm:gap-24">
+        <div className="flex flex-col gap-16 sm:gap-24">
           {experience.map((exp) => (
             <ExperienceEntry key={exp.company} entry={exp} />
           ))}
@@ -57,10 +57,10 @@ function ExperienceEntry({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-      className="relative pl-10 sm:pl-16"
+      className="relative pl-8 sm:pl-16"
     >
-      <div className="absolute left-0 top-1 flex h-6 w-6 items-center justify-center rounded-full border border-edge bg-canvas sm:h-8 sm:w-8">
-        <span className="h-2 w-2 rounded-full bg-violet-400 shadow-[0_0_18px_2px_rgba(167,139,250,0.6)]" />
+      <div className="absolute left-0 top-1 flex h-5 w-5 items-center justify-center rounded-full border border-edge bg-canvas sm:h-8 sm:w-8">
+        <span className="h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_18px_2px_rgba(167,139,250,0.6)] sm:h-2 sm:w-2" />
       </div>
 
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -69,7 +69,7 @@ function ExperienceEntry({
           href={entry.companyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-1 font-display text-2xl font-semibold text-ink sm:text-3xl"
+          className="group inline-flex min-h-[44px] items-center gap-1 font-display text-xl font-semibold text-ink sm:text-3xl"
         >
           {entry.company}
           <ArrowUpRight className="h-5 w-5 text-muted transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-ink" />
@@ -87,7 +87,7 @@ function ExperienceEntry({
       </p>
 
       {/* Small highlights */}
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+      <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2">
         {entry.highlights.map((h, i) => (
           <motion.div
             key={h.title}
@@ -96,7 +96,7 @@ function ExperienceEntry({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 0.6, delay: 0.05 * i }}
-            className="group relative overflow-hidden rounded-2xl border border-edge bg-surface/40 p-5 backdrop-blur transition hover:border-violet-500/40 hover:bg-surface/70"
+            className="group relative overflow-hidden rounded-xl border border-edge bg-surface/40 p-4 backdrop-blur transition hover:border-violet-500/40 hover:bg-surface/70 sm:rounded-2xl sm:p-5"
           >
             <div className="mb-2 flex items-center gap-2">
               <span className="font-mono text-[0.68rem] uppercase tracking-widest text-violet-300/80">

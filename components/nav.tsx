@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { useState } from "react";
 import { nav } from "@/lib/data";
@@ -8,6 +9,7 @@ import { useActiveSectionContext } from "@/context/active-section-context";
 import { cn } from "@/lib/cn";
 
 export default function Nav() {
+  const pathname = usePathname();
   const { activeSection, setActiveSection, setTimeOfLastClick } =
     useActiveSectionContext();
   const { scrollY } = useScroll();
@@ -18,7 +20,7 @@ export default function Nav() {
   });
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4 sm:pt-6">
+    <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:pt-4">
       {/* SVG filter for liquid glass effect */}
       <svg className="absolute h-0 w-0" aria-hidden>
         <defs>
@@ -45,7 +47,7 @@ export default function Nav() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "nav-glass relative flex items-center gap-2 rounded-full p-1.5 transition-all",
+          "nav-glass relative flex items-center gap-1 rounded-full p-1 transition-all sm:gap-2 sm:p-1.5",
           // Crystal clear glass - minimal blur, almost invisible
           "border border-white/[0.06]",
           "bg-transparent",
@@ -55,24 +57,29 @@ export default function Nav() {
         )}
       >
         <Link
-          href="/"
+          href="/#home"
           onClick={() => {
-            setActiveSection("Work");
+            setActiveSection("Me");
             setTimeOfLastClick(Date.now());
           }}
-          className="group ml-1 mr-1 flex min-h-[44px] items-center gap-2 px-1.5 font-display text-sm font-semibold text-ink sm:ml-2 sm:pr-2"
+          className="group ml-0.5 mr-0.5 flex h-10 items-center gap-1.5 px-1 font-display text-sm font-semibold text-ink sm:ml-2 sm:mr-1 sm:h-auto sm:gap-2 sm:px-1.5 sm:pr-2"
         >
-          <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.08] sm:h-6 sm:w-6">
-            <span className="h-2 w-2 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.6)]" />
+          <span className="relative flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.08] sm:h-6 sm:w-6">
+            <span className="h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.6)] sm:h-2 sm:w-2" />
           </span>
           <span className="hidden sm:inline">km.</span>
         </Link>
 
         <nav>
-          <ul className="flex items-center gap-0.5">
+          <ul className="flex items-center gap-0">
             {nav.map((link) => {
               const isPage = "isPage" in link && link.isPage;
-              const isActive = !isPage && activeSection === link.name;
+              // Check if this page link matches current pathname
+              const isPageActive = isPage && pathname === link.hash;
+              // Check if this section is active (only when on homepage)
+              const isSectionActive = !isPage && pathname === "/" && activeSection === link.name;
+              const isActive = isPageActive || isSectionActive;
+              
               return (
                 <li key={link.hash} className="relative">
                   <Link
@@ -86,7 +93,7 @@ export default function Nav() {
                           }
                     }
                     className={cn(
-                      "relative z-10 block min-h-[44px] rounded-full px-3 py-3 text-xs font-medium transition sm:px-4 sm:py-2 sm:text-sm",
+                      "relative z-10 flex h-10 items-center justify-center rounded-full px-2.5 text-[0.7rem] font-medium transition sm:h-auto sm:px-4 sm:py-2 sm:text-sm",
                       isActive
                         ? "text-ink"
                         : "text-muted hover:text-ink"

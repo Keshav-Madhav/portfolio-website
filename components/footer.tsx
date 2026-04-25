@@ -14,7 +14,7 @@ export default function Footer() {
       <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link
-            href="#home"
+            href="/#home"
             className="inline-flex min-h-[44px] items-center gap-2 font-display text-lg font-semibold text-ink sm:text-xl"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-edge bg-surface sm:h-7 sm:w-7">
@@ -50,9 +50,18 @@ export default function Footer() {
           © {year} Keshav Madhav. Built with Next.js, Framer Motion, Lenis and
           spite for bad dashboards.
         </p>
-        <p className="font-mono">
-          v2.0 · <span className="text-emerald-400">◉</span> online
-        </p>
+        <div className="flex items-center gap-3 font-mono">
+          <span className="hidden items-center gap-1.5 text-muted/60 sm:flex">
+            <kbd className="rounded border border-edge/60 bg-surface/50 px-1 py-0.5 text-[0.65rem]">?</kbd>
+            <span className="text-[0.65rem]">shortcuts</span>
+          </span>
+          <span className="text-muted/40">·</span>
+          <span>v2.0</span>
+          <span className="text-muted/40">·</span>
+          <span className="flex items-center gap-1">
+            <span className="text-emerald-400">◉</span> online
+          </span>
+        </div>
       </div>
     </footer>
   );

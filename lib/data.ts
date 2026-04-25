@@ -26,6 +26,7 @@ import cookieTutorial from "@/public/cookie-tutorial.png";
 import cookieEasterEgg from "@/public/cookie-easter-egg.png";
 
 export const nav = [
+  { name: "Me", hash: "/#home" },
   { name: "About", hash: "/about", isPage: true },
   { name: "Work", hash: "/#work" },
   { name: "Projects", hash: "/#projects" },

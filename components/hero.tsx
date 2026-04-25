@@ -20,7 +20,7 @@ const rotating = [
 ];
 
 export default function Hero() {
-  const { ref } = useSectionInView("Work", 0.2);
+  const { ref } = useSectionInView("Me", 0.2);
   useReducedMotion();
   const [rotIdx, setRotIdx] = useState(0);
 
@@ -174,6 +174,29 @@ export default function Hero() {
             </div>
           </div>
         ))}
+      </motion.div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1.2 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+      >
+        <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-muted/60">
+          scroll
+        </span>
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          className="flex h-8 w-5 items-start justify-center rounded-full border border-muted/30 p-1"
+        >
+          <motion.div 
+            className="h-1.5 w-1 rounded-full bg-muted/50"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.div>
       </motion.div>
 
     </section>

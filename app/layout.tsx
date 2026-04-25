@@ -12,6 +12,8 @@ import ParticleField from "@/components/ui/particle-field";
 import ScrollProgress from "@/components/ui/scroll-progress";
 import VelocityTilt from "@/components/ui/velocity-tilt";
 import FlowField from "@/components/ui/flow-field";
+import KeyboardNav from "@/components/ui/keyboard-nav";
+import Konami from "@/components/ui/konami";
 import ActiveSectionContextProvider from "@/context/active-section-context";
 import { Toaster } from "react-hot-toast";
 
@@ -65,6 +67,8 @@ export default function RootLayout({
         <SpiritGuide />
         <LenisProvider>
           <ActiveSectionContextProvider>
+            <KeyboardNav />
+            <Konami />
             <Nav />
             <main>{children}</main>
             <Footer />

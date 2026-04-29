@@ -70,7 +70,7 @@ export default function ImageCycler({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.3 }}
-              className="rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-widest text-white/80 backdrop-blur"
+              className="rounded-full border border-edge/30 bg-surface/80 px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-widest text-muted backdrop-blur"
             >
               {images[index].caption}
             </motion.span>

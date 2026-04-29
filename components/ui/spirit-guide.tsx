@@ -1454,13 +1454,13 @@ export default function SpiritGuide() {
       const finalOpacity = Math.max(0.15, Math.min(1, opacity * breathOpacity * emotionState.intensity));
 
       // Apply squash/stretch to the orb transform
-      el.style.transform = `translate3d(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px, 0) scale(${(finalScale * squashStretch.x).toFixed(4)}, ${(finalScale * squashStretch.y).toFixed(4)})`;
-      el.style.opacity = finalOpacity.toFixed(3);
-      
+      el!.style.transform = `translate3d(${pos.x.toFixed(1)}px, ${pos.y.toFixed(1)}px, 0) scale(${(finalScale * squashStretch.x).toFixed(4)}, ${(finalScale * squashStretch.y).toFixed(4)})`;
+      el!.style.opacity = finalOpacity.toFixed(3);
+
       // Update emotion colors via CSS custom properties
-      el.style.setProperty("--spirit-hue", emotionState.hue.toFixed(1));
-      el.style.setProperty("--spirit-sat", `${emotionState.saturation.toFixed(1)}%`);
-      el.style.setProperty("--spirit-light", `${emotionState.lightness.toFixed(1)}%`);
+      el!.style.setProperty("--spirit-hue", emotionState.hue.toFixed(1));
+      el!.style.setProperty("--spirit-sat", `${emotionState.saturation.toFixed(1)}%`);
+      el!.style.setProperty("--spirit-light", `${emotionState.lightness.toFixed(1)}%`);
 
       raf = requestAnimationFrame(tick);
     }

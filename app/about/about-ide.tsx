@@ -356,8 +356,61 @@ function RenderedIntro({ onFileClick }: { onFileClick: (id: string) => void }) {
         <Pill>{profile.githubStats.repos} repos</Pill>
       </div>
 
-      {/* Bio */}
-      <p className="text-ink/80 leading-relaxed">{profile.extendedBio.intro}</p>
+      {/* The 5-second read — headline + proof points */}
+      <div className="rounded-lg border border-violet-500/30 bg-gradient-to-br from-violet-500/10 to-cyan-500/5 p-4 sm:p-5">
+        <p className="font-display text-base font-semibold leading-snug text-ink sm:text-lg">
+          {profile.headline}
+        </p>
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          {profile.proofPoints.map((p) => (
+            <div
+              key={p.label}
+              className="rounded-md border border-edge/60 bg-canvas/60 p-2.5"
+            >
+              <div className="font-display text-base font-semibold text-violet-300">
+                {p.value}
+              </div>
+              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-wider text-muted">
+                {p.label}
+              </div>
+              <div className="mt-0.5 text-[11px] leading-snug text-ink/70">
+                {p.detail}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Capabilities — the 30-second read */}
+      <div>
+        <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted">
+          What I actually build
+        </p>
+        <div className="grid gap-2">
+          {profile.capabilities.map((c) => (
+            <div
+              key={c.title}
+              className="rounded-md border border-edge/60 bg-surface/30 p-3"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-medium text-ink">{c.title}</p>
+                <span className="shrink-0 rounded-full border border-edge/60 bg-canvas/60 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-muted">
+                  {c.tag}
+                </span>
+              </div>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted">{c.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* The longer read */}
+      <div>
+        <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted">
+          The longer read
+        </p>
+        <p className="text-sm leading-relaxed text-ink/80">{profile.extendedBio.intro}</p>
+      </div>
 
       {/* Philosophy */}
       <div className="rounded-lg border border-violet-500/20 bg-violet-500/5 p-4">
@@ -913,8 +966,22 @@ function getIntroContent(): string[] {
   return [
     `# ${profile.name}`,
     ``,
-    `> ${profile.handle}`,
+    `> ${profile.handle} · ${profile.role} @ [${profile.company}](https://www.verbaflo.ai/)`,
     ``,
+    `## TL;DR`,
+    ``,
+    `**${profile.headline}**`,
+    ``,
+    ...profile.proofPoints.map((p) => `- **${p.value}** ${p.label} — ${p.detail}`),
+    ``,
+    `## What I actually build`,
+    ``,
+    ...profile.capabilities.flatMap((c) => [
+      `### ${c.title} \`${c.tag}\``,
+      ``,
+      c.detail,
+      ``,
+    ]),
     `## Quick facts`,
     ``,
     `- **Role:** ${profile.role} @ [${profile.company}](https://www.verbaflo.ai/)`,
@@ -922,7 +989,7 @@ function getIntroContent(): string[] {
     `- **Education:** ${education.degree}`,
     `- **GitHub:** [${profile.githubStats.repos} repos](${profile.github})`,
     ``,
-    `## About`,
+    `## The longer read`,
     ``,
     profile.extendedBio.intro,
     ``,

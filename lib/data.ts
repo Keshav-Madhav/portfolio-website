@@ -48,13 +48,13 @@ export const profile = {
   linkedin: "https://www.linkedin.com/in/keshav-madhav/",
   twitter: "",
   tagline:
-    "Engineering agentic systems, blazing-fast interfaces, and the glue between them.",
-  bio: "I build production agentic pipelines (tool-calling orchestrators, text-to-SQL, retrieval over vector stores) and I care a lot about the interface humans use to watch those systems think. I moved from a founding front-end engineer role into full-stack AI, and I like living at that seam: where a well-designed UI makes an LLM system legible and debuggable.",
+    "Building production AI runtimes — custom orchestrators, retrieval, and the tooling teams debug against.",
+  bio: "I build production AI runtimes — custom multi-agent orchestrators, retrieval pipelines, text-to-SQL, and the desktop / IDE / observability tooling teams debug against. I moved from a founding front-end role into full-stack AI, and I'm comfortable from WebGL and Electron up through Kubernetes and trace pipelines. The interfaces and the runtime are both mine.",
   extendedBio: {
     intro:
-      "I'm Keshav Madhav — an AI engineer who started as a front-end engineer and grew into building agentic systems end-to-end. I care deeply about both the infrastructure that makes LLMs useful and the interfaces that make them understandable.",
+      "I'm Keshav Madhav — an AI engineer who ships full systems, not just prompts. Custom orchestrators, retrieval and eval infra, and the desktop / IDE / observability tooling that makes LLM pipelines legible. Started as a founding front-end engineer; grew into owning the runtime.",
     current:
-      "Currently at VerbaFlo, I own core pieces of the agentic AI stack: orchestration logic, retrieval pipelines (Milvus/Zilliz + hybrid search), text-to-SQL with Pydantic-validated schemas, and the internal debugging tools the team uses daily.",
+      "Currently at VerbaFlo, I own core pieces of the agentic AI stack: a multi-agent orchestrator with parallel tool-calling and SSE streaming, retrieval pipelines on Milvus / Zilliz with hybrid search and query expansion, Pydantic-validated text-to-SQL across MongoDB and Postgres, and the company-wide debugging surface (a unified MCP server + custom tracing + LLM playground) the rest of the team debugs against daily.",
     past: "Before that, I was the founding front-end engineer at PrudentBit, where I built the entire Immune product suite (Immunefiles, Immunevault, ImmuneShare) from scratch — end-to-end encrypted storage and sharing with a migration to Next.js 14 that cut load times in half.",
     sideProjects:
       "Outside of work, I've shipped 90+ public repositories — games, simulations, creative-coding experiments, and developer tools. Highlights include a VS Code extension for live Jinja2 rendering (10K+ installs), an N-body gravity sandbox, a Cookie Clicker remake that went too far, and contributions to Axon (a knowledge-graph engine for codebases).",
@@ -66,6 +66,40 @@ export const profile = {
     { label: "AI pipeline stages owned", value: "6" },
     { label: "VS Code ext. installs", value: "10K+" },
     { label: "Side projects", value: "90+" },
+  ],
+  // Scan-first one-liners. The deeper read lives in extendedBio + experience.
+  headline: "I build production AI runtimes — and the tools teams debug them with.",
+  proofPoints: [
+    { label: "Autonomous RCA", value: "95%+", detail: "across a 500k+ LOC codebase" },
+    { label: "Agent orchestrator", value: "12 agents", detail: "parallel, streaming, cached" },
+    { label: "VS Code installs", value: "10K+", detail: "Live Jinja Renderer" },
+    { label: "Public repos", value: "90+", detail: "shipped end-to-end" },
+  ],
+  capabilities: [
+    {
+      title: "Multi-agent orchestrators",
+      detail:
+        "12-agent parallel execution across MongoDB, Postgres, and Milvus with SSE streaming, semantic cache, schema pre-warming, query expansion, and clarification loops. Custom runtime — not a framework wrapper.",
+      tag: "Runtime",
+    },
+    {
+      title: "Retrieval & RAG infra",
+      detail:
+        "Production Milvus / Zilliz vector stores with hybrid search, 6-variant query expansion, reranking, and Pydantic-validated text-to-SQL on top.",
+      tag: "Pipelines",
+    },
+    {
+      title: "Observability that pays off",
+      detail:
+        "A unified MCP debugger plugged into every AI-native IDE the team uses. Hand it a ClickUp ticket, it walks the codebase, traces, spans, and DBs and RCAs the bug autonomously.",
+      tag: "Tooling",
+    },
+    {
+      title: "Interfaces & the things teams use",
+      detail:
+        "Electron simulators, VS Code extensions, custom tracing UIs, span-search dashboards. The runtime and the surface are both mine.",
+      tag: "Full-stack",
+    },
   ],
   githubStats: {
     repos: 98,
@@ -80,39 +114,39 @@ export const vfInternal = [
   {
     id: "simulation",
     title: "Conversation Simulation",
-    subtitle: "QA harness for real chat traffic",
+    subtitle: "Desktop replay harness — thousands of real conversations, every stage, every branch",
     description:
-      "A desktop replay engine that autonomously runs live user conversations through the current stack (Router, FAQ, Text2SQL, PMS, bot analysis) end to end. Catches regressions, diffs responses run-over-run, and surfaces per-stage latency before anything touches prod.",
+      "An Electron + Puppeteer replay engine that autonomously drives live widgets with LLM-powered user personas, runs conversations through the current stack (Router, FAQ, Text2SQL, PMS, bot analysis) end-to-end, and catches regressions before anything touches prod. Doubles as the team's CID investigation tool — full transcripts enriched with Elasticsearch traces and span history.",
     bullets: [
-      "Parallel replay of thousands of real transcripts against any branch",
-      "Stage-level diffs (Router / FAQ / SQL / Summary) with side-by-side outputs",
-      "Metrics pane: p50/p95 latency, stage success, error clusters",
+      "Parallel replay of thousands of real transcripts against any branch — in minutes, not hours",
+      "Stage-level diffs (Router / FAQ / SQL / Summary) side-by-side with per-stage latency",
+      "ClickUp QA mode + CID investigator built into the same shell",
     ],
     accent: "violet",
   },
   {
     id: "mcp",
     title: "Unified Debugging MCP",
-    subtitle: "One server, every agentic IDE",
+    subtitle: "Autonomous RCA across a 500k+ LOC codebase",
     description:
-      "A company-wide MCP server that plugs into Claude Code, Cursor, Codex, Windsurf, Antigravity, and Cowork. Hand it a ClickUp ticket and it walks every system we run (Kibana traces, MongoDB, Elasticsearch, span history) to debug with full context.",
+      "A company-wide MCP server that turns any agentic IDE — Claude Code, Cursor, Codex, Windsurf, Antigravity, Cowork — into an autonomous debugger. Hand it a ClickUp ticket and it navigates the full 500k+ LOC repo, the live conversation in MongoDB, Elasticsearch trace indices, span history, and metrics, then RCAs the bug end-to-end. Resolves 95%+ of issues without a human stepping in.",
     bullets: [
+      "ClickUp ticket → full RCA in one shot: code, conversation, traces, spans, metrics, DB",
       "Single MCP surface across every AI-native editor the team uses",
-      "ClickUp → full RCA session: ticket → conversation → trace → spans → code",
-      "Custom tool routing, guardrails, and deterministic output for agent use",
+      "Custom tool routing, guardrails, and deterministic outputs tuned for agent loops",
     ],
     accent: "cyan",
   },
   {
     id: "trace",
     title: "In-house Tracing + LLM Playground",
-    subtitle: "Our own Opik, built for our pipeline",
+    subtitle: "Our own Opik — purpose-built for our pipeline, faster than anything we tried",
     description:
-      "A full observability stack for our LLM pipeline, faster and purpose-built. Span-level querying, diff views across runs, and a playground that replays any trace through any model with prompt edits via a custom LiteLLM wrapper.",
+      "A full observability stack for our LLM pipeline: span-level querying with Elasticsearch aggregations, run-over-run diff views, and a playground that replays any historical trace through any model with prompt edits. Built on a custom LiteLLM wrapper that lets one surface hit every internal and public model.",
     bullets: [
-      "Blazing UI for span search, filtering, and run comparison",
-      "Prompt-edit playground: rerun any historical call through any model",
-      "Custom LiteLLM wrapper lets one surface hit every internal & public model",
+      "Span search, filtering, and run comparison — no waiting on third-party trace UIs",
+      "Prompt-edit playground: rerun any production call through any model with edited inputs",
+      "Custom LiteLLM wrapper unifies Claude, OpenAI, Gemini, Vertex, Cerebras, Together — one surface, every model",
     ],
     accent: "emerald",
   },
@@ -184,13 +218,13 @@ export const projects = [
   {
     slug: "grid-math",
     title: "Grid Math",
-    kind: "Creative Coding · Desktop",
+    kind: "Creative Coding · Desktop · GPU",
     description:
-      "A generative math-art engine: spirals, vortexes, field equations, live audio reactivity, and a desktop wallpaper mode that puts all of it behind your icons. Native shell via Electron with a custom renderer; the web build lets you play with the same equations in-browser.",
-    stack: ["Electron", "Canvas", "JavaScript"],
+      "500k GPU-rendered points at 60fps, FFT-driven audio reactivity, and a desktop wallpaper mode that puts the whole field equation behind your icons. Cross-platform Electron + WebGL shell with a custom renderer, native Swift audio capture on macOS, and a web build that runs the same engine in-browser.",
+    stack: ["Electron", "WebGL", "Web Audio API", "Swift", "JavaScript"],
     accent: "violet",
     featured: true,
-    stat: null,
+    stat: { label: "GPU points @ 60fps", value: "500k" },
     image: gridHero,
     gallery: [
       { src: gridHero, caption: "Spiral render" },
@@ -212,10 +246,10 @@ export const projects = [
   {
     slug: "live-jinja-renderer",
     title: "Live Jinja Renderer",
-    kind: "Open Source · VS Code",
+    kind: "Open Source · VS Code Extension",
     description:
-      "A VS Code / Cursor extension that renders real Python Jinja2 templates live as you type. Powered by Pyodide, with JSON / YAML / TOML variable files, context-aware highlighting, output search, and markdown + mermaid support. Crossed 10K installs on Open VSX.",
-    stack: ["TypeScript", "VS Code API", "Pyodide", "Jinja2"],
+      "A VS Code / Cursor extension that runs real Python Jinja2 templates inside the editor — via Pyodide (WASM Python), not a string-replace fake. JSON / YAML / TOML variable binding, IntelliSense for 50+ filters, hover docs, go-to-def, output search, markdown + mermaid rendering. 10K+ installs on Open VSX.",
+    stack: ["TypeScript", "VS Code API", "Pyodide / WASM", "Jinja2"],
     accent: "amber",
     featured: true,
     stat: { label: "Installs on Open VSX", value: "10K+" },
@@ -241,11 +275,11 @@ export const projects = [
     title: "Cookie Clicker Reimagined",
     kind: "Game · Systems · Animation",
     description:
-      "A from-scratch remake that went too far. Full prestige tree with physics + camera controls, per-baker story modals, a newspaper-statistics modal, a 30+ song music library, 15+ minigames, a fully-animated tutorial system, and a grandmapocalypse-grade pile of easter eggs and achievements.",
-    stack: ["Vanilla JS", "HTML Canvas", "CSS"],
+      "A from-scratch remake that went too far. Physics-driven prestige tree with camera controls, per-baker story modals, a newspaper-statistics screen, 30+ track music library, 15+ minigames, a fully-animated tutorial, and a grandmapocalypse-grade pile of easter eggs and achievements. Vanilla JS + Canvas — no engine.",
+    stack: ["Vanilla JS", "HTML Canvas", "Game Loop", "CSS"],
     accent: "emerald",
     featured: true,
-    stat: null,
+    stat: { label: "Minigames + 30+ tracks", value: "15+" },
     image: cookieMain,
     gallery: [
       { src: cookieMain, caption: "Main UI: cookie, rows, shop" },
@@ -272,13 +306,13 @@ export const projects = [
   {
     slug: "space-sim",
     title: "Space Sandbox",
-    kind: "Simulation · Graphics",
+    kind: "Simulation · Physics · Graphics",
     description:
-      "An N-body gravity playground: from a handful of planets orbiting a black hole to 21,000 bodies at 30fps. Includes a space-probe mode for exploring local gravity potential, heatmaps, grid warping, and vector fields. All Canvas + WebGL, no engine.",
-    stack: ["WebGL", "Canvas", "Vanilla JS"],
+      "An N-body gravity playground that scales from a handful of planets around a black hole to 21,000 bodies at 30fps. Space-probe mode for exploring local gravity potential, heatmaps, grid warping, and vector fields. Pure Canvas + WebGL — no engine, no shortcuts.",
+    stack: ["WebGL", "Canvas", "Physics", "Vanilla JS"],
     accent: "indigo",
     featured: true,
-    stat: null,
+    stat: { label: "Bodies @ 30fps", value: "21k" },
     image: spaceOrbits,
     gallery: [
       { src: spaceOrbits, caption: "Black-hole with 145 orbiting planets" },
@@ -515,14 +549,19 @@ export const stack = [
     group: "AI / Agents",
     items: [
       "Agentic orchestration",
+      "Multi-agent systems",
       "Tool-calling",
       "RAG",
       "Text-to-SQL",
       "Evals",
+      "LLM-as-judge",
       "LiteLLM",
-      "MCP",
-      "Pydantic",
+      "LangGraph",
       "LangChain",
+      "Instructor",
+      "MCP",
+      "MCP servers",
+      "Pydantic",
     ],
   },
   {
@@ -536,10 +575,25 @@ export const stack = [
       "PostgreSQL",
       "Milvus / Zilliz",
       "Redis",
-      "Elasticsearch",
+      "Snowflake",
+      "Kafka",
+      "asyncpg",
       "Supabase",
       "Firebase",
       "Convex",
+    ],
+  },
+  {
+    group: "Observability",
+    items: [
+      "Prometheus",
+      "Grafana",
+      "Jaeger",
+      "OpenTelemetry",
+      "Opik",
+      "Elasticsearch",
+      "Kibana",
+      "Custom tracing",
     ],
   },
   {
@@ -548,27 +602,51 @@ export const stack = [
       "Next.js 15",
       "React 19",
       "TypeScript",
+      "Vite",
       "Tailwind",
       "Framer Motion",
       "GSAP",
       "ThreeJS / R3F",
+      "WebGL",
       "ShadCN",
       "Zustand",
     ],
   },
   {
     group: "Backend",
-    items: ["Python", "FastAPI", "Node.js", "Jinja2", "AppsScript", "Prisma"],
+    items: [
+      "Python",
+      "FastAPI",
+      "Node.js",
+      "Streaming / SSE",
+      "Celery",
+      "APScheduler",
+      "Jinja2",
+      "Prisma",
+      "AppsScript",
+    ],
   },
   {
-    group: "Tooling",
+    group: "Desktop & Native",
+    items: [
+      "Electron",
+      "Puppeteer",
+      "Pyodide / WASM",
+      "Swift (native bindings)",
+      "VS Code API",
+      "Web Audio API",
+    ],
+  },
+  {
+    group: "Infra & Tooling",
     items: [
       "Docker",
-      "Kibana",
-      "Grafana",
-      "Git",
+      "Kubernetes",
+      "AWS",
+      "GCP",
       "Vercel",
-      "VS Code API",
+      "Git",
+      "Makefile / IaC",
       "Bun / pnpm",
     ],
   },

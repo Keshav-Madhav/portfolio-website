@@ -49,7 +49,7 @@ export default function Stack() {
               {group.items.map((item) => (
                 <li
                   key={item}
-                  className="rounded-full border border-edge/80 bg-canvas/60 px-3 py-1.5 font-mono text-[0.65rem] text-ink/90 transition hover:border-violet-500/40 hover:text-violet-300 sm:px-2.5 sm:py-1 sm:text-[0.68rem]"
+                  className="rounded-full border border-edge/80 bg-canvas/60 px-3 py-1.5 font-mono text-[0.65rem] text-ink/90 transition hover:border-accent/40 hover:text-accent sm:px-2.5 sm:py-1 sm:text-[0.68rem]"
                 >
                   {item}
                 </li>

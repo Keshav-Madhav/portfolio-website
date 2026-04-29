@@ -35,7 +35,7 @@ export default function Hero() {
     <section
       ref={ref}
       id="home"
-      className="relative mx-auto flex min-h-[92vh] w-full max-w-6xl flex-col justify-center px-6 pb-24 pt-28 sm:pt-40"
+      className="relative mx-auto flex min-h-[92vh] w-full max-w-6xl flex-col justify-center px-6 pb-24 pt-24 sm:pt-32"
     >
       {/* Status pill */}
       <motion.div
@@ -159,7 +159,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, delay: 0.45 }}
-        className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-edge bg-edge/60 sm:mt-20 sm:grid-cols-4"
+        className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-edge bg-edge/60 sm:mt-14 sm:grid-cols-4"
       >
         {profile.stats.map((s) => (
           <div

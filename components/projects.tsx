@@ -172,9 +172,20 @@ function FeaturedCard({
             <span className={cn("h-1.5 w-1.5 rounded-full", a.dot)} />
             {project.kind}
           </span>
-          {!primary && (
+          {hasStat && hasGallery ? (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border bg-canvas/60 px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-widest",
+                a.text,
+                "border-edge"
+              )}
+            >
+              <span className="font-semibold">{project.stat!.value}</span>
+              <span className="text-muted">{project.stat!.label}</span>
+            </span>
+          ) : !primary ? (
             <Sparkles className={cn("h-5 w-5", a.text)} aria-hidden />
-          )}
+          ) : null}
         </div>
 
         {/* Title — clickable to the primary link */}

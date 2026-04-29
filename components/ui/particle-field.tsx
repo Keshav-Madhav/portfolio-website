@@ -26,6 +26,44 @@ export default function ParticleField() {
 
     const mouse = { x: -9999, y: -9999, active: false };
 
+    // Theme palette — read from CSS vars and re-read on theme change so
+    // the constellation feels native in both themes.
+    const palette = {
+      lineR: 167, lineG: 139, lineB: 250,   // particle ↔ particle line
+      mouseR: 165, mouseG: 243, mouseB: 252, // mouse line
+      dotR: 196, dotG: 181, dotB: 253,       // particle dot
+      lineAlphaMul: 1,
+      dotAlpha: 0.6,
+    };
+
+    const readPalette = () => {
+      const isLight =
+        document.documentElement.dataset.theme === "light";
+      if (isLight) {
+        // Dark indigo on light bg — saturated but not loud.
+        // Dot color a touch warmer than line color so dots pop without
+        // looking neon.
+        palette.lineR = 99;  palette.lineG = 81;  palette.lineB = 165;
+        palette.mouseR = 14; palette.mouseG = 116; palette.mouseB = 144;
+        palette.dotR = 76;   palette.dotG = 60;   palette.dotB = 130;
+        palette.lineAlphaMul = 0.65; // lines are softer on light
+        palette.dotAlpha = 0.55;
+      } else {
+        palette.lineR = 167; palette.lineG = 139; palette.lineB = 250;
+        palette.mouseR = 165; palette.mouseG = 243; palette.mouseB = 252;
+        palette.dotR = 196;  palette.dotG = 181;  palette.dotB = 253;
+        palette.lineAlphaMul = 1;
+        palette.dotAlpha = 0.6;
+      }
+    };
+    readPalette();
+
+    const themeObserver = new MutationObserver(readPalette);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       W = window.innerWidth;
@@ -139,8 +177,8 @@ export default function ParticleField() {
           const dy = a.y - b.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < MAX2) {
-            const alpha = (1 - d2 / MAX2) * 0.22;
-            ctx.strokeStyle = `rgba(167, 139, 250, ${alpha})`;
+            const alpha = (1 - d2 / MAX2) * 0.22 * palette.lineAlphaMul;
+            ctx.strokeStyle = `rgba(${palette.lineR}, ${palette.lineG}, ${palette.lineB}, ${alpha})`;
             ctx.lineWidth = 0.6;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -150,15 +188,15 @@ export default function ParticleField() {
         }
       }
 
-      // Mouse → particle lines (stronger, cyan tint)
+      // Mouse → particle lines
       if (mouse.active) {
         for (const p of particles) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < MOUSE_R2) {
-            const alpha = (1 - d2 / MOUSE_R2) * 0.38;
-            ctx.strokeStyle = `rgba(165, 243, 252, ${alpha})`;
+            const alpha = (1 - d2 / MOUSE_R2) * 0.38 * palette.lineAlphaMul;
+            ctx.strokeStyle = `rgba(${palette.mouseR}, ${palette.mouseG}, ${palette.mouseB}, ${alpha})`;
             ctx.lineWidth = 0.8;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
@@ -169,7 +207,7 @@ export default function ParticleField() {
       }
 
       // Particle dots last (on top of lines)
-      ctx.fillStyle = "rgba(196, 181, 253, 0.6)";
+      ctx.fillStyle = `rgba(${palette.dotR}, ${palette.dotG}, ${palette.dotB}, ${palette.dotAlpha})`;
       for (const p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -196,6 +234,7 @@ export default function ParticleField() {
     return () => {
       running = false;
       cancelAnimationFrame(rafId);
+      themeObserver.disconnect();
       window.removeEventListener("resize", onResize);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);

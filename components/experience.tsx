@@ -99,7 +99,7 @@ function ExperienceEntry({
             className="group relative overflow-hidden rounded-xl border border-edge bg-surface/40 p-4 backdrop-blur transition hover:border-violet-500/40 hover:bg-surface/70 sm:rounded-2xl sm:p-5"
           >
             <div className="mb-2 flex items-center gap-2">
-              <span className="font-mono text-[0.68rem] uppercase tracking-widest text-violet-300/80">
+              <span className="font-mono text-[0.68rem] uppercase tracking-widest text-accent/90">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="font-display text-base font-medium text-ink">

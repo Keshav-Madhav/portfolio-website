@@ -14,6 +14,7 @@ import VelocityTilt from "@/components/ui/velocity-tilt";
 import FlowField from "@/components/ui/flow-field";
 import KeyboardNav from "@/components/ui/keyboard-nav";
 import Konami from "@/components/ui/konami";
+import Multiplayer from "@/components/ui/multiplayer";
 import ActiveSectionContextProvider from "@/context/active-section-context";
 import { Toaster } from "react-hot-toast";
 
@@ -69,6 +70,7 @@ export default function RootLayout({
           <ActiveSectionContextProvider>
             <KeyboardNav />
             <Konami />
+            <Multiplayer />
             <Nav />
             <main>{children}</main>
             <Footer />

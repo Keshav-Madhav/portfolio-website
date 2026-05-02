@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   ChevronRight,
   File,
@@ -64,7 +64,7 @@ export default function AboutIDE() {
 
   return (
     <div className="h-[calc(100vh-4rem)] min-h-[500px] pt-16 pb-4 px-3 sm:h-[calc(100vh-5rem)] sm:pt-20 sm:pb-6 sm:px-6">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -183,7 +183,7 @@ export default function AboutIDE() {
             <span className="hidden sm:inline">main</span>
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -282,7 +282,7 @@ function EditorContent({
 
   if (viewMode === "rendered") {
     return (
-      <motion.div
+      <m.div
         key={`${activeFile}-rendered`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -290,12 +290,12 @@ function EditorContent({
         className="p-3 sm:p-6 max-w-2xl"
       >
         <RenderedContent activeFile={activeFile} onFileClick={onFileClick} />
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <motion.div
+    <m.div
       key={`${activeFile}-raw`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -312,7 +312,7 @@ function EditorContent({
           </span>
         </div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }
 

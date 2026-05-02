@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { vfInternal } from "@/lib/data";
 import { accentMap, cn } from "@/lib/cn";
@@ -19,7 +19,7 @@ export default function VfInternal() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         {vfInternal.map((p, i) => (
-          <motion.div
+          <m.div
             key={p.id}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -34,7 +34,7 @@ export default function VfInternal() {
             <TiltedCard intensity={8} className="h-full">
               <InternalCard project={p} accent={p.accent as AccentColor} />
             </TiltedCard>
-          </motion.div>
+          </m.div>
         ))}
       </div>
     </div>
@@ -149,7 +149,7 @@ function SimViz({ accent }: { accent: AccentColor }) {
               const x = 12 + i * 25;
               const yy = y + Math.sin(i * 0.7 + row) * 7;
               return (
-                <motion.circle
+                <m.circle
                   key={i}
                   cx={x}
                   cy={yy}
@@ -168,7 +168,7 @@ function SimViz({ accent }: { accent: AccentColor }) {
           </g>
         ))}
         {/* Vertical replay cursor */}
-        <motion.line
+        <m.line
           x1={30}
           x2={30}
           y1={0}
@@ -238,7 +238,7 @@ function McpViz({ accent }: { accent: AccentColor }) {
           const y = 56 + Math.sin(angle) * 38;
           return (
             <g key={label}>
-              <motion.line
+              <m.line
                 x1={160}
                 y1={56}
                 x2={x}
@@ -254,7 +254,7 @@ function McpViz({ accent }: { accent: AccentColor }) {
                   repeat: Infinity,
                 }}
               />
-              <motion.circle
+              <m.circle
                 cx={x}
                 cy={y}
                 r={2.8}
@@ -307,7 +307,7 @@ function TraceViz({ accent }: { accent: AccentColor }) {
         className={cn("absolute inset-0 h-full w-full", a.text)}
       >
         {spans.map((s, i) => (
-          <motion.rect
+          <m.rect
             key={i}
             x={s.x}
             y={s.y}
@@ -328,7 +328,7 @@ function TraceViz({ accent }: { accent: AccentColor }) {
           />
         ))}
 
-        <motion.line
+        <m.line
           x1={6}
           x2={6}
           y1={10}

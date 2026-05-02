@@ -356,6 +356,40 @@ export default function SpiritGuide() {
     const el = orbRef.current;
     if (!el) return;
 
+    // Per-frame DOM-rect cache. Invalidated on scroll/resize so cached rects
+    // stay correct without paying the cost of a forced layout reflow on every
+    // tick. applyBehavior calls getBoundingClientRect 2–3× per frame per
+    // active target; with this cache that drops to 1 layout per scroll event.
+    const rectCache = new WeakMap<HTMLElement, DOMRect>();
+    const rectGen = new WeakMap<HTMLElement, number>();
+    let rectGenCurrent = 0;
+    const cachedRect = (target: HTMLElement): DOMRect => {
+      if (rectGen.get(target) !== rectGenCurrent) {
+        rectCache.set(target, target.getBoundingClientRect());
+        rectGen.set(target, rectGenCurrent);
+      }
+      return rectCache.get(target)!;
+    };
+    const invalidateRectCache = () => {
+      rectGenCurrent++;
+    };
+    window.addEventListener("scroll", invalidateRectCache, { passive: true });
+    window.addEventListener("resize", invalidateRectCache);
+
+    // Pointer-at-item using the cached rect path so we don't trigger a
+    // second layout for the same element on the same frame.
+    const pointAtCachedItem = (target: HTMLElement) => {
+      const r = cachedRect(target);
+      const vh = window.innerHeight;
+      const vw = window.innerWidth;
+      const idealX = r.left + r.width * 0.85;
+      const idealY = r.top + r.height * 0.18;
+      return {
+        x: Math.max(60, Math.min(vw - 60, idealX)),
+        y: Math.max(MIN_Y, Math.min(vh - 60, idealY)),
+      };
+    };
+
     // Initialize Perlin noise
     const perlin = new PerlinNoise();
     let noiseTime = Math.random() * 1000;
@@ -835,7 +869,7 @@ export default function SpiritGuide() {
       if (next.id === "explorer" || next.id === "grand_tour") {
         const targetEl = next.id === "explorer" ? next.element : next.targets[0];
         if (targetEl) {
-          const p = pointAtItem(targetEl);
+          const p = pointAtCachedItem(targetEl);
           const dx = p.x - pos.x;
           const dy = p.y - pos.y;
           const len = Math.hypot(dx, dy);
@@ -906,7 +940,7 @@ export default function SpiritGuide() {
         }
 
         case "explorer": {
-          const rect = b.element.getBoundingClientRect();
+          const rect = cachedRect(b.element);
           const vh = window.innerHeight;
           const elCenter = rect.top + rect.height / 2;
           // Item center must be within safe zone
@@ -919,7 +953,7 @@ export default function SpiritGuide() {
             return;
           }
 
-          const p = pointAtItem(b.element);
+          const p = pointAtCachedItem(b.element);
 
           if (b.phase === "approach") {
             target.x = p.x;
@@ -972,7 +1006,7 @@ export default function SpiritGuide() {
           }
 
           // Check if current target is still visible - skip if scrolled out of view
-          const activeRect = active.getBoundingClientRect();
+          const activeRect = cachedRect(active);
           const vh = window.innerHeight;
           const activeCenter = activeRect.top + activeRect.height / 2;
           const isActiveVisible = activeCenter > VIEWPORT_PADDING_TOP && activeCenter < vh - VIEWPORT_PADDING_BOTTOM;
@@ -992,7 +1026,7 @@ export default function SpiritGuide() {
             return; // Re-evaluate on next frame
           }
 
-          const p = pointAtItem(active);
+          const p = pointAtCachedItem(active);
           target.x = p.x;
           target.y = p.y;
           const phaseDt = now - b.phaseStart;
@@ -1059,18 +1093,18 @@ export default function SpiritGuide() {
                 // Skip any items that are no longer visible (outside safe zones)
                 while (b.idx < b.targets.length) {
                   const nextItem = b.targets[b.idx];
-                  const nextRect = nextItem.getBoundingClientRect();
+                  const nextRect = cachedRect(nextItem);
                   const nextCenter = nextRect.top + nextRect.height / 2;
                   const isNextVisible = nextCenter > VIEWPORT_PADDING_TOP && nextCenter < vh - VIEWPORT_PADDING_BOTTOM;
                   if (isNextVisible) break;
                   b.idx += 1;
                 }
-                
+
                 if (b.idx >= b.targets.length) {
                   b.phase = "homing";
                   b.phaseStart = now;
                 } else {
-                  const nextP = pointAtItem(b.targets[b.idx]);
+                  const nextP = pointAtCachedItem(b.targets[b.idx]);
                   const dx = nextP.x - pos.x;
                   const dy = nextP.y - pos.y;
                   const len = Math.hypot(dx, dy);
@@ -1233,7 +1267,7 @@ export default function SpiritGuide() {
             introTarget = document.querySelector<HTMLElement>('[data-spirit="stats"]');
           }
           if (introTarget) {
-            const rect = introTarget.getBoundingClientRect();
+            const rect = cachedRect(introTarget);
             // Only if target is visible
             if (rect.bottom > 50 && rect.top < window.innerHeight - 50) {
               const introExplorer: ExplorerB = {
@@ -1258,9 +1292,9 @@ export default function SpiritGuide() {
       // ======== Hover attraction ========
       // If user hovers a spirit item and orb is idle, gently drift toward it
       if (hoveredItem && (behavior.id === "companion" || behavior.id === "drifter")) {
-        const rect = hoveredItem.getBoundingClientRect();
+        const rect = cachedRect(hoveredItem);
         if (rect.bottom > 0 && rect.top < window.innerHeight) {
-          const p = pointAtItem(hoveredItem);
+          const p = pointAtCachedItem(hoveredItem);
           // Gently bias target toward hovered item
           target.x = lerpValue(target.x, p.x, 0.02);
           target.y = lerpValue(target.y, p.y, 0.02);
@@ -1601,6 +1635,8 @@ export default function SpiritGuide() {
       clearTouched();
       hideBubble();
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", invalidateRectCache);
+      window.removeEventListener("resize", invalidateRectCache);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("click", onClick);
       document.removeEventListener("visibilitychange", onVisibilityChange);

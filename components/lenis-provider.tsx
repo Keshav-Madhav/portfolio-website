@@ -4,15 +4,16 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 
 /**
- * LenisProvider — owns the smooth-scroll loop and, crucially, intercepts
- * in-page anchor clicks so hash navigation works at all (otherwise Lenis
- * swallows the native scroll and links appear dead).
+ * LenisProvider — owns the smooth-scroll loop and intercepts in-page anchor
+ * clicks so hash navigation works (Lenis would otherwise swallow native scroll
+ * and links would appear dead).
+ *
+ * Note: this component renders nothing. It's mounted via <DeferredEffects />
+ * after first paint so the ~10KB Lenis JS doesn't sit in the critical bundle.
+ * The first ~800ms of scrolling uses native browser scroll, then Lenis takes
+ * over seamlessly.
  */
-export default function LenisProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function LenisProvider() {
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.15,
@@ -103,5 +104,5 @@ export default function LenisProvider({
     };
   }, []);
 
-  return <>{children}</>;
+  return null;
 }

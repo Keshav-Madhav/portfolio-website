@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import Image from "next/image";
 import {
-  motion,
+  m,
   useMotionTemplate,
   useMotionValue,
   useTransform,
@@ -47,7 +47,7 @@ export default function Projects() {
       {/* Featured bento */}
       <div className="grid gap-3 sm:gap-4 sm:grid-cols-6 sm:auto-rows-[minmax(220px,auto)]">
         {featured.map((p, i) => (
-          <motion.div
+          <m.div
             key={p.slug}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -62,7 +62,7 @@ export default function Projects() {
             <TiltedCard intensity={5} className="h-full">
               <FeaturedCard project={p} accent={p.accent as AccentColor} />
             </TiltedCard>
-          </motion.div>
+          </m.div>
         ))}
       </div>
 
@@ -161,7 +161,7 @@ function FeaturedCard({
         a.shadow
       )}
     >
-      <motion.div
+      <m.div
         className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{ background }}
       />
@@ -319,7 +319,7 @@ function CompactCard({
   const primary = project.links[0];
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -424,7 +424,7 @@ function CompactCard({
           )}
         </div>
       </TiltedCard>
-    </motion.div>
+    </m.div>
   );
 }
 

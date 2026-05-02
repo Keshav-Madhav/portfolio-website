@@ -22,14 +22,14 @@ export type Reaction = {
 };
 
 export const REACTIONS: Reaction[] = [
-  { key: "otter", label: "vibing", src: "/reactions/otter.png" },
-  { key: "goblin", label: "goblin mode", src: "/reactions/goblin.png" },
-  { key: "mushroom", label: "magic", src: "/reactions/mushroom.png" },
-  { key: "sloth", label: "chill", src: "/reactions/sloth.png" },
-  { key: "yoyo", label: "yoyo", src: "/reactions/yoyo.png" },
-  { key: "crystal", label: "oracle", src: "/reactions/crystal.png" },
-  { key: "mate", label: "mate", src: "/reactions/mate.png" },
-  { key: "wilted", label: "wilted", src: "/reactions/wilted.png" },
+  { key: "otter", label: "vibing", src: "/reactions/otter.webp" },
+  { key: "goblin", label: "goblin mode", src: "/reactions/goblin.webp" },
+  { key: "mushroom", label: "magic", src: "/reactions/mushroom.webp" },
+  { key: "sloth", label: "chill", src: "/reactions/sloth.webp" },
+  { key: "yoyo", label: "yoyo", src: "/reactions/yoyo.webp" },
+  { key: "crystal", label: "oracle", src: "/reactions/crystal.webp" },
+  { key: "mate", label: "mate", src: "/reactions/mate.webp" },
+  { key: "wilted", label: "wilted", src: "/reactions/wilted.webp" },
 ];
 
 export const REACTIONS_BY_KEY: Record<ReactionKey, Reaction> = REACTIONS.reduce(

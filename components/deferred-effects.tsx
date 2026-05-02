@@ -20,6 +20,13 @@ const VelocityTilt = dynamic(() => import("./ui/velocity-tilt"), {
 const KeyboardNav = dynamic(() => import("./ui/keyboard-nav"), { ssr: false });
 const Konami = dynamic(() => import("./ui/konami"), { ssr: false });
 const Multiplayer = dynamic(() => import("./ui/multiplayer"), { ssr: false });
+// Toaster is rarely needed in the first frame (only fires after a contact
+// form submit / copy-email click). Pull it out of the critical bundle.
+const Toaster = dynamic(
+  () => import("react-hot-toast").then((m) => m.Toaster),
+  { ssr: false },
+);
+const LenisProvider = dynamic(() => import("./lenis-provider"), { ssr: false });
 
 export default function DeferredEffects() {
   const [ready, setReady] = useState(false);
@@ -44,6 +51,7 @@ export default function DeferredEffects() {
 
   return (
     <>
+      <LenisProvider />
       <FlowField />
       <ParticleField />
       <VelocityTilt />
@@ -52,6 +60,16 @@ export default function DeferredEffects() {
       <KeyboardNav />
       <Konami />
       <Multiplayer />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: "hsl(222 18% 8%)",
+            color: "hsl(220 15% 96%)",
+            border: "1px solid hsl(220 13% 18%)",
+          },
+        }}
+      />
     </>
   );
 }

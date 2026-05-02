@@ -19,7 +19,7 @@ import {
 } from "@ably/spaces/react";
 import { Realtime, type Message } from "ably";
 import Spaces from "@ably/spaces";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 import { getOrCreateIdentity } from "@/lib/cursor-identity";
 import {
@@ -285,7 +285,7 @@ const Cursor = memo(function Cursor({
   color: string;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0.6 }}
       animate={{ opacity: 1, scale: 1, x, y }}
       exit={{ opacity: 0, scale: 0.6 }}
@@ -313,7 +313,7 @@ const Cursor = memo(function Cursor({
           strokeLinecap="round"
         />
       </svg>
-    </motion.div>
+    </m.div>
   );
 });
 
@@ -428,7 +428,7 @@ const FloatingReactionView = memo(function FloatingReactionView({
   rotate: number;
 }) {
   return (
-    <motion.div
+    <m.div
       initial={{
         opacity: 0,
         scale: 0.3,
@@ -452,7 +452,7 @@ const FloatingReactionView = memo(function FloatingReactionView({
       style={{ filter: "drop-shadow(0 10px 22px rgba(0,0,0,0.55))" }}
     >
       <ReactionIcon reactionKey={reactionKey} size={64} />
-    </motion.div>
+    </m.div>
   );
 });
 
@@ -480,7 +480,7 @@ function PresenceHint() {
   return (
     <AnimatePresence>
       {count > 0 && !dismissed && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
@@ -517,7 +517,7 @@ function PresenceHint() {
           >
             ×
           </button>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

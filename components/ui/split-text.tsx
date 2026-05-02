@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { m, useReducedMotion, type Variants } from "framer-motion";
 import { cn } from "@/lib/cn";
 
 const wordV: Variants = {
@@ -44,7 +44,7 @@ export default function SplitText({
           key={i}
           className="inline-block overflow-hidden align-baseline whitespace-pre"
         >
-          <motion.span
+          <m.span
             className="inline-block"
             custom={i}
             variants={wordV}
@@ -54,7 +54,7 @@ export default function SplitText({
           >
             {word}
             {i < words.length - 1 ? " " : ""}
-          </motion.span>
+          </m.span>
         </span>
       ))}
     </Tag>

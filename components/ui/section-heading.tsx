@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
+import { m } from "framer-motion";
+import { useInView } from "@/lib/use-in-view";
 import { cn } from "@/lib/cn";
 
 export default function SectionHeading({
@@ -17,7 +17,10 @@ export default function SectionHeading({
   align?: "left" | "center";
   className?: string;
 }) {
-  const { ref, inView } = useInView({ threshold: 0.4, triggerOnce: true });
+  const [ref, inView] = useInView<HTMLHeadingElement>({
+    threshold: 0.4,
+    triggerOnce: true,
+  });
 
   return (
     <div
@@ -28,7 +31,7 @@ export default function SectionHeading({
       )}
     >
       {eyebrow && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
@@ -37,9 +40,9 @@ export default function SectionHeading({
         >
           <span className="h-[1px] w-6 bg-gradient-to-r from-transparent to-muted/60 sm:w-8" />
           {eyebrow}
-        </motion.div>
+        </m.div>
       )}
-      <motion.h2
+      <m.h2
         ref={ref}
         initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0)" }}
@@ -51,9 +54,9 @@ export default function SectionHeading({
         )}
       >
         {title}
-      </motion.h2>
+      </m.h2>
       {description && (
-        <motion.p
+        <m.p
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
@@ -61,7 +64,7 @@ export default function SectionHeading({
           className="mt-4 max-w-2xl text-sm leading-relaxed text-muted sm:mt-6 sm:text-base lg:text-lg"
         >
           {description}
-        </motion.p>
+        </m.p>
       )}
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useActiveSectionContext } from "@/context/active-section-context";
 
 const shortcuts = [
@@ -94,7 +94,7 @@ export default function KeyboardNav() {
       {/* Pending key indicator */}
       <AnimatePresence>
         {pendingKey && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -106,14 +106,14 @@ export default function KeyboardNav() {
               </kbd>
               <span className="text-muted/60">then...</span>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       {/* Navigation toast */}
       <AnimatePresence>
         {toast && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -122,7 +122,7 @@ export default function KeyboardNav() {
             <div className="rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 py-2 font-mono text-xs text-violet-300 backdrop-blur">
               → {toast}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -130,14 +130,14 @@ export default function KeyboardNav() {
       <AnimatePresence>
         {showHelp && (
           <>
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowHelp(false)}
               className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm"
             />
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -183,7 +183,7 @@ export default function KeyboardNav() {
                   Close · Esc
                 </button>
               </div>
-            </motion.div>
+            </m.div>
           </>
         )}
       </AnimatePresence>

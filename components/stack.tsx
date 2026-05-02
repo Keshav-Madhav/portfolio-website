@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import SectionHeading from "./ui/section-heading";
 import Marquee from "./ui/marquee";
 import { stack, education, profile } from "@/lib/data";
@@ -32,7 +32,7 @@ export default function Stack() {
       {/* Groups */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stack.map((group, gi) => (
-          <motion.div
+          <m.div
             key={group.group}
             data-spirit
             initial={{ opacity: 0, y: 24 }}
@@ -55,7 +55,7 @@ export default function Stack() {
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </m.div>
         ))}
       </div>
 

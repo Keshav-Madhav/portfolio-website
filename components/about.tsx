@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useRef } from "react";
 import { ArrowDown, Sparkles } from "lucide-react";
 import SectionHeading from "./ui/section-heading";
@@ -27,7 +27,7 @@ export default function About() {
       />
 
       {/* Headline + proof-point strip — the 5-second read */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.4 }}
@@ -40,7 +40,7 @@ export default function About() {
 
         <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:grid-cols-4 sm:gap-3">
           {profile.proofPoints.map((p, i) => (
-            <motion.div
+            <m.div
               key={p.label}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -58,15 +58,15 @@ export default function About() {
               <div className="mt-1 text-[0.7rem] leading-snug text-ink/70 sm:text-xs">
                 {p.detail}
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Capability cards — the 30-second read */}
       <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
         {profile.capabilities.map((c, i) => (
-          <motion.div
+          <m.div
             key={c.title}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -90,12 +90,12 @@ export default function About() {
               aria-hidden
               className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-violet-500/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
             />
-          </motion.div>
+          </m.div>
         ))}
       </div>
 
       {/* Deep-read prose — always visible, the 1-minute read */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
@@ -115,7 +115,7 @@ export default function About() {
           <Quote>UI-sharp</Quote>
           <Quote tone="accent">Infra-curious</Quote>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Keep-scrolling cue — pill, not a button */}
       <div className="mt-10 flex flex-col items-center gap-3 sm:mt-14">

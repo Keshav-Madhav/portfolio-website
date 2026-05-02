@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { m, useReducedMotion, type Variants } from "framer-motion";
 import React from "react";
 
 const variants: Variants = {
@@ -20,25 +20,22 @@ const variants: Variants = {
 export function Reveal({
   children,
   i = 0,
-  as: Component = "div",
   className,
   once = true,
 }: {
   children: React.ReactNode;
   i?: number;
-  as?: any;
   className?: string;
   once?: boolean;
 }) {
   const reduce = useReducedMotion();
 
   if (reduce) {
-    return <Component className={className}>{children}</Component>;
+    return <div className={className}>{children}</div>;
   }
 
-  const MotionTag = motion(Component);
   return (
-    <MotionTag
+    <m.div
       className={className}
       custom={i}
       variants={variants}
@@ -47,7 +44,7 @@ export function Reveal({
       viewport={{ once, amount: 0.3 }}
     >
       {children}
-    </MotionTag>
+    </m.div>
   );
 }
 
@@ -64,7 +61,7 @@ export function StaggerGroup({
   if (reduce) return <div className={className}>{children}</div>;
 
   return (
-    <motion.div
+    <m.div
       className={className}
       initial="hidden"
       whileInView="visible"
@@ -77,7 +74,7 @@ export function StaggerGroup({
       }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -89,8 +86,8 @@ export function StaggerItem({
   className?: string;
 }) {
   return (
-    <motion.div className={className} variants={variants} custom={0}>
+    <m.div className={className} variants={variants} custom={0}>
       {children}
-    </motion.div>
+    </m.div>
   );
 }

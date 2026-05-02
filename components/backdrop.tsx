@@ -1,13 +1,17 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 /**
  * Backdrop with aurora blobs that scroll WITH content.
- * - Uses transform to move blobs based on scroll position
- * - Creates natural scrolling feel without fixed position headache
- * - Dimmed for less distraction from foreground
+ *
+ * Two perf decisions:
+ * 1. The container's parallax translate is driven imperatively via a ref-RAF
+ *    that self-suspends when scroll settles (no React re-renders during scroll).
+ * 2. The 8 blob breathing animations are pure CSS @keyframes — moves them off
+ *    framer-motion's animation runtime onto the browser compositor (GPU). On
+ *    a slow CPU this saves ~8 rAF ticks/frame doing JS interpolation.
  */
 export default function Backdrop() {
   const reduce = useReducedMotion();
@@ -18,9 +22,6 @@ export default function Backdrop() {
     const el = containerRef.current;
     if (!el) return;
 
-    // Smoothly interpolate towards the live scroll position via a ref-driven
-    // rAF loop. The previous version pushed the interpolated value through
-    // useState, which forced the whole tree to re-render on every frame.
     let rafId = 0;
     let running = true;
     let current = 0;
@@ -30,8 +31,6 @@ export default function Backdrop() {
       if (!running) return;
       current += (target - current) * 0.1;
       el.style.transform = `translate3d(0, ${-current}px, 0)`;
-      // Settle: stop the loop once we're within sub-pixel of the target
-      // and resume only when scroll fires again.
       if (Math.abs(target - current) < 0.5) {
         running = false;
         rafId = 0;
@@ -74,151 +73,120 @@ export default function Backdrop() {
     };
   }, [reduce]);
 
+  // CSS-driven blob animations defined as a <style> tag co-located with the
+  // component so the keyframes ship with the file. `prefers-reduced-motion`
+  // already nukes all animations globally in globals.css.
   return (
     <div className="pointer-events-none fixed inset-0 -z-20 overflow-hidden">
+      <style>{`
+        @keyframes blob-a { 0%,100% { transform: translateX(-50%) scale(1); } 33% { transform: translateX(-45%) scale(1.05); } 66% { transform: translateX(-55%) scale(0.98); } }
+        @keyframes blob-b { 0%,100% { transform: translateY(0) scale(1); } 33% { transform: translateY(40px) scale(1.04); } 66% { transform: translateY(-20px) scale(0.98); } }
+        @keyframes blob-c { 0%,100% { transform: translate(0,0) rotate(0deg); } 33% { transform: translate(30px,0) rotate(3deg); } 66% { transform: translate(-10px,0) rotate(-2deg); } }
+        @keyframes blob-d { 0%,100% { transform: scale(1) translateX(0); } 33% { transform: scale(1.08) translateX(20px); } 66% { transform: scale(0.95) translateX(-15px); } }
+        @keyframes blob-e { 0%,100% { transform: translateY(0) scale(1); } 33% { transform: translateY(30px) scale(1.06); } 66% { transform: translateY(-20px) scale(0.97); } }
+        @keyframes blob-f { 0%,100% { transform: translate(0,0); } 33% { transform: translate(-25px,20px); } 66% { transform: translate(15px,-15px); } }
+        @keyframes blob-g { 0%,100% { transform: translateX(-50%) scale(1); } 33% { transform: translateX(-50%) scale(1.05); } 66% { transform: translateX(-50%) scale(0.96); } }
+        @keyframes blob-h { 0%,100% { transform: translateX(0); } 33% { transform: translateX(35px); } 66% { transform: translateX(-15px); } }
+      `}</style>
+
       {/* Base canvas color */}
       <div className="absolute inset-0 bg-[hsl(222_25%_4%)]" />
-      
+
       {/* Aurora container - transforms based on scroll (driven imperatively) */}
-      <div
-        ref={containerRef}
-        className="absolute inset-0 will-change-transform"
-      >
-        {/* Aurora blob 1 - Top violet */}
-        <motion.div
+      <div ref={containerRef} className="absolute inset-0 will-change-transform">
+        <div
           aria-hidden
-          className="absolute -top-40 left-1/2 h-[40rem] w-[60rem] -translate-x-1/2 rounded-full blur-[140px]"
+          className="absolute -top-40 left-1/2 h-[40rem] w-[60rem] rounded-full blur-[140px] will-change-transform"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(258 85% 60% / 0.35), transparent 65%)",
             opacity: 0.22,
+            animation: reduce ? undefined : "blob-a 20s ease-in-out infinite",
+            transform: "translateX(-50%)",
           }}
-          animate={
-            reduce
-              ? undefined
-              : {
-                  x: ["-50%", "-45%", "-55%", "-50%"],
-                  scale: [1, 1.05, 0.98, 1],
-                }
-          }
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
-
-        {/* Aurora blob 2 - Cyan right (hero area) */}
-        <motion.div
+        <div
           aria-hidden
-          className="absolute top-[20vh] -right-32 h-[36rem] w-[48rem] rounded-full blur-[130px]"
+          className="absolute top-[20vh] -right-32 h-[36rem] w-[48rem] rounded-full blur-[130px] will-change-transform"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(190 90% 50% / 0.30), transparent 65%)",
             opacity: 0.16,
+            animation: reduce ? undefined : "blob-b 24s ease-in-out infinite",
           }}
-          animate={
-            reduce ? undefined : { y: [0, 40, -20, 0], scale: [1, 1.04, 0.98, 1] }
-          }
-          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
         />
-
-        {/* Aurora blob 3 - Emerald (Work section ~100vh) */}
-        <motion.div
+        <div
           aria-hidden
-          className="absolute top-[85vh] -left-32 h-[32rem] w-[44rem] rounded-full blur-[120px]"
+          className="absolute top-[85vh] -left-32 h-[32rem] w-[44rem] rounded-full blur-[120px] will-change-transform"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(160 80% 45% / 0.28), transparent 65%)",
             opacity: 0.14,
+            animation: reduce ? undefined : "blob-c 28s ease-in-out infinite",
           }}
-          animate={
-            reduce ? undefined : { x: [0, 30, -10, 0], rotate: [0, 3, -2, 0] }
-          }
-          transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
         />
-        
-        {/* Aurora blob 4 - Rose accent (~170vh) */}
-        <motion.div
+        <div
           aria-hidden
-          className="absolute top-[170vh] right-[5%] h-[28rem] w-[36rem] rounded-full blur-[150px]"
+          className="absolute top-[170vh] right-[5%] h-[28rem] w-[36rem] rounded-full blur-[150px] will-change-transform"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(320 70% 55% / 0.22), transparent 70%)",
             opacity: 0.12,
+            animation: reduce ? undefined : "blob-d 30s ease-in-out infinite",
           }}
-          animate={
-            reduce ? undefined : { scale: [1, 1.08, 0.95, 1], x: [0, 20, -15, 0] }
-          }
-          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
         />
-        
-        {/* Aurora blob 5 - Indigo (Projects ~250vh) */}
-        <motion.div
+        <div
           aria-hidden
-          className="absolute top-[250vh] left-[10%] h-[30rem] w-[40rem] rounded-full blur-[160px]"
+          className="absolute top-[250vh] left-[10%] h-[30rem] w-[40rem] rounded-full blur-[160px] will-change-transform"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(240 75% 50% / 0.24), transparent 70%)",
             opacity: 0.13,
+            animation: reduce ? undefined : "blob-e 32s ease-in-out infinite",
           }}
-          animate={
-            reduce ? undefined : { y: [0, 30, -20, 0], scale: [1, 1.06, 0.97, 1] }
-          }
-          transition={{ duration: 32, repeat: Infinity, ease: "easeInOut" }}
         />
-        
-        {/* Aurora blob 6 - Cyan (Stack ~340vh) */}
-        <motion.div
+        <div
           aria-hidden
-          className="absolute top-[340vh] -right-20 h-[34rem] w-[46rem] rounded-full blur-[130px]"
+          className="absolute top-[340vh] -right-20 h-[34rem] w-[46rem] rounded-full blur-[130px] will-change-transform"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(185 85% 48% / 0.26), transparent 65%)",
             opacity: 0.14,
+            animation: reduce ? undefined : "blob-f 26s ease-in-out infinite",
           }}
-          animate={
-            reduce ? undefined : { x: [0, -25, 15, 0], y: [0, 20, -15, 0] }
-          }
-          transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
         />
-        
-        {/* Aurora blob 7 - Purple (Contact ~430vh) */}
-        <motion.div
+        <div
           aria-hidden
-          className="absolute top-[430vh] left-1/2 -translate-x-1/2 h-[36rem] w-[50rem] rounded-full blur-[140px]"
+          className="absolute top-[430vh] left-1/2 h-[36rem] w-[50rem] rounded-full blur-[140px] will-change-transform"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(270 80% 55% / 0.28), transparent 65%)",
             opacity: 0.15,
+            animation: reduce ? undefined : "blob-g 22s ease-in-out infinite",
+            transform: "translateX(-50%)",
           }}
-          animate={
-            reduce ? undefined : { scale: [1, 1.05, 0.96, 1] }
-          }
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
         />
-        
-        {/* Aurora blob 8 - Teal bottom (~520vh) */}
-        <motion.div
+        <div
           aria-hidden
-          className="absolute top-[520vh] -left-20 h-[32rem] w-[42rem] rounded-full blur-[140px]"
+          className="absolute top-[520vh] -left-20 h-[32rem] w-[42rem] rounded-full blur-[140px] will-change-transform"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(175 80% 45% / 0.24), transparent 65%)",
             opacity: 0.12,
+            animation: reduce ? undefined : "blob-h 34s ease-in-out infinite",
           }}
-          animate={
-            reduce ? undefined : { x: [0, 35, -15, 0] }
-          }
-          transition={{ duration: 34, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
-      
-      {/* Fixed overlays */}
+
       {/* Subtle vignette */}
-      <div 
+      <div
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at center, transparent 40%, hsl(222 30% 2% / 0.5) 100%)",
+          background:
+            "radial-gradient(ellipse at center, transparent 40%, hsl(222 30% 2% / 0.5) 100%)",
         }}
       />
-      
+
       {/* Noise texture */}
       <div className="absolute inset-0 noise opacity-[0.02]" />
     </div>

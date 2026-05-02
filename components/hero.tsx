@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Download, Github, Linkedin, Mail, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
+import { useInView } from "@/lib/use-in-view";
 import Magnetic from "./ui/magnetic";
 import ShinyText from "./ui/shiny-text";
 import SplitText from "./ui/split-text";
@@ -28,7 +28,7 @@ export default function Hero() {
   // Gate the rotating-text interval on visibility — once the hero scrolls
   // away there's no reason to keep firing setState (which also keeps
   // DecryptedText's internal scramble loop alive).
-  const { ref: rotRef, inView: rotInView } = useInView({
+  const [rotRef, rotInView] = useInView<HTMLDivElement>({
     threshold: 0,
     initialInView: true,
   });
@@ -48,7 +48,7 @@ export default function Hero() {
       className="relative mx-auto flex min-h-[92vh] w-full max-w-6xl flex-col justify-center px-6 pb-24 pt-24 sm:pt-32"
     >
       {/* Status pill */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -69,7 +69,7 @@ export default function Hero() {
             VerbaFlo
           </a>
         </span>
-      </motion.div>
+      </m.div>
 
       {/* Name — SplitText reveal */}
       <h1 className="font-display text-[clamp(3rem,9vw,7.5rem)] font-semibold leading-[0.95] tracking-tight text-ink">
@@ -82,18 +82,17 @@ export default function Hero() {
         />
       </h1>
 
-      {/* Lede */}
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 0.15 }}
+      {/* Lede — render immediately (no opacity entrance) so this paragraph
+          can serve as a fast LCP element. The decorative entrance was costing
+          ~1300ms on the LCP audit. */}
+      <p
         className="mt-8 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl"
       >
         I&apos;m an AI engineer building the agentic stack at{" "}
         <span className="text-ink">VerbaFlo</span>: orchestrators, retrieval,
         tracing, and the tooling that makes all of it debuggable. Previously
         founding front-end at <span className="text-ink">PrudentBit</span>.
-      </motion.p>
+      </p>
 
       {/* Decrypted rotating sub-line */}
       <div
@@ -112,7 +111,7 @@ export default function Hero() {
       </div>
 
       {/* CTA row */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.3 }}
@@ -164,10 +163,10 @@ export default function Hero() {
             <Mail className="h-4 w-4" />
           </IconLink>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Stat strip */}
-      <motion.div
+      <m.div
         data-spirit="stats"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -187,10 +186,10 @@ export default function Hero() {
             </div>
           </div>
         ))}
-      </motion.div>
+      </m.div>
 
       {/* Scroll indicator */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1.2 }}
@@ -199,18 +198,18 @@ export default function Hero() {
         <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-muted/60">
           scroll
         </span>
-        <motion.div
+        <m.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           className="flex h-8 w-5 items-start justify-center rounded-full border border-muted/30 p-1"
         >
-          <motion.div 
+          <m.div 
             className="h-1.5 w-1 rounded-full bg-muted/50"
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           />
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
 
     </section>
   );

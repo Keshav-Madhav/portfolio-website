@@ -1,12 +1,8 @@
 "use client";
 
-import React from "react";
 import { Loader2, Send } from "lucide-react";
-import { experimental_useFormStatus as useFormStatus } from "react-dom";
 
-export default function SubmitBtn() {
-  const { pending } = useFormStatus();
-
+export default function SubmitBtn({ pending = false }: { pending?: boolean }) {
   return (
     <button
       data-spirit="button"

@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  motion,
+  m,
   useMotionValue,
   useSpring,
   useTransform,
@@ -79,7 +79,7 @@ export default function TiltedCard({
   };
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       onMouseMove={onMove}
       onMouseEnter={handleEnter}
@@ -103,6 +103,6 @@ export default function TiltedCard({
           )}
         />
       )}
-    </motion.div>
+    </m.div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 const KONAMI_CODE = [
   "ArrowUp",
@@ -72,7 +72,7 @@ export default function Konami() {
       {triggered && (
         <>
           {/* Rainbow border flash */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -83,7 +83,7 @@ export default function Konami() {
           />
 
           {/* Message */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: -20 }}
@@ -91,13 +91,13 @@ export default function Konami() {
             className="fixed left-1/2 top-1/2 z-[101] -translate-x-1/2 -translate-y-1/2"
           >
             <div className="rounded-2xl border border-violet-500/50 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 px-8 py-6 text-center backdrop-blur-xl">
-              <motion.div
+              <m.div
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 0.5, repeat: 3 }}
                 className="mb-3 text-4xl"
               >
                 🎮
-              </motion.div>
+              </m.div>
               <p className="font-display text-xl font-semibold text-ink">
                 {message}
               </p>
@@ -105,11 +105,11 @@ export default function Konami() {
                 ↑↑↓↓←→←→BA
               </p>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Floating emojis */}
           {[...Array(12)].map((_, i) => (
-            <motion.div
+            <m.div
               key={i}
               initial={{
                 opacity: 1,
@@ -130,7 +130,7 @@ export default function Konami() {
               className="pointer-events-none fixed z-[102] text-2xl"
             >
               {["🎮", "⭐", "🚀", "✨", "🎯", "💫"][i % 6]}
-            </motion.div>
+            </m.div>
           ))}
         </>
       )}

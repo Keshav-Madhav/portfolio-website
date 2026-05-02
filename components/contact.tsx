@@ -1,23 +1,39 @@
 "use client";
 
-import { motion } from "framer-motion";
-import toast from "react-hot-toast";
+import { useState } from "react";
+import { m } from "framer-motion";
 import { Copy, Mail, ArrowUpRight } from "lucide-react";
 import SectionHeading from "./ui/section-heading";
 import SubmitBtn from "./submit-btn";
-import { sendEmail } from "@/actions/sendEmail";
 import { profile } from "@/lib/data";
 import { useSectionInView } from "@/lib/hooks";
 
+// Lazy-load react-hot-toast so it stays out of the critical bundle.
+// Toast only fires after a user interaction (form submit / copy-email click).
+async function showToast(type: "success" | "error", msg: string) {
+  const { default: toast } = await import("react-hot-toast");
+  toast[type](msg);
+}
+
+async function postContact(formData: FormData) {
+  const res = await fetch("/api/contact", { method: "POST", body: formData });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Send failed" }));
+    return { error: err.error ?? "Send failed" };
+  }
+  return res.json();
+}
+
 export default function Contact() {
   const { ref } = useSectionInView("Contact", 0.3);
+  const [pending, setPending] = useState(false);
 
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(profile.email);
-      toast.success("Email copied");
+      showToast("success", "Email copied");
     } catch {
-      toast.error("Copy failed, please grab it manually");
+      showToast("error", "Copy failed, please grab it manually");
     }
   };
 
@@ -41,7 +57,7 @@ export default function Contact() {
 
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         {/* Left: info card */}
-        <motion.div
+        <m.div
           data-spirit
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -109,21 +125,26 @@ export default function Contact() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Right: form */}
-        <motion.form
+        <m.form
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           action={async (formData) => {
-            const { error } = await sendEmail(formData);
-            if (error) {
-              toast.error(error);
-              return;
+            setPending(true);
+            try {
+              const { error } = await postContact(formData);
+              if (error) {
+                showToast("error", error);
+                return;
+              }
+              showToast("success", "Sent! Talk soon");
+            } finally {
+              setPending(false);
             }
-            toast.success("Sent! Talk soon");
           }}
           className="rounded-2xl border border-edge bg-surface/40 p-5 backdrop-blur sm:rounded-3xl sm:p-8"
         >
@@ -153,8 +174,8 @@ export default function Contact() {
               className="mt-2 w-full resize-none rounded-lg border border-edge bg-canvas/60 px-3 py-3 text-sm text-ink outline-none transition placeholder:text-muted/60 focus:border-violet-500/50 focus:bg-canvas sm:rounded-xl sm:px-4"
             />
           </div>
-          <SubmitBtn />
-        </motion.form>
+          <SubmitBtn pending={pending} />
+        </m.form>
       </div>
     </section>
   );

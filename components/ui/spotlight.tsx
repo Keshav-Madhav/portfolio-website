@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
+import { m, useMotionTemplate, useMotionValue } from "framer-motion";
 import React, { useRef } from "react";
 import { cn } from "@/lib/cn";
 import { useCachedRect } from "@/lib/use-cached-rect";
@@ -54,7 +54,7 @@ export default function Spotlight({
       onMouseLeave={handleLeave}
       className={cn("relative isolate", className)}
     >
-      <motion.div
+      <m.div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 hover:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"
         style={{ background: bg }}

@@ -1,9 +1,9 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
+import { useInView } from "@/lib/use-in-view";
 import { cn } from "@/lib/cn";
 
 export type CycleImage = {
@@ -28,7 +28,7 @@ export default function ImageCycler({
   const [paused, setPaused] = useState(false);
   // Don't waste an interval (or AnimatePresence remount + image fetch) when
   // the gallery is scrolled out of view.
-  const { ref: viewRef, inView } = useInView({ threshold: 0 });
+  const [viewRef, inView] = useInView<HTMLDivElement>({ threshold: 0 });
 
   useEffect(() => {
     if (paused || !inView || images.length <= 1) return;
@@ -46,7 +46,7 @@ export default function ImageCycler({
       onMouseLeave={() => setPaused(false)}
     >
       <AnimatePresence mode="popLayout" initial={false}>
-        <motion.div
+        <m.div
           key={index}
           initial={{ opacity: 0, scale: 1.04, filter: "blur(8px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
@@ -62,14 +62,14 @@ export default function ImageCycler({
             className="object-cover"
             priority={priority}
           />
-        </motion.div>
+        </m.div>
       </AnimatePresence>
 
       {/* Caption + dots */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between px-4 py-3">
         <AnimatePresence mode="wait">
           {images[index].caption && (
-            <motion.span
+            <m.span
               key={index + "-cap"}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -78,7 +78,7 @@ export default function ImageCycler({
               className="rounded-full border border-edge/30 bg-surface/80 px-2.5 py-1 font-mono text-[0.62rem] uppercase tracking-widest text-muted backdrop-blur"
             >
               {images[index].caption}
-            </motion.span>
+            </m.span>
           )}
         </AnimatePresence>
         <div className="flex items-center gap-1">

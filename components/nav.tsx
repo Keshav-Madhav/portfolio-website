@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { m, useMotionValueEvent, useScroll } from "framer-motion";
 import { useState } from "react";
 import { nav } from "@/lib/data";
 import { useActiveSectionContext } from "@/context/active-section-context";
@@ -42,7 +42,7 @@ export default function Nav() {
         </defs>
       </svg>
       
-      <motion.div
+      <m.div
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -102,7 +102,7 @@ export default function Nav() {
                     {link.name}
                   </Link>
                   {isActive && (
-                    <motion.span
+                    <m.span
                       layoutId="nav-pill"
                       transition={{
                         type: "spring",
@@ -117,7 +117,7 @@ export default function Nav() {
             })}
           </ul>
         </nav>
-      </motion.div>
+      </m.div>
     </header>
   );
 }

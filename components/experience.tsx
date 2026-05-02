@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import SectionHeading from "./ui/section-heading";
 import VfInternal from "./vf-internal";
@@ -52,7 +52,7 @@ function ExperienceEntry({
   const isVerbaFlo = entry.company === "VerbaFlo";
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -89,7 +89,7 @@ function ExperienceEntry({
       {/* Small highlights */}
       <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2">
         {entry.highlights.map((h, i) => (
-          <motion.div
+          <m.div
             key={h.title}
             data-spirit
             initial={{ opacity: 0, y: 16 }}
@@ -107,12 +107,12 @@ function ExperienceEntry({
               </h3>
             </div>
             <p className="text-sm leading-relaxed text-muted">{h.detail}</p>
-          </motion.div>
+          </m.div>
         ))}
       </div>
 
       {/* VerbaFlo internal showcase — big visual block */}
       {isVerbaFlo && <VfInternal />}
-    </motion.div>
+    </m.div>
   );
 }

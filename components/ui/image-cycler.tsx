@@ -3,6 +3,7 @@
 import Image, { type StaticImageData } from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { cn } from "@/lib/cn";
 
 export type CycleImage = {
@@ -25,17 +26,21 @@ export default function ImageCycler({
 }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  // Don't waste an interval (or AnimatePresence remount + image fetch) when
+  // the gallery is scrolled out of view.
+  const { ref: viewRef, inView } = useInView({ threshold: 0 });
 
   useEffect(() => {
-    if (paused || images.length <= 1) return;
+    if (paused || !inView || images.length <= 1) return;
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % images.length);
     }, interval);
     return () => clearInterval(id);
-  }, [interval, images.length, paused]);
+  }, [interval, images.length, paused, inView]);
 
   return (
     <div
+      ref={viewRef}
       className={cn("relative overflow-hidden", className)}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}

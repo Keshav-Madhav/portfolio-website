@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Backdrop with aurora blobs that scroll WITH content.
@@ -12,32 +12,65 @@ import { useEffect, useRef, useState } from "react";
 export default function Backdrop() {
   const reduce = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollY, setScrollY] = useState(0);
-  
+
   useEffect(() => {
     if (reduce) return;
-    
-    let rafId: number;
-    let currentScroll = 0;
-    let targetScroll = 0;
-    
-    const handleScroll = () => {
-      targetScroll = window.scrollY;
+    const el = containerRef.current;
+    if (!el) return;
+
+    // Smoothly interpolate towards the live scroll position via a ref-driven
+    // rAF loop. The previous version pushed the interpolated value through
+    // useState, which forced the whole tree to re-render on every frame.
+    let rafId = 0;
+    let running = true;
+    let current = 0;
+    let target = window.scrollY;
+
+    const tick = () => {
+      if (!running) return;
+      current += (target - current) * 0.1;
+      el.style.transform = `translate3d(0, ${-current}px, 0)`;
+      // Settle: stop the loop once we're within sub-pixel of the target
+      // and resume only when scroll fires again.
+      if (Math.abs(target - current) < 0.5) {
+        running = false;
+        rafId = 0;
+        return;
+      }
+      rafId = requestAnimationFrame(tick);
     };
-    
-    const animate = () => {
-      // Smooth interpolation for buttery scroll
-      currentScroll += (targetScroll - currentScroll) * 0.1;
-      setScrollY(currentScroll);
-      rafId = requestAnimationFrame(animate);
+
+    const ensureRunning = () => {
+      if (!running) {
+        running = true;
+        rafId = requestAnimationFrame(tick);
+      }
     };
-    
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    rafId = requestAnimationFrame(animate);
-    
+
+    const onScroll = () => {
+      target = window.scrollY;
+      ensureRunning();
+    };
+
+    const onVis = () => {
+      if (document.hidden) {
+        running = false;
+        if (rafId) cancelAnimationFrame(rafId);
+      } else {
+        target = window.scrollY;
+        ensureRunning();
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("visibilitychange", onVis);
+    rafId = requestAnimationFrame(tick);
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      cancelAnimationFrame(rafId);
+      running = false;
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("visibilitychange", onVis);
     };
   }, [reduce]);
 
@@ -46,14 +79,10 @@ export default function Backdrop() {
       {/* Base canvas color */}
       <div className="absolute inset-0 bg-[hsl(222_25%_4%)]" />
       
-      {/* Aurora container - transforms based on scroll */}
-      <div 
+      {/* Aurora container - transforms based on scroll (driven imperatively) */}
+      <div
         ref={containerRef}
-        className="absolute inset-0"
-        style={{
-          transform: `translateY(${-scrollY}px)`,
-          willChange: "transform",
-        }}
+        className="absolute inset-0 will-change-transform"
       >
         {/* Aurora blob 1 - Top violet */}
         <motion.div

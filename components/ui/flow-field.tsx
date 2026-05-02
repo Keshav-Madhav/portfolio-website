@@ -71,7 +71,7 @@ export default function FlowField() {
       }
     };
 
-    const resize = () => {
+    const applyResize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       W = window.innerWidth;
       H = window.innerHeight;
@@ -82,7 +82,22 @@ export default function FlowField() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       initParticles();
     };
-    resize();
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+    const resize = () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(applyResize, 120);
+    };
+    applyResize();
+
+    // Build the cursor-glow radial gradient ONCE — anchored at (200,200) in
+    // its own 400×400 box; we translate the canvas to follow the mouse.
+    const cachedGlow = (() => {
+      const g = ctx.createRadialGradient(200, 200, 0, 200, 200, 200);
+      g.addColorStop(0, "rgba(167, 139, 250, 0.04)");
+      g.addColorStop(0.4, "rgba(165, 243, 252, 0.015)");
+      g.addColorStop(1, "transparent");
+      return g;
+    })();
 
     const onMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
@@ -176,17 +191,15 @@ export default function FlowField() {
         }
       }
 
-      // Cursor glow (dimmer)
+      // Cursor glow (dimmer). Build the gradient at (0,0) once per resize and
+      // translate the canvas to draw it — avoids allocating a fresh
+      // CanvasGradient + 3 colorStops on every frame the mouse is active.
       if (mouse.active) {
-        const gradient = ctx.createRadialGradient(
-          mouse.x, mouse.y, 0,
-          mouse.x, mouse.y, 200
-        );
-        gradient.addColorStop(0, "rgba(167, 139, 250, 0.04)");
-        gradient.addColorStop(0.4, "rgba(165, 243, 252, 0.015)");
-        gradient.addColorStop(1, "transparent");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(mouse.x - 200, mouse.y - 200, 400, 400);
+        ctx.save();
+        ctx.translate(mouse.x - 200, mouse.y - 200);
+        ctx.fillStyle = cachedGlow;
+        ctx.fillRect(0, 0, 400, 400);
+        ctx.restore();
       }
 
       rafId = requestAnimationFrame(draw);

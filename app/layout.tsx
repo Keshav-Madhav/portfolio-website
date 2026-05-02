@@ -6,15 +6,8 @@ import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import Backdrop from "@/components/backdrop";
 import LenisProvider from "@/components/lenis-provider";
-import ClickSpark from "@/components/ui/click-spark";
-import SpiritGuide from "@/components/ui/spirit-guide";
-import ParticleField from "@/components/ui/particle-field";
 import ScrollProgress from "@/components/ui/scroll-progress";
-import VelocityTilt from "@/components/ui/velocity-tilt";
-import FlowField from "@/components/ui/flow-field";
-import KeyboardNav from "@/components/ui/keyboard-nav";
-import Konami from "@/components/ui/konami";
-import Multiplayer from "@/components/ui/multiplayer";
+import DeferredEffects from "@/components/deferred-effects";
 import ActiveSectionContextProvider from "@/context/active-section-context";
 import { Toaster } from "react-hot-toast";
 
@@ -59,21 +52,18 @@ export default function RootLayout({
       className={`${sans.variable} ${display.variable} ${mono.variable}`}
     >
       <body className="font-sans antialiased selection:bg-accent/40 relative">
+        {/* Eager: visible from first paint */}
         <Backdrop />
-        <FlowField />
-        <ParticleField />
         <ScrollProgress />
-        <VelocityTilt />
-        <ClickSpark />
-        <SpiritGuide />
         <LenisProvider>
           <ActiveSectionContextProvider>
-            <KeyboardNav />
-            <Konami />
-            <Multiplayer />
             <Nav />
             <main>{children}</main>
             <Footer />
+            {/* Deferred: heavy decorative + interactive effects.
+                Code-split into a separate chunk and mounted on idle, so
+                they don't compete with hydration / LCP. */}
+            <DeferredEffects />
             <Toaster
               position="bottom-right"
               toastOptions={{

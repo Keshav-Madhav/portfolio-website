@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Download, Github, Linkedin, Mail, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import Magnetic from "./ui/magnetic";
 import ShinyText from "./ui/shiny-text";
 import SplitText from "./ui/split-text";
@@ -24,12 +25,21 @@ export default function Hero() {
   useReducedMotion();
   const [rotIdx, setRotIdx] = useState(0);
 
+  // Gate the rotating-text interval on visibility — once the hero scrolls
+  // away there's no reason to keep firing setState (which also keeps
+  // DecryptedText's internal scramble loop alive).
+  const { ref: rotRef, inView: rotInView } = useInView({
+    threshold: 0,
+    initialInView: true,
+  });
+
   useEffect(() => {
+    if (!rotInView) return;
     const id = setInterval(() => {
       setRotIdx((i) => (i + 1) % rotating.length);
     }, 2800);
     return () => clearInterval(id);
-  }, []);
+  }, [rotInView]);
 
   return (
     <section
@@ -86,7 +96,10 @@ export default function Hero() {
       </motion.p>
 
       {/* Decrypted rotating sub-line */}
-      <div className="mt-4 flex min-h-[2rem] items-center font-mono text-sm text-muted">
+      <div
+        ref={rotRef}
+        className="mt-4 flex min-h-[2rem] items-center font-mono text-sm text-muted"
+      >
         <span className="mr-2 text-violet-300/80">{">"}</span>
         <span className="mr-2">currently thinking about</span>
         <DecryptedText

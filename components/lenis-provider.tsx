@@ -24,12 +24,27 @@ export default function LenisProvider({
     // expose for other components (spirit interruptions, debug, etc.)
     (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
 
-    let rafId: number;
+    let rafId = 0;
+    let running = true;
     const raf = (time: number) => {
+      if (!running) return;
       lenis.raf(time);
       rafId = requestAnimationFrame(raf);
     };
     rafId = requestAnimationFrame(raf);
+
+    // Pause the smooth-scroll loop while the tab is hidden — saves a 60fps
+    // rAF tick that does nothing useful in the background.
+    const onVis = () => {
+      if (document.hidden) {
+        running = false;
+        if (rafId) cancelAnimationFrame(rafId);
+      } else if (!running) {
+        running = true;
+        rafId = requestAnimationFrame(raf);
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
 
     // Capture-phase interceptor for in-page anchor clicks.
     // We register BEFORE React's synthetic handlers (capture: true) so
@@ -79,8 +94,10 @@ export default function LenisProvider({
     }
 
     return () => {
+      running = false;
       document.removeEventListener("click", onAnchorClick, true);
-      cancelAnimationFrame(rafId);
+      document.removeEventListener("visibilitychange", onVis);
+      if (rafId) cancelAnimationFrame(rafId);
       (window as unknown as { __lenis?: Lenis }).__lenis = undefined;
       lenis.destroy();
     };

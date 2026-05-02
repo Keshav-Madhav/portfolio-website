@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as Ably from "ably";
+import { Rest } from "ably";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     url.searchParams.get("clientId") ||
     `anon-${Math.random().toString(36).slice(2, 10)}`;
 
-  const rest = new Ably.Rest(apiKey);
+  const rest = new Rest(apiKey);
   const tokenRequest = await rest.auth.createTokenRequest({ clientId });
 
   return NextResponse.json(tokenRequest);

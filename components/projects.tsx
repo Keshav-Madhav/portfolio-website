@@ -16,6 +16,7 @@ import ShinyText from "./ui/shiny-text";
 import { projects } from "@/lib/data";
 import { accentMap, cn } from "@/lib/cn";
 import { useSectionInView } from "@/lib/hooks";
+import { useCachedRect } from "@/lib/use-cached-rect";
 import type { AccentColor } from "@/lib/types";
 
 type Proj = (typeof projects)[number];
@@ -112,7 +113,8 @@ function FeaturedCard({
   project: Proj;
   accent: AccentColor;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const { ref, onEnter, onLeave, getRect } = useCachedRect<HTMLDivElement>();
+  const rafRef = useRef<number | null>(null);
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
   const background = useMotionTemplate`radial-gradient(520px circle at ${useTransform(
@@ -125,17 +127,33 @@ function FeaturedCard({
   const hasStat = !!project.stat;
   const primary = project.links[0];
 
+  const handleLeave = () => {
+    onLeave();
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  };
+
   const onMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const r = ref.current.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width);
-    my.set((e.clientY - r.top) / r.height);
+    const r = getRect();
+    if (!r) return;
+    const cx = e.clientX;
+    const cy = e.clientY;
+    if (rafRef.current != null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      mx.set((cx - r.left) / r.width);
+      my.set((cy - r.top) / r.height);
+    });
   };
 
   return (
     <div
       ref={ref}
+      onMouseEnter={onEnter}
       onMouseMove={onMove}
+      onMouseLeave={handleLeave}
       data-spirit
       className={cn(
         "group relative isolate flex h-full flex-col overflow-hidden rounded-3xl border border-edge bg-surface/40 backdrop-blur transition",

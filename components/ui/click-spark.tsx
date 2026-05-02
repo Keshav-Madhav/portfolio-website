@@ -23,7 +23,7 @@ export default function ClickSpark({
   lineWidth?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef = useRef<number>();
+  const rafRef = useRef<number | null>(null);
   const particlesRef = useRef<Particle[]>([]);
 
   useEffect(() => {
@@ -32,20 +32,34 @@ export default function ClickSpark({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let dpr = window.devicePixelRatio || 1;
-    const resize = () => {
-      dpr = window.devicePixelRatio || 1;
+    // Cap DPR at 2 — retina/3x backing stores triple the pixel work for
+    // visually imperceptible gain in particle effects.
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const applySize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = window.innerWidth + "px";
       canvas.style.height = window.innerHeight + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-    resize();
+    const resize = () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(applySize, 100);
+    };
+    applySize();
     window.addEventListener("resize", resize);
 
+    // rAF only runs while there are live particles. Idle = no work.
+    const ensureLoop = () => {
+      if (rafRef.current == null) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+
     const onClick = (e: MouseEvent) => {
-      // Don't spark on nav / buttons that interrupt — let them through
       const t = e.target as HTMLElement | null;
       if (t?.closest("input, textarea")) return;
       for (let i = 0; i < count; i++) {
@@ -60,15 +74,25 @@ export default function ClickSpark({
           ttl: 28 + Math.random() * 10,
         });
       }
+      ensureLoop();
     };
     window.addEventListener("click", onClick);
 
     const tick = () => {
+      const particles = particlesRef.current;
+      if (particles.length === 0) {
+        // Nothing to draw — clear once and pause until next click.
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        rafRef.current = null;
+        return;
+      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.lineCap = "round";
       ctx.lineWidth = lineWidth;
-      const next: Particle[] = [];
-      for (const p of particlesRef.current) {
+      // In-place compaction avoids allocating a new array each frame.
+      let write = 0;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
         p.life += 1;
         const t = p.life / p.ttl;
         if (t >= 1) continue;
@@ -86,17 +110,26 @@ export default function ClickSpark({
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(nx, ny);
         ctx.stroke();
-        next.push(p);
+        particles[write++] = p;
       }
-      particlesRef.current = next;
+      particles.length = write;
       rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
+
+    const onVis = () => {
+      if (document.hidden && rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
 
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("click", onClick);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      document.removeEventListener("visibilitychange", onVis);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
     };
   }, [color, count, radius, lineWidth]);
 

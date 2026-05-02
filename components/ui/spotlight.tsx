@@ -3,6 +3,7 @@
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import React, { useRef } from "react";
 import { cn } from "@/lib/cn";
+import { useCachedRect } from "@/lib/use-cached-rect";
 
 export default function Spotlight({
   children,
@@ -15,15 +16,32 @@ export default function Spotlight({
   color?: string;
   size?: number;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const { ref, onEnter, onLeave, getRect } = useCachedRect<HTMLDivElement>();
+  const rafRef = useRef<number | null>(null);
   const mx = useMotionValue(-9999);
   const my = useMotionValue(-9999);
 
   const onMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const r = ref.current.getBoundingClientRect();
-    mx.set(e.clientX - r.left);
-    my.set(e.clientY - r.top);
+    const r = getRect();
+    if (!r) return;
+    const cx = e.clientX;
+    const cy = e.clientY;
+    if (rafRef.current != null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      mx.set(cx - r.left);
+      my.set(cy - r.top);
+    });
+  };
+
+  const handleLeave = () => {
+    onLeave();
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    mx.set(-9999);
+    my.set(-9999);
   };
 
   const bg = useMotionTemplate`radial-gradient(${size}px circle at ${mx}px ${my}px, ${color}, transparent 55%)`;
@@ -31,11 +49,9 @@ export default function Spotlight({
   return (
     <div
       ref={ref}
+      onMouseEnter={onEnter}
       onMouseMove={onMove}
-      onMouseLeave={() => {
-        mx.set(-9999);
-        my.set(-9999);
-      }}
+      onMouseLeave={handleLeave}
       className={cn("relative isolate", className)}
     >
       <motion.div

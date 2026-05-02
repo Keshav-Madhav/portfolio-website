@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 // Reactions use a custom 3D illustration pack stored in /public/reactions/.
 // Distinctive rendered look — chunky, warm gradients, shadow-baked — nothing
 // like any OS emoji set. Each PNG is a unique character/object the visitor
@@ -35,7 +37,7 @@ export const REACTIONS_BY_KEY: Record<ReactionKey, Reaction> = REACTIONS.reduce(
   {} as Record<ReactionKey, Reaction>,
 );
 
-export function ReactionIcon({
+export const ReactionIcon = memo(function ReactionIcon({
   reactionKey,
   size = 48,
   className,
@@ -53,8 +55,10 @@ export function ReactionIcon({
       width={size}
       height={size}
       draggable={false}
+      decoding="async"
+      loading="eager"
       className={className}
       style={{ display: "block" }}
     />
   );
-}
+});

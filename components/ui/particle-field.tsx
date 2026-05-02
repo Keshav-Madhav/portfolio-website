@@ -76,9 +76,13 @@ export default function ParticleField() {
     };
     resize();
 
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     const onResize = () => {
-      resize();
-      reseed();
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        resize();
+        reseed();
+      }, 120);
     };
     const onMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
@@ -97,9 +101,11 @@ export default function ParticleField() {
     let particles: P[] = [];
 
     const reseed = () => {
+      // Cap at 60. n² connection pass at 90 = 4005 pair checks/frame; at 60 it
+      // drops to 1770. Visually identical density on most viewports.
       const target = Math.min(
-        90,
-        Math.max(30, Math.floor((W * H) / 28000))
+        60,
+        Math.max(24, Math.floor((W * H) / 36000))
       );
       if (particles.length === target) return;
       particles = Array.from({ length: target }, () => ({
@@ -169,6 +175,11 @@ export default function ParticleField() {
       }
 
       // Connection lines (particle ↔ particle)
+      // Set color once with full opacity; vary opacity via globalAlpha to
+      // skip allocating thousands of "rgba(...)" strings per frame.
+      ctx.strokeStyle = `rgb(${palette.lineR}, ${palette.lineG}, ${palette.lineB})`;
+      ctx.lineWidth = 0.6;
+      const lineMul = 0.22 * palette.lineAlphaMul;
       for (let i = 0; i < particles.length; i++) {
         const a = particles[i];
         for (let j = i + 1; j < particles.length; j++) {
@@ -177,9 +188,7 @@ export default function ParticleField() {
           const dy = a.y - b.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < MAX2) {
-            const alpha = (1 - d2 / MAX2) * 0.22 * palette.lineAlphaMul;
-            ctx.strokeStyle = `rgba(${palette.lineR}, ${palette.lineG}, ${palette.lineB}, ${alpha})`;
-            ctx.lineWidth = 0.6;
+            ctx.globalAlpha = (1 - d2 / MAX2) * lineMul;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
@@ -190,14 +199,15 @@ export default function ParticleField() {
 
       // Mouse → particle lines
       if (mouse.active) {
+        ctx.strokeStyle = `rgb(${palette.mouseR}, ${palette.mouseG}, ${palette.mouseB})`;
+        ctx.lineWidth = 0.8;
+        const mouseMul = 0.38 * palette.lineAlphaMul;
         for (const p of particles) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < MOUSE_R2) {
-            const alpha = (1 - d2 / MOUSE_R2) * 0.38 * palette.lineAlphaMul;
-            ctx.strokeStyle = `rgba(${palette.mouseR}, ${palette.mouseG}, ${palette.mouseB}, ${alpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.globalAlpha = (1 - d2 / MOUSE_R2) * mouseMul;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(mouse.x, mouse.y);
@@ -206,13 +216,15 @@ export default function ParticleField() {
         }
       }
 
-      // Particle dots last (on top of lines)
-      ctx.fillStyle = `rgba(${palette.dotR}, ${palette.dotG}, ${palette.dotB}, ${palette.dotAlpha})`;
+      // Reset alpha for the dot pass (uses palette.dotAlpha directly).
+      ctx.globalAlpha = palette.dotAlpha;
+      ctx.fillStyle = `rgb(${palette.dotR}, ${palette.dotG}, ${palette.dotB})`;
       for (const p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.globalAlpha = 1;
 
       rafId = requestAnimationFrame(tick);
     };
@@ -235,6 +247,7 @@ export default function ParticleField() {
       running = false;
       cancelAnimationFrame(rafId);
       themeObserver.disconnect();
+      if (resizeTimer) clearTimeout(resizeTimer);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);

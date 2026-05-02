@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
 import {
   SpacesProvider,
@@ -9,7 +17,7 @@ import {
   useCursors,
   useMembers,
 } from "@ably/spaces/react";
-import * as Ably from "ably";
+import { Realtime, type Message } from "ably";
 import Spaces from "@ably/spaces";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -23,6 +31,7 @@ import {
 
 const SPACE_NAME = "portfolio-home";
 const REACTION_CHANNEL = "portfolio-reactions";
+const FAR_OFFSCREEN = -10000;
 
 function getOrCreateClientId() {
   if (typeof window === "undefined") return "anon";
@@ -37,9 +46,47 @@ function getOrCreateClientId() {
   return id;
 }
 
+// Imperative scroll compensation: instead of holding scrollY in React state
+// (which would re-render every cursor + reaction on every scroll frame),
+// we apply a translateY directly to a ref'd wrapper via rAF. Children render
+// at document coords (pageX, pageY); the wrapper offsets the whole layer by
+// -scrollY so children land at the correct viewport position. Net effect:
+// zero React re-renders during scroll.
+function useScrollCompensateRef<T extends HTMLElement>(): RefObject<T> {
+  const ref = useRef<T>(null);
+  useEffect(() => {
+    let raf = 0;
+    const apply = () => {
+      const el = ref.current;
+      if (el) el.style.transform = `translate3d(0, ${-window.scrollY}px, 0)`;
+      raf = 0;
+    };
+    apply();
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+  return ref;
+}
+
+// Preload reaction PNGs once. Without this, the first key-press has a flash
+// of empty space while the browser fetches the image.
+function preloadReactionAssets() {
+  if (typeof window === "undefined") return;
+  REACTIONS.forEach(({ src }) => {
+    const img = new window.Image();
+    img.src = src;
+  });
+}
+
 export default function Multiplayer() {
   const [clients, setClients] = useState<{
-    ably: Ably.Realtime;
+    ably: Realtime;
     spaces: Spaces;
   } | null>(null);
 
@@ -47,8 +94,10 @@ export default function Multiplayer() {
     if (process.env.NEXT_PUBLIC_MULTIPLAYER_ENABLED !== "1") return;
     if (window.matchMedia("(pointer: coarse)").matches) return;
 
+    preloadReactionAssets();
+
     const clientId = getOrCreateClientId();
-    const ably = new Ably.Realtime({
+    const ably = new Realtime({
       authUrl: "/api/ably/token",
       authParams: { clientId },
       clientId,
@@ -103,22 +152,11 @@ function SpaceEnter() {
   return null;
 }
 
-function useScrollY() {
-  const [y, setY] = useState(0);
-  useEffect(() => {
-    const onScroll = () => setY(window.scrollY);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  return y;
-}
-
 function CursorLayer() {
   const { space, cursors } = useCursors({ returnCursors: true });
   const { self, others } = useMembers();
-  const scrollY = useScrollY();
   const isEntered = !!self;
+  const layerRef = useScrollCompensateRef<HTMLDivElement>();
 
   useEffect(() => {
     if (!space || !isEntered) return;
@@ -131,13 +169,16 @@ function CursorLayer() {
     const safeSet = (position: { x: number; y: number }) => {
       try {
         const result = space.cursors.set({ position }) as unknown;
-        // set() returns a Promise that rejects with ERR_NOT_ENTERED_SPACE
-        // during reconnects / tab-switches / brief membership lapses.
-        if (result && typeof (result as Promise<unknown>).then === "function") {
+        // .set() returns a Promise that rejects with ERR_NOT_ENTERED_SPACE
+        // during reconnects / tab-switches. Swallow it.
+        if (
+          result &&
+          typeof (result as Promise<unknown>).then === "function"
+        ) {
           (result as Promise<unknown>).catch(() => {});
         }
       } catch {
-        // sync throw fallback
+        /* sync throw fallback */
       }
     };
 
@@ -158,10 +199,9 @@ function CursorLayer() {
       schedule();
     };
 
-    // Recompute pageX/Y from last known viewport coords on scroll. The mouse
-    // didn't move but the document did, so pageY = clientY + scrollY changed
-    // — without this, remote viewers see a stale position until our next
-    // pointermove, causing a teleport jump.
+    // pageY = clientY + scrollY. The mouse didn't move but scroll did, so
+    // pageY changed. Re-broadcast so remotes see continuous motion instead
+    // of a teleport jump on the next pointermove.
     const onScroll = () => {
       if (clientX == null || clientY == null) return;
       lastX = clientX + window.scrollX;
@@ -173,10 +213,10 @@ function CursorLayer() {
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
       clientX = clientY = null;
-      safeSet({ x: -10000, y: -10000 });
+      safeSet({ x: FAR_OFFSCREEN, y: FAR_OFFSCREEN });
     };
 
-    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointerleave", onLeave);
     document.addEventListener("mouseleave", onLeave);
@@ -190,46 +230,52 @@ function CursorLayer() {
     };
   }, [space, isEntered]);
 
-  const memberLookup = useMemo(() => {
-    const m = new Map<string, { name: string; color: string }>();
+  // Map clientId → color. Member presence rarely changes, so this Map is
+  // stable across cursor updates and only recomputes on join/leave.
+  const colorByClientId = useMemo(() => {
+    const m = new Map<string, string>();
     others?.forEach((member) => {
-      const profile = (member.profileData ?? {}) as {
-        name?: string;
-        color?: string;
-      };
-      m.set(member.clientId ?? "", {
-        name: profile.name ?? "Anon",
-        color: profile.color ?? "#888",
-      });
+      const profile = (member.profileData ?? {}) as { color?: string };
+      m.set(member.clientId ?? "", profile.color ?? "#888");
     });
     return m;
   }, [others]);
 
+  // Project Ably's cursor map into a stable list of primitives. With memo'd
+  // <Cursor>, only entries whose (x,y,color) actually changed will re-render.
+  const cursorList = useMemo(() => {
+    if (!cursors) return [];
+    const out: { id: string; x: number; y: number; color: string }[] = [];
+    for (const entry of Object.values(cursors)) {
+      const pos = entry.cursorUpdate?.position;
+      if (!pos || pos.x < -1000) continue;
+      const color = colorByClientId.get(entry.member.clientId ?? "");
+      if (!color) continue;
+      out.push({
+        id: entry.member.connectionId,
+        x: pos.x,
+        y: pos.y,
+        color,
+      });
+    }
+    return out;
+  }, [cursors, colorByClientId]);
+
   return (
-    <div className="pointer-events-none fixed inset-0 z-[80] overflow-hidden">
+    <div
+      ref={layerRef}
+      className="pointer-events-none fixed inset-0 z-[80] will-change-transform"
+    >
       <AnimatePresence>
-        {cursors &&
-          Object.values(cursors).map((entry) => {
-            const { member, cursorUpdate } = entry;
-            const pos = cursorUpdate?.position;
-            if (!pos || pos.x < -1000) return null;
-            const profile = memberLookup.get(member.clientId ?? "");
-            if (!profile) return null;
-            return (
-              <Cursor
-                key={member.connectionId}
-                x={pos.x}
-                y={pos.y - scrollY}
-                color={profile.color}
-              />
-            );
-          })}
+        {cursorList.map(({ id, x, y, color }) => (
+          <Cursor key={id} x={x} y={y} color={color} />
+        ))}
       </AnimatePresence>
     </div>
   );
 }
 
-function Cursor({
+const Cursor = memo(function Cursor({
   x,
   y,
   color,
@@ -269,7 +315,7 @@ function Cursor({
       </svg>
     </motion.div>
   );
-}
+});
 
 type FloatingReaction = {
   id: number;
@@ -284,9 +330,10 @@ function ReactionsLayer() {
   const [reactions, setReactions] = useState<FloatingReaction[]>([]);
   const cursorRef = useRef<{ x: number; y: number } | null>(null);
   const idRef = useRef(0);
-  const scrollY = useScrollY();
+  const layerRef = useScrollCompensateRef<HTMLDivElement>();
 
-  function spawn(x: number, y: number, key: ReactionKey) {
+  // Stable across renders — refs + setState are stable, so no deps needed.
+  const spawn = useCallback((x: number, y: number, key: ReactionKey) => {
     const id = ++idRef.current;
     const drift = Math.random() * 40 - 20;
     const rotate = Math.random() * 30 - 15;
@@ -294,19 +341,26 @@ function ReactionsLayer() {
     setTimeout(() => {
       setReactions((r) => r.filter((rx) => rx.id !== id));
     }, 2200);
-  }
+  }, []);
 
-  const { channel } = useChannel(REACTION_CHANNEL, "reaction", (msg) => {
-    const data = msg.data as { x: number; y: number; key: string };
-    const k = data.key as ReactionKey;
-    if (REACTIONS_BY_KEY[k]) spawn(data.x, data.y, k);
-  });
+  // Stable channel callback — without useCallback, every render hands
+  // useChannel a new function reference and triggers a re-subscribe.
+  const onReaction = useCallback(
+    (msg: Message) => {
+      const data = msg.data as { x: number; y: number; key: string };
+      const k = data.key as ReactionKey;
+      if (REACTIONS_BY_KEY[k]) spawn(data.x, data.y, k);
+    },
+    [spawn],
+  );
+
+  const { channel } = useChannel(REACTION_CHANNEL, "reaction", onReaction);
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       cursorRef.current = { x: e.pageX, y: e.pageY };
     };
-    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
 
@@ -322,8 +376,12 @@ function ReactionsLayer() {
         return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
 
-      const idx = Number(e.key) - 1;
-      if (idx < 0 || idx >= REACTIONS.length) return;
+      // Only handle "1".."9" — any other key (arrows, letters, etc.) makes
+      // Number(e.key) NaN, which would slip past `< 0 / >= length` and crash
+      // on REACTIONS[NaN].
+      if (e.key.length !== 1 || e.key < "1" || e.key > "9") return;
+      const idx = e.key.charCodeAt(0) - 49; // '1' = 49
+      if (idx >= REACTIONS.length) return;
       if (!cursorRef.current) return;
 
       const reactionKey = REACTIONS[idx].key;
@@ -333,45 +391,70 @@ function ReactionsLayer() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [channel]);
+  }, [channel, spawn]);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[81] overflow-hidden">
+    <div
+      ref={layerRef}
+      className="pointer-events-none fixed inset-0 z-[81] will-change-transform"
+    >
       <AnimatePresence>
         {reactions.map((r) => (
-          <motion.div
+          <FloatingReactionView
             key={r.id}
-            initial={{
-              opacity: 0,
-              scale: 0.3,
-              x: r.x - 32,
-              y: r.y - scrollY - 32,
-              rotate: 0,
-            }}
-            animate={{
-              opacity: [0, 1, 1, 0],
-              scale: [0.3, 1.25, 1, 0.85],
-              y: r.y - scrollY - 130,
-              x: r.x - 32 + r.drift,
-              rotate: r.rotate,
-            }}
-            transition={{
-              duration: 2.2,
-              ease: [0.22, 1, 0.36, 1],
-              opacity: { times: [0, 0.15, 0.7, 1], duration: 2.2 },
-            }}
-            className="absolute left-0 top-0 select-none"
-            style={{
-              filter: "drop-shadow(0 10px 22px rgba(0,0,0,0.55))",
-            }}
-          >
-            <ReactionIcon reactionKey={r.key} size={64} />
-          </motion.div>
+            x={r.x}
+            y={r.y}
+            reactionKey={r.key}
+            drift={r.drift}
+            rotate={r.rotate}
+          />
         ))}
       </AnimatePresence>
     </div>
   );
 }
+
+const FloatingReactionView = memo(function FloatingReactionView({
+  x,
+  y,
+  reactionKey,
+  drift,
+  rotate,
+}: {
+  x: number;
+  y: number;
+  reactionKey: ReactionKey;
+  drift: number;
+  rotate: number;
+}) {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.3,
+        x: x - 32,
+        y: y - 32,
+        rotate: 0,
+      }}
+      animate={{
+        opacity: [0, 1, 1, 0],
+        scale: [0.3, 1.25, 1, 0.85],
+        y: y - 130,
+        x: x - 32 + drift,
+        rotate: rotate,
+      }}
+      transition={{
+        duration: 2.2,
+        ease: [0.22, 1, 0.36, 1],
+        opacity: { times: [0, 0.15, 0.7, 1], duration: 2.2 },
+      }}
+      className="absolute left-0 top-0 select-none will-change-transform"
+      style={{ filter: "drop-shadow(0 10px 22px rgba(0,0,0,0.55))" }}
+    >
+      <ReactionIcon reactionKey={reactionKey} size={64} />
+    </motion.div>
+  );
+});
 
 function PresenceHint() {
   const { others } = useMembers();
@@ -405,8 +488,8 @@ function PresenceHint() {
           className="fixed bottom-6 right-6 z-[82] flex items-center gap-3 rounded-full border border-edge bg-surface/90 px-4 py-2 font-mono text-xs text-muted shadow-2xl backdrop-blur"
         >
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
           <span className="text-ink">
             {count} {count === 1 ? "other" : "others"} here

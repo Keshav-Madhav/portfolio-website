@@ -1,36 +1,121 @@
 import Groq from "groq-sdk";
+import OpenAI from "openai";
 import {
   buildSystemPrompt,
   buildIntroSystemPrompt,
+  buildRagSystemPrompt,
 } from "@/lib/keshav-context";
+import {
+  ragSearch,
+  getEmbeddingsIndex,
+  RAG_CONFIG,
+  type RetrievalResult,
+} from "@/lib/embeddings";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 // =============================================================================
-// MODEL ROUTING — simple now
+// MODEL ROUTING
 // =============================================================================
 //
-// Default model is the 70B. The 8B kept hedging like a generic LLM ("I don't
-// have personal preferences or emotions") and breaking the first-person
-// Keshav persona, so we no longer use it for real Q&A.
+// Primary Q&A model: OpenAI GPT-4o-mini
+//   - Much better at following persona instructions
+//   - Lower hallucination rate
+//   - Better at synthesizing multiple chunks
 //
-// The ONE exception is the [INTRO] greeting on chat-open: 1-2 sentences of
-// scripted hello where speed matters more than nuance, and the persona is
-// simple enough that 8B can't stray.
+// Intro model: Groq Llama 3.1 8B
+//   - Fast (sub-200ms)
+//   - Good enough for a scripted 1-2 sentence greeting
+//   - Free tier friendly
+//
+// Fallback: If OpenAI fails, we fall back to Groq 70B, then 8B.
 
-const FAST_MODEL = "llama-3.1-8b-instant";       // intro only
-const QUALITY_MODEL = "llama-3.3-70b-versatile"; // everything else
+const OPENAI_MODEL = "gpt-4o-mini";
+const GROQ_INTRO_MODEL = "llama-3.1-8b-instant";
+const GROQ_FALLBACK_PRIMARY = "llama-3.3-70b-versatile";
+const GROQ_FALLBACK_SECONDARY = "llama-3.1-8b-instant";
 
 const INTRO_TRIGGER = "[INTRO]";
 
 // =============================================================================
-// RATE LIMIT — naive in-memory IP bucket, fine for a portfolio
+// ERROR HELPERS
+// =============================================================================
+
+type ErrorShape = {
+  status?: number;
+  error?: { code?: string; type?: string; message?: string };
+  message?: string;
+};
+
+function asError(err: unknown): ErrorShape {
+  if (err && typeof err === "object") return err as ErrorShape;
+  return {};
+}
+
+function isRateLimit(err: unknown): boolean {
+  const e = asError(err);
+  return e.status === 429;
+}
+
+function parseRetryInSeconds(err: unknown): number | null {
+  const msg = asError(err).error?.message || asError(err).message || "";
+  const m = msg.match(/try again in\s+((?:\d+h)?(?:\d+m)?(?:[\d.]+s)?)/i);
+  if (!m) return null;
+  let total = 0;
+  const h = m[1].match(/(\d+)h/);
+  const mn = m[1].match(/(\d+)m/);
+  const s = m[1].match(/([\d.]+)s/);
+  if (h) total += parseInt(h[1], 10) * 3600;
+  if (mn) total += parseInt(mn[1], 10) * 60;
+  if (s) total += parseFloat(s[1]);
+  return total > 0 ? Math.ceil(total) : null;
+}
+
+function humanizeSeconds(s: number): string {
+  if (s < 60) return `${s} seconds`;
+  const m = Math.ceil(s / 60);
+  if (m < 60) return `${m} minute${m === 1 ? "" : "s"}`;
+  const h = Math.floor(m / 60);
+  const rm = m % 60;
+  return rm ? `${h}h ${rm}m` : `${h} hour${h === 1 ? "" : "s"}`;
+}
+
+function friendlyError(err: unknown): string {
+  if (isRateLimit(err)) {
+    const s = parseRetryInSeconds(err);
+    const when = s
+      ? ` Try again in ~${humanizeSeconds(s)}.`
+      : " Please try again in a minute.";
+    return `Chat is getting a lot of traffic.${when}`;
+  }
+  const e = asError(err);
+  if (e.status === 401 || e.status === 403) {
+    return "Chat is misconfigured on the server.";
+  }
+  return "Chat hit a snag. Please try again shortly.";
+}
+
+// =============================================================================
+// RAG
+// =============================================================================
+
+function isRagAvailable(): boolean {
+  try {
+    const index = getEmbeddingsIndex();
+    return Array.isArray(index.chunks) && index.chunks.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+// =============================================================================
+// RATE LIMIT — naive in-memory IP bucket
 // =============================================================================
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 8; // 8 messages per minute per IP
+const RATE_LIMIT_MAX = 12; // bumped from 8 since OpenAI handles load better
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
 function rateLimit(ip: string): { ok: boolean; retryIn?: number } {
@@ -48,19 +133,118 @@ function rateLimit(ip: string): { ok: boolean; retryIn?: number } {
 }
 
 // =============================================================================
-// HANDLER
+// STREAMING HELPERS
 // =============================================================================
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
+
+interface UsageStats {
+  promptTokens: number;
+  completionTokens: number;
+  cachedTokens: number;
+  cacheHitRate: number;
+}
+
+interface StreamResult {
+  stream: AsyncIterable<string>;
+  model: string;
+  provider: "openai" | "groq";
+  getUsage: () => UsageStats | null;
+}
+
+async function streamOpenAI(
+  openai: OpenAI,
+  model: string,
+  systemPrompt: string,
+  messages: ChatMessage[],
+  maxTokens: number,
+): Promise<StreamResult> {
+  const completion = await openai.chat.completions.create({
+    model,
+    stream: true,
+    stream_options: { include_usage: true },
+    temperature: 0.6,
+    max_tokens: maxTokens,
+    messages: [
+      { role: "system", content: systemPrompt },
+      ...messages,
+    ],
+  });
+
+  let usage: UsageStats | null = null;
+
+  const stream = (async function* () {
+    for await (const chunk of completion) {
+      // Capture usage from the final chunk
+      if (chunk.usage) {
+        const promptTokens = chunk.usage.prompt_tokens ?? 0;
+        const completionTokens = chunk.usage.completion_tokens ?? 0;
+        // OpenAI returns cached tokens in prompt_tokens_details
+        const details = chunk.usage as {
+          prompt_tokens_details?: { cached_tokens?: number };
+        };
+        const cachedTokens = details.prompt_tokens_details?.cached_tokens ?? 0;
+        const cacheHitRate = promptTokens > 0 ? cachedTokens / promptTokens : 0;
+        
+        usage = { promptTokens, completionTokens, cachedTokens, cacheHitRate };
+        
+        console.log(
+          `[openai] usage: ${promptTokens} prompt (${cachedTokens} cached = ${(cacheHitRate * 100).toFixed(1)}%), ${completionTokens} completion`
+        );
+      }
+      
+      const delta = chunk.choices[0]?.delta?.content;
+      if (delta) yield delta;
+    }
+  })();
+
+  return { stream, model, provider: "openai", getUsage: () => usage };
+}
+
+async function streamGroq(
+  groq: Groq,
+  model: string,
+  systemPrompt: string,
+  messages: ChatMessage[],
+  maxTokens: number,
+): Promise<StreamResult> {
+  const completion = await groq.chat.completions.create({
+    model,
+    stream: true,
+    temperature: 0.55,
+    max_tokens: maxTokens,
+    messages: [
+      { role: "system", content: systemPrompt },
+      ...messages,
+    ],
+  });
+
+  const stream = (async function* () {
+    for await (const chunk of completion) {
+      const delta = chunk.choices[0]?.delta?.content;
+      if (delta) yield delta;
+    }
+  })();
+
+  // Groq doesn't support prompt caching
+  return { stream, model, provider: "groq", getUsage: () => null };
+}
+
+// =============================================================================
+// HANDLER
+// =============================================================================
+
 type ChatBody = {
   messages: ChatMessage[];
   jdText?: string;
 };
 
 export async function POST(req: Request) {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    return new Response("GROQ_API_KEY not configured", { status: 500 });
+  const openaiKey = process.env.OPENAI_API_KEY;
+  const groqKey = process.env.GROQ_API_KEY;
+
+  if (!openaiKey && !groqKey) {
+    return new Response("No LLM API keys configured", { status: 500 });
   }
 
   const ip =
@@ -82,11 +266,12 @@ export async function POST(req: Request) {
     return new Response("Bad request", { status: 400 });
   }
 
-  // Validate + clamp message sizes
   const messages = body.messages
     .filter(
       (m) =>
-        m && typeof m.content === "string" && m.content.length > 0 &&
+        m &&
+        typeof m.content === "string" &&
+        m.content.length > 0 &&
         (m.role === "user" || m.role === "assistant"),
     )
     .slice(-12)
@@ -99,8 +284,6 @@ export async function POST(req: Request) {
   const jdText = body.jdText?.slice(0, 20_000) ?? "";
   const hasJD = jdText.trim().length > 0;
 
-  // If the user has uploaded a JD, prepend it to their last message so the
-  // model sees both the JD and the visitor's question in the same turn.
   if (hasJD && !isIntro) {
     const idx = messages.lastIndexOf(lastUser);
     messages[idx] = {
@@ -109,20 +292,109 @@ export async function POST(req: Request) {
     };
   }
 
-  // Pick model + system prompt:
-  //   • intro greeting → 8B + tiny intro-only prompt (under 1K tokens, fits
-  //     8B's 6K TPM cap with room for the response)
-  //   • everything else → 70B + full context (persona + structured profile
-  //     + deep notes + live GitHub)
-  const model = isIntro ? FAST_MODEL : QUALITY_MODEL;
-  const systemPrompt = isIntro
-    ? buildIntroSystemPrompt()
-    : await buildSystemPrompt();
+  // =============================================================================
+  // Build system prompt
+  // =============================================================================
 
-  const groq = new Groq({ apiKey });
+  let systemPrompt: string;
+  let retrieval: RetrievalResult | null = null;
+
+  if (isIntro) {
+    systemPrompt = buildIntroSystemPrompt();
+  } else if (isRagAvailable()) {
+    try {
+      const recentUserMessages = messages
+        .filter((m) => m.role === "user")
+        .slice(-3)
+        .map((m) => m.content)
+        .join(" ")
+        .slice(0, 500);
+
+      retrieval = await ragSearch(recentUserMessages);
+      systemPrompt = buildRagSystemPrompt(retrieval.context);
+    } catch (err) {
+      console.warn("[chat] RAG failed, using static prompt:", err);
+      systemPrompt = await buildSystemPrompt();
+    }
+  } else {
+    systemPrompt = await buildSystemPrompt();
+  }
+
+  const systemTokenEstimate = Math.ceil(
+    systemPrompt.length / RAG_CONFIG.CHARS_PER_TOKEN,
+  );
+
+  // =============================================================================
+  // Attempt streaming — intro uses Groq 8B, Q&A uses OpenAI with Groq fallback
+  // =============================================================================
+
+  const openai = openaiKey ? new OpenAI({ apiKey: openaiKey }) : null;
+  const groq = groqKey ? new Groq({ apiKey: groqKey }) : null;
+
+  const maxTokens = isIntro ? 200 : 1024;
+  let streamResult: StreamResult | null = null;
+  let lastError: unknown = null;
+
+  if (isIntro) {
+    // Intro: Groq 8B only (fast, cheap, good enough for greeting)
+    if (groq) {
+      try {
+        streamResult = await streamGroq(
+          groq,
+          GROQ_INTRO_MODEL,
+          systemPrompt,
+          messages,
+          maxTokens,
+        );
+      } catch (err) {
+        lastError = err;
+        console.warn("[chat] Groq intro failed:", err);
+      }
+    }
+  } else {
+    // Q&A: OpenAI primary, Groq fallback chain
+    if (openai) {
+      try {
+        streamResult = await streamOpenAI(
+          openai,
+          OPENAI_MODEL,
+          systemPrompt,
+          messages,
+          maxTokens,
+        );
+      } catch (err) {
+        lastError = err;
+        console.warn("[chat] OpenAI failed, trying Groq fallback:", err);
+      }
+    }
+
+    // Fallback to Groq if OpenAI failed or unavailable
+    if (!streamResult && groq) {
+      for (const model of [GROQ_FALLBACK_PRIMARY, GROQ_FALLBACK_SECONDARY]) {
+        try {
+          streamResult = await streamGroq(
+            groq,
+            model,
+            systemPrompt,
+            messages,
+            maxTokens,
+          );
+          break;
+        } catch (err) {
+          lastError = err;
+          console.warn(`[chat] Groq ${model} failed:`, err);
+        }
+      }
+    }
+  }
+
+  // =============================================================================
+  // Build SSE response
+  // =============================================================================
+
   const encoder = new TextEncoder();
 
-  const stream = new ReadableStream<Uint8Array>({
+  const bodyStream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const send = (event: string, data: unknown) => {
         controller.enqueue(
@@ -130,35 +402,60 @@ export async function POST(req: Request) {
         );
       };
 
-      send("meta", { model });
+      if (!streamResult) {
+        const friendly = friendlyError(lastError);
+        console.error("[chat] all providers failed:", lastError);
+        send("meta", { model: null, provider: null, failed: true });
+        send("error", { message: friendly });
+        send("done", {});
+        controller.close();
+        return;
+      }
+
+      send("meta", {
+        model: streamResult.model,
+        provider: streamResult.provider,
+        rag: retrieval !== null,
+        systemTokens: systemTokenEstimate,
+        retrieval: retrieval
+          ? {
+              topScore: Number(retrieval.topScore.toFixed(3)),
+              included: retrieval.includedCount,
+              considered: retrieval.trace.length,
+              contextTokens: retrieval.estimatedTokens,
+              searchMs: retrieval.searchMs,
+            }
+          : null,
+      });
 
       try {
-        const completion = await groq.chat.completions.create({
-          model,
-          stream: true,
-          temperature: 0.55,
-          max_tokens: isIntro ? 200 : 1024,
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...messages,
-          ],
-        });
-
-        for await (const chunk of completion) {
-          const delta = chunk.choices[0]?.delta?.content ?? "";
-          if (delta) send("delta", delta);
+        for await (const delta of streamResult.stream) {
+          send("delta", delta);
         }
+        
+        // Send usage stats if available (OpenAI only)
+        const usage = streamResult.getUsage();
+        if (usage) {
+          send("usage", {
+            promptTokens: usage.promptTokens,
+            completionTokens: usage.completionTokens,
+            cachedTokens: usage.cachedTokens,
+            cacheHitRate: Number((usage.cacheHitRate * 100).toFixed(1)),
+          });
+        }
+        
         send("done", {});
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Unknown error";
-        send("error", { message: msg });
+        const friendly = friendlyError(err);
+        console.error("[chat] mid-stream error:", err);
+        send("error", { message: friendly });
       } finally {
         controller.close();
       }
     },
   });
 
-  return new Response(stream, {
+  return new Response(bodyStream, {
     headers: {
       "content-type": "text/event-stream",
       "cache-control": "no-cache, no-transform",

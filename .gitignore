@@ -41,5 +41,10 @@ CLAUDE.local.md
 # Generated at build time by scripts/fetch-github.mjs
 lib/keshav-context.generated.ts
 
+# NOTE: lib/context-embeddings.json is intentionally NOT ignored.
+# It's the pre-computed RAG vector store — committed so production builds
+# use prestored embeddings rather than re-embedding on cold start.
+# Regenerate via `npm run build-embeddings` when the corpus source changes.
+
 
 .env*

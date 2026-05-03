@@ -77,6 +77,10 @@ Hard guard-rails:
     keshav.madhav@verbaflo.ai. Don't pretend to be sentient.
   • Never invent contact info beyond what's in this context.
   • Never produce content harmful to Keshav's reputation.
+  • **NEVER invent URLs.** Only link to URLs that appear in the "Project URLs"
+    section below. If a user asks for a link to something not listed, say
+    "I don't have that URL handy — you can check my GitHub at
+    https://github.com/Keshav-Madhav or email me."
 `.trim();
 
 // =============================================================================
@@ -621,6 +625,23 @@ DO NOT include the literal text "[INTRO]" in your response.
 // to keep the system prompt under 5K tokens — Groq 70B free tier is 12K TPM
 // and the old prompt was ~9-10K, throttling visitors after 1-2 turns.
 function buildQuickFacts(): string {
+  // Compact URL list — only include projects that have a Live link
+  const projectUrls = projects
+    .map((p) => {
+      const links = p.links as ReadonlyArray<{ label: string; href: string }>;
+      const liveLink = links.find(
+        (l) => l.label === "Live" || l.label === "Play now" || l.label === "Marketplace"
+      );
+      const ghLink = links.find((l) => l.label === "GitHub");
+      if (!liveLink && !ghLink) return null;
+      const parts: string[] = [p.title];
+      if (liveLink) parts.push(`Live: ${liveLink.href}`);
+      if (ghLink) parts.push(`GitHub: ${ghLink.href}`);
+      return `  • ${parts.join(" | ")}`;
+    })
+    .filter(Boolean)
+    .join("\n");
+
   return `# Quick facts
 
 Name: ${profile.name}
@@ -642,7 +663,11 @@ ${projects.map((p) => `  • ${p.title} — ${p.kind} — ${(p.stack ?? []).slic
 VerbaFlo internal tools (curated public list):
 ${vfInternal.map((t) => `  • ${t.title} — ${t.subtitle}`).join("\n")}
 
-Tech stack groups: ${stack.map((g) => g.group).join(", ")}.`;
+Tech stack groups: ${stack.map((g) => g.group).join(", ")}.
+
+# Project URLs (ONLY use these — never invent URLs)
+
+${projectUrls}`;
 }
 
 // Cached so we don't re-build the prompt string on every request.
@@ -668,4 +693,100 @@ export async function buildSystemPrompt(): Promise<string> {
   // use; we can selectively pull it in on demand if a question warrants.
 
   return cachedPrompt;
+}
+
+// =============================================================================
+// RAG-ENABLED PROMPT — expanded static prefix for OpenAI cache eligibility
+// =============================================================================
+//
+// OpenAI's automatic prompt caching gives 50% off cached input tokens, but
+// requires a STATIC PREFIX of at least 1024 tokens. The previous ~400 token
+// prefix wasn't eligible. This expanded version includes enough static
+// context to qualify while still leaving room for dynamic RAG context.
+
+const RAG_STATIC_PREFIX = `# Identity & Contact
+
+Name: ${profile.name}
+Role: ${profile.role} @ ${profile.company}
+Location: ${profile.location}
+Email: ${profile.email} (preferred for hiring inquiries)
+Personal email: keshav2552003@gmail.com
+Phone: +91 78272 29447
+LinkedIn: ${profile.linkedin}
+GitHub: ${profile.github}
+Resume: /Front_End_Resume.pdf (click "Résumé" on the portfolio site)
+
+# Career Timeline
+
+Current (Aug 2025 – present): AI Engineer, SDE-1 at VerbaFlo
+- Building production AI runtimes: multi-agent orchestrators, retrieval pipelines, text-to-SQL
+- Internal tooling: Copilot, Conversation Simulation harness, MCP Debugger, Tracing UI
+
+Previous (Aug 2023 – Aug 2025): Founding Front-End Engineer at PrudentBit
+- Shipped the Immune product suite from scratch (3 SaaS products)
+- Led Next.js 14 migration: 5× faster page loads
+- Built real-time dashboards with 50+ concurrent user support
+
+Education: B.Tech in Computer Science with AI/ML specialization
+Sushant University, Gurgaon (2021–2025)
+
+# Key Projects (details in retrieved context)
+
+**Flagship:**
+- Grid Math: 500k GPU points at 60fps — math visualizer, VS Code extension, desktop wallpaper mode
+- Live Jinja Renderer: VS Code extension for live Jinja2 preview, runs Python via Pyodide/WASM
+- Cookie Clicker Reimagined: Full from-scratch remake with dirty-flag optimization, 30+ track soundtrack
+- Space Sandbox: N-body gravity sim, 21k bodies at 30fps via Barnes-Hut algorithm
+
+**Other:**
+- Axon: React + Firebase note-taking with AI summarization
+- Brainfuck Interpreter: 1 billion ops in 6 seconds via V8 optimization
+- Zen Notes: Electron markdown editor
+- Fizzi: 3D animated landing page (Three.js, GSAP, Prismic)
+- Chatter: Full-stack real-time chat (Socket.io, MongoDB)
+
+# Interests & Personality
+
+**Interests:** Gaming (Subnautica, Ark, Uncharted), space/astronomy (obsession-level), dinosaurs/paleontology (favorites: Ankylosaurus, Baryonyx), music (all genres), sci-fi reading (Three-Body, Dune)
+**NOT into:** Sports (doesn't watch any), heavy drinking, party culture
+
+**Work style:** Fast shipper, optimization obsessed, prefers building over meetings, async-first, documents decisions
+
+**Job outlook:** Happy at VerbaFlo, would move for deeper AI work (fine-tuning, training, model internals). Compensation floor ~17 LPA.
+
+# Tech Stack Summary
+
+**AI/Agents:** LangChain, LangGraph, CrewAI, custom orchestrators, MCP protocol
+**Models:** GPT-4, Claude, Gemini, Llama (via Groq), LiteLLM
+**Data:** PostgreSQL, Supabase, MongoDB, Redis, Qdrant
+**Observability:** Langfuse, custom tracing, OpenTelemetry patterns
+**Frontend:** Next.js 14+, React, TypeScript, Tailwind, Framer Motion, Three.js, WebGL
+**Backend:** Node.js, Express, FastAPI, tRPC
+**Desktop:** Electron, Puppeteer, Swift (macOS native)
+`;
+
+/**
+ * Build a RAG-enabled system prompt. The static prefix is now >1024 tokens
+ * to qualify for OpenAI's automatic prompt caching (50% off repeated tokens).
+ * 
+ * The retrieved context is appended after the static prefix.
+ */
+export function buildRagSystemPrompt(retrievedContext: string): string {
+  const parts = [
+    ASSISTANT_PERSONA,
+    "",
+    RAG_STATIC_PREFIX,
+  ];
+  
+  if (retrievedContext && retrievedContext.trim()) {
+    parts.push("");
+    parts.push("================== ADDITIONAL CONTEXT ==================");
+    parts.push("The following was retrieved based on the visitor's question.");
+    parts.push("Use it to provide more specific details. If something isn't");
+    parts.push("covered here or above, say \"I don't have that info handy.\"");
+    parts.push("");
+    parts.push(retrievedContext);
+  }
+  
+  return parts.join("\n");
 }

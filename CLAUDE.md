@@ -40,11 +40,16 @@ components/                 Sections + providers + ui/
 └── ui/                     Atoms, decorative effects, spirit guide, multiplayer
 
 lib/                        data, types, hooks, utils — single source of truth for content
-                            keshav-context.ts is the chat assistant's knowledge base
+                            keshav-context.ts is the chat assistant's base persona + facts
+                            embeddings.ts is the RAG retrieval runtime
+                            context-embeddings.json is the prestored vector store (committed)
 context/                    Active-section context (only global state)
 email/                      React Email template for the contact form
 public/                     Static images (imported into lib/data.ts for fingerprinting)
 scripts/fetch-github.mjs    Prebuild step — bakes top GitHub repos into chat context
+scripts/corpus-source.mjs   RAG corpus source-of-truth (45 sections, ~92K chars)
+scripts/build-embeddings.mjs  Prebuild step — chunks + embeds the corpus → lib/context-embeddings.json
+scripts/eval-rag.mjs        Retrieval eval harness — 47 golden queries, measures recall/tokens
 ```
 
 ## The deferred-effects pattern (the performance story)
@@ -76,6 +81,33 @@ The spirit guide reads attributes off the page rather than exposing a JS API. Se
 - `data-spirit-touched="true"` — set/cleared by the spirit guide itself; CSS keys glow intensification off it. Don't touch it manually.
 
 If you add a clickable card or button and want the orb to react, just add the attribute. The orb scans on every animation frame during a tour and every ~5s during idle. See `components/ui/CLAUDE.md` for the full spirit-guide behavior tree.
+
+## The chat assistant (RAG)
+
+The bottom-left "Ask about Keshav" widget streams from Groq (Llama 3.3 70B). Early versions shoved the entire persona + all content into the system prompt, which blew past Groq's free-tier 12K tokens-per-minute ceiling and caused the model to hallucinate URLs. The current system is RAG.
+
+**Build time** — `scripts/build-embeddings.mjs` reads `scripts/corpus-source.mjs` (45 curated sections covering identity, learning timeline, VerbaFlo / PrudentBit work, every project in depth, personality, tech stack, and a URL reference), chunks each section at ~300 tokens with 60-token overlap, and embeds every chunk with `Xenova/all-MiniLM-L6-v2` (local, no network). Output is committed to `lib/context-embeddings.json` (~970 KB, 109 chunks) so the production runtime does not re-embed on cold start. Runs via `prebuild`, so `npm run build` always has fresh embeddings.
+
+**Model routing** — Q&A is served by a two-model chain: `llama-3.3-70b-versatile` (primary) with `llama-3.1-8b-instant` as automatic fallback on daily-token-limit 429s. Groq's free tier caps the 70B at 100K tokens/day; the 8B has a much larger daily quota. With RAG injecting concrete facts, the 8B's old "hedging" problem is largely neutralized — it has the answer in context and just needs to paraphrase it. INTRO always uses 8B. The `meta` SSE event reports which model actually served the request and sets `fallback: true` when the primary was skipped, so the UI can show a discreet indicator if you ever want one.
+
+**Error UX** — `friendlyError()` in `app/api/chat/route.ts` converts Groq SDK errors into short visitor-facing lines (daily quota, per-minute rate limit, 401/403 misconfig, generic) and parses Groq's "try again in Xm Ys" timestamps into a humanized ETA. The raw JSON never hits the visitor. Mid-stream failures send an `error` SSE event after partial output so the widget can show the note below the half-typed message.
+
+**Runtime** — `/api/chat/route.ts` embeds the user's recent turn, runs cosine similarity against all 109 chunks (O(n) over 384-dim vectors, ~1-5ms), then `lib/embeddings.ts::buildRetrievalResult` filters with three rules in order:
+
+1. **MIN_SCORE (0.22)** — hard floor for noise.
+2. **SCORE_GAP (0.35)** — a chunk must sit within 0.35 of the top score. This makes retrieval adaptive: when the top match is strong (0.70+), only very-similar chunks are kept; when the top match is weak, the floor moves with it.
+3. **ALWAYS_INCLUDE_TOP_IF_ABOVE (0.18)** — the rank-0 chunk is always included as long as it clears this lower floor, so low-confidence queries still get *something* instead of empty context.
+4. **MAX_CONTEXT_TOKENS (1,800)** — greedy pack, highest score first.
+
+The injected context plus the slim base prompt (persona + minimal facts) lands at roughly 3-4K tokens per request, comfortably under the 12K TPM ceiling.
+
+**Observability + quality** — three pieces keep retrieval honest:
+
+- `scripts/eval-rag.mjs` (`npm run eval-rag`) runs 47 golden queries against the committed index and reports recall@top-K, recall@included, and the top-score distribution. Current baseline: 100% top-K recall, 97.9% inclusion recall, median top score 0.445. Fails CI-style if recall drops below 90%. Add new queries whenever you spot a real-world miss.
+- `/api/chat/debug-rag?q=...` (GET) and POST `{query}` — returns the full retrieval trace (every scored chunk, which decision was made, which were included, final context string). Dev-only by default; set `DEBUG_RAG_ENABLED=1` to expose in prod. No LLM call, so it's free to hammer.
+- `/api/chat` emits a `meta` SSE event with `{topScore, included, considered, contextTokens, searchMs, systemTokens}` on every request — a debug HUD in the chat widget can render these live.
+
+**Editing the corpus** — add or update sections in `scripts/corpus-source.mjs`, then `npm run build-embeddings`. If a real query retrieves the wrong thing, prefer adding a "Topics covered here: …" anchor line to the top of the correct section (existing precedent in `identity`, `contact`, `work-style`, `personality-optimization`, `tech-desktop-native`) — this is significantly cheaper than rewriting prose, and it directly boosts the section's embedding toward how visitors actually ask. Then re-run `npm run eval-rag` to confirm recall.
 
 ## The multiplayer layer (Ably)
 
@@ -116,7 +148,9 @@ The `/about` page is a faux IDE that synthesizes "files" (`intro.md`, `now.md`, 
 ## Dev commands
 
 - `npm run dev` — Next dev server (default port 3000).
-- `npm run build` — production build. Run before claiming a change is shipped.
+- `npm run build` — production build. Run before claiming a change is shipped. Auto-runs `prebuild` which fetches GitHub repos and rebuilds the RAG embeddings.
+- `npm run build-embeddings` — rebuild the RAG vector store manually after editing `scripts/corpus-source.mjs`.
+- `npm run eval-rag` — run the retrieval eval harness (47 golden queries). Exits non-zero if recall drops below 90%.
 - `npm run lint` — `next lint`.
 
 There are no automated tests in this repo — verify changes by running `npm run dev` and clicking through the affected sections (and ideally with reduced motion enabled to confirm the bail-outs still work).

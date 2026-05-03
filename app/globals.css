@@ -657,3 +657,53 @@ html:not([data-fast-scroll="true"]) main {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* -----------------------------------------------------------------------
+   Mobile / coarse-pointer performance overrides.
+   
+   backdrop-filter: blur() is the single most expensive CSS operation on
+   phone GPUs — each blurred pixel requires sampling ~50–100 neighbors per
+   frame during scroll. filter: blur() on large elements (Backdrop blobs)
+   is similarly crushing. Kill both entirely on touch devices.
+   
+   The data-coarse attribute is set by lib/use-is-mobile.ts on mount.
+   We also use the (pointer: coarse) media query as a fallback so the
+   styles apply even before JS runs.
+   ----------------------------------------------------------------------- */
+@media (pointer: coarse) {
+  /* Nuke all backdrop-filter blur — nav glass, cards, modals */
+  .backdrop-blur-sm,
+  .backdrop-blur,
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-3xl,
+  [class*="backdrop-blur-["] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  
+  /* Glass cards: solid background instead of blur */
+  .glass {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: hsl(var(--surface) / 0.92) !important;
+  }
+  
+  /* Backdrop aurora blobs: hide entirely, show gradient fallback */
+  [data-aurora-blob] {
+    display: none !important;
+  }
+  
+  /* Kill the velocity-tilt skew — janky on touch flicks */
+  html[data-fast-scroll="true"] main {
+    transform: none !important;
+  }
+  
+  /* Spirit guide glow transitions are heavy; instant instead */
+  [data-spirit],
+  [data-spirit-touched="true"] {
+    transition: none !important;
+  }
+}

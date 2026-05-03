@@ -53,7 +53,14 @@ The site is tuned aggressively for LCP. `app/layout.tsx` mounts the smallest pos
 
 The first ~800ms of scrolling uses native browser scroll. Then Lenis takes over seamlessly. The hero's lede paragraph deliberately renders without entrance animation so it can serve as the LCP element (the original animated entrance was costing ~1300ms on LCP audits).
 
-**On mobile / touch-only devices** (`(pointer: coarse)`), the entire decoration layer is gated off via `useIsMobile()` from `lib/use-is-mobile.ts`. Only the chat widget and toaster mount — none of the canvas effects, the spirit guide, Lenis, multiplayer, keyboard nav, or Konami are even downloaded. The `Backdrop` (eager) also collapses to 4 of its 8 aurora blobs with smaller blur radii on `< sm` viewports. See `components/CLAUDE.md` for the full rationale.
+**On mobile / touch-only devices** (`(pointer: coarse)`), the entire decoration layer is gated off via `useIsMobile()` from `lib/use-is-mobile.ts`. Only the chat widget and toaster mount — none of the canvas effects, the spirit guide, Lenis, multiplayer, keyboard nav, or Konami are even downloaded. Additional mobile cuts:
+
+- **Backdrop**: all blurred blobs are hidden via `[data-aurora-blob] { display: none }` and replaced with a static gradient fallback. The parallax RAF loop bails entirely.
+- **Nav backdrop-blur**: killed by a global CSS rule; nav gets a solid semi-transparent background instead.
+- **`filter: blur()` in animations**: stripped from `reveal.tsx`, `section-heading.tsx`, `split-text.tsx`, and `image-cycler.tsx` on mobile. Only `opacity` + `y` remain; durations are shortened.
+- **ScrollProgress**: hidden (`hidden sm:block`).
+
+See `components/ui/CLAUDE.md` for full mobile performance rules.
 
 **Cross-cutting rule**: never add a new globally-mounted client effect to `app/layout.tsx`. Add it to `components/deferred-effects.tsx`. The two effects mounted eagerly (`Backdrop`, `ScrollProgress`) are intentional exceptions. If the new effect should also run on phones (functional, not decorative), put it outside the `!isMobile` block.
 

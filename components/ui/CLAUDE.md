@@ -270,11 +270,30 @@ The match is checked by sliding a 10-key window: `[...sequence, e.key].slice(-10
 
 ---
 
+## Mobile / coarse-pointer performance
+
+On phones (and any touch-only device), the decoration layer is aggressively trimmed to save battery and frame budget:
+
+1. **Entire decoration layer skipped** (`deferred-effects.tsx`) — Lenis, both canvas fields, spirit guide, click sparks, velocity tilt, keyboard nav, Konami, and multiplayer are never downloaded or mounted. Only `ChatWidget` and `Toaster` survive.
+
+2. **Backdrop fallback** — The animated blurred aurora blobs are hidden via `[data-aurora-blob] { display: none }` and replaced with a cheap static radial-gradient fallback. The parallax RAF loop also bails.
+
+3. **Nav backdrop-blur nuked** — CSS rule `@media (pointer: coarse) { [class*="backdrop-blur-["] { backdrop-filter: none !important; } }` kills all Tailwind backdrop-blur classes site-wide. The nav gets a solid semi-transparent background instead.
+
+4. **`filter: blur()` removed from animations** — `reveal.tsx`, `section-heading.tsx`, `split-text.tsx`, and `image-cycler.tsx` all use `useIsMobile()` to skip the blur portion of their enter animations; only `opacity` and `y` remain. Durations are also shortened.
+
+5. **ScrollProgress hidden** — The progress bar is `hidden sm:block`; phones don't need the tiny extra element at the top.
+
+**When adding new animations**: always check `useIsMobile()` (from `lib/use-is-mobile.ts`) and skip `filter: blur`, heavy `backdrop-filter`, and any full-screen CSS blur. On phones, `filter: blur()` on a per-element basis is less damaging than `backdrop-filter: blur()` (which samples from a live composite), but both should still be avoided for large or frequently-animating elements.
+
+---
+
 ## Conventions for new effects
 
 - `"use client"` and `default export` so `next/dynamic` can pick them up.
 - Use `m.*` from framer-motion (not `motion.*`).
 - Bail out under `useReducedMotion()` — return `null` for canvas effects, return plain text for text effects.
+- **Check `useIsMobile()`** and skip `filter: blur()` animations on coarse-pointer devices.
 - Pause RAF on `document.visibilitychange` (`document.hidden`).
 - All scroll/touch/pointer listeners get `{ passive: true }`.
 - For canvas: cap DPR at 2, debounce resize at ~120ms.

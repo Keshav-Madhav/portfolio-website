@@ -2,6 +2,7 @@
 
 import { m } from "framer-motion";
 import { useInView } from "@/lib/use-in-view";
+import { useIsMobile } from "@/lib/use-is-mobile";
 import { cn } from "@/lib/cn";
 
 export default function SectionHeading({
@@ -21,6 +22,15 @@ export default function SectionHeading({
     threshold: 0.4,
     triggerOnce: true,
   });
+  const isMobile = useIsMobile();
+
+  // Skip filter: blur on mobile — it's expensive on phone GPUs
+  const h2Initial = isMobile
+    ? { opacity: 0, y: 24 }
+    : { opacity: 0, y: 24, filter: "blur(8px)" };
+  const h2Animate = isMobile
+    ? { opacity: 1, y: 0 }
+    : { opacity: 1, y: 0, filter: "blur(0)" };
 
   return (
     <div
@@ -44,10 +54,10 @@ export default function SectionHeading({
       )}
       <m.h2
         ref={ref}
-        initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
-        whileInView={{ opacity: 1, y: 0, filter: "blur(0)" }}
+        initial={h2Initial}
+        whileInView={h2Animate}
         viewport={{ once: true, amount: 0.4 }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: isMobile ? 0.5 : 0.9, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
           "heading-paint font-display text-2xl font-semibold leading-[1.2] tracking-tight text-ink sm:text-4xl lg:text-5xl sm:leading-[1.15]",
           inView && "in-view"

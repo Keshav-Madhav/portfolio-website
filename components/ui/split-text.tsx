@@ -1,21 +1,25 @@
 "use client";
 
 import { m, useReducedMotion, type Variants } from "framer-motion";
+import { useMemo } from "react";
 import { cn } from "@/lib/cn";
+import { useIsMobile } from "@/lib/use-is-mobile";
 
-const wordV: Variants = {
-  hidden: { opacity: 0, y: 24, filter: "blur(8px)" },
+const makeWordVariants = (skipBlur: boolean): Variants => ({
+  hidden: skipBlur
+    ? { opacity: 0, y: 20 }
+    : { opacity: 0, y: 24, filter: "blur(8px)" },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    filter: "blur(0)",
+    ...(skipBlur ? {} : { filter: "blur(0)" }),
     transition: {
       delay: i * 0.05,
-      duration: 0.7,
+      duration: skipBlur ? 0.4 : 0.7,
       ease: [0.22, 1, 0.36, 1],
     },
   }),
-};
+});
 
 export default function SplitText({
   text,
@@ -29,7 +33,9 @@ export default function SplitText({
   as?: "span" | "h1" | "h2" | "h3" | "p";
 }) {
   const reduce = useReducedMotion();
-  const Tag: any = as;
+  const isMobile = useIsMobile();
+  const wordV = useMemo(() => makeWordVariants(isMobile), [isMobile]);
+  const Tag: React.ElementType = as;
 
   if (reduce) {
     return <Tag className={className}>{text}</Tag>;
@@ -53,7 +59,7 @@ export default function SplitText({
             viewport={{ once, amount: 0.4 }}
           >
             {word}
-            {i < words.length - 1 ? " " : ""}
+            {i < words.length - 1 ? " " : ""}
           </m.span>
         </span>
       ))}

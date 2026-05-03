@@ -1,12 +1,12 @@
 "use client";
 
 import { useReducedMotion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Backdrop with aurora blobs that scroll WITH content.
  *
- * Three perf decisions:
+ * Four perf decisions:
  * 1. The container's parallax translate is driven imperatively via a ref-RAF
  *    that self-suspends when scroll settles (no React re-renders during scroll).
  * 2. The 8 blob breathing animations are pure CSS @keyframes — moves them off
@@ -15,13 +15,25 @@ import { useEffect, useRef } from "react";
  * 3. On small viewports we hide every other blob (`hidden sm:block`) and use
  *    a smaller blur radius. 130–160px blur over a full-screen layer is one
  *    of the most expensive things a phone GPU can be asked to do at 60fps.
+ * 4. On coarse-pointer devices (phones) we hide ALL blobs via CSS and show
+ *    a static gradient fallback instead. The parallax RAF loop also bails.
  */
 export default function Backdrop() {
   const reduce = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isCoarse, setIsCoarse] = useState(false);
 
   useEffect(() => {
-    if (reduce) return;
+    // Detect coarse pointer (touch devices) to skip the parallax loop entirely
+    const mq = window.matchMedia("(pointer: coarse)");
+    setIsCoarse(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsCoarse(e.matches);
+    mq.addEventListener?.("change", handler);
+    return () => mq.removeEventListener?.("change", handler);
+  }, []);
+
+  useEffect(() => {
+    if (reduce || isCoarse) return;
     const el = containerRef.current;
     if (!el) return;
 
@@ -74,7 +86,7 @@ export default function Backdrop() {
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [reduce]);
+  }, [reduce, isCoarse]);
 
   // CSS-driven blob animations defined as a <style> tag co-located with the
   // component so the keyframes ship with the file. `prefers-reduced-motion`
@@ -95,10 +107,30 @@ export default function Backdrop() {
       {/* Base canvas color */}
       <div className="absolute inset-0 bg-[hsl(222_25%_4%)]" />
 
+      {/* Mobile-only static gradient fallback — much cheaper than blurred blobs */}
+      <div
+        aria-hidden
+        data-aurora-fallback
+        className="absolute inset-0 hidden opacity-40"
+        style={{
+          background: `
+            radial-gradient(ellipse 120% 60% at 50% 0%, hsl(258 70% 50% / 0.25), transparent 60%),
+            radial-gradient(ellipse 80% 50% at 80% 50%, hsl(190 80% 45% / 0.15), transparent 50%),
+            radial-gradient(ellipse 70% 40% at 20% 80%, hsl(270 70% 50% / 0.12), transparent 50%)
+          `,
+        }}
+      />
+      <style>{`
+        @media (pointer: coarse) {
+          [data-aurora-fallback] { display: block !important; }
+        }
+      `}</style>
+
       {/* Aurora container - transforms based on scroll (driven imperatively) */}
       <div ref={containerRef} className="absolute inset-0 will-change-transform">
         <div
           aria-hidden
+          data-aurora-blob
           className="absolute -top-40 left-1/2 h-[40rem] w-[60rem] rounded-full blur-[70px] will-change-transform sm:blur-[140px]"
           style={{
             background:
@@ -110,6 +142,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
+          data-aurora-blob
           className="absolute top-[20vh] -right-32 hidden h-[36rem] w-[48rem] rounded-full blur-[130px] will-change-transform sm:block"
           style={{
             background:
@@ -120,6 +153,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
+          data-aurora-blob
           className="absolute top-[85vh] -left-32 h-[32rem] w-[44rem] rounded-full blur-[60px] will-change-transform sm:blur-[120px]"
           style={{
             background:
@@ -130,6 +164,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
+          data-aurora-blob
           className="absolute top-[170vh] right-[5%] hidden h-[28rem] w-[36rem] rounded-full blur-[150px] will-change-transform sm:block"
           style={{
             background:
@@ -140,6 +175,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
+          data-aurora-blob
           className="absolute top-[250vh] left-[10%] h-[30rem] w-[40rem] rounded-full blur-[80px] will-change-transform sm:blur-[160px]"
           style={{
             background:
@@ -150,6 +186,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
+          data-aurora-blob
           className="absolute top-[340vh] -right-20 hidden h-[34rem] w-[46rem] rounded-full blur-[130px] will-change-transform sm:block"
           style={{
             background:
@@ -160,6 +197,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
+          data-aurora-blob
           className="absolute top-[430vh] left-1/2 h-[36rem] w-[50rem] rounded-full blur-[70px] will-change-transform sm:blur-[140px]"
           style={{
             background:
@@ -171,6 +209,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
+          data-aurora-blob
           className="absolute top-[520vh] -left-20 hidden h-[32rem] w-[42rem] rounded-full blur-[140px] will-change-transform sm:block"
           style={{
             background:

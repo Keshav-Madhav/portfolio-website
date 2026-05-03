@@ -40,3 +40,6 @@ CLAUDE.local.md
 
 # Generated at build time by scripts/fetch-github.mjs
 lib/keshav-context.generated.ts
+
+
+.env*

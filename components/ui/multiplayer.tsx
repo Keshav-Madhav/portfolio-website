@@ -456,9 +456,19 @@ const FloatingReactionView = memo(function FloatingReactionView({
   );
 });
 
+type HighlightedCursor = {
+  id: string;
+  x: number;
+  y: number;
+  color: string;
+};
+
 function PresenceHint() {
   const { others } = useMembers();
+  const { cursors } = useCursors({ returnCursors: true });
   const [dismissed, setDismissed] = useState(false);
+  const [cycleIndex, setCycleIndex] = useState(0);
+  const [highlighted, setHighlighted] = useState<HighlightedCursor | null>(null);
 
   useEffect(() => {
     if (sessionStorage.getItem("multiplayer-hint-dismissed") === "1") {
@@ -477,48 +487,197 @@ function PresenceHint() {
     return () => clearTimeout(t);
   }, [count, dismissed]);
 
+  const colorByClientId = useMemo(() => {
+    const m = new Map<string, string>();
+    others?.forEach((member) => {
+      const profile = (member.profileData ?? {}) as { color?: string };
+      m.set(member.clientId ?? "", profile.color ?? "#888");
+    });
+    return m;
+  }, [others]);
+
+  const cursorList = useMemo(() => {
+    if (!cursors) return [];
+    const out: { id: string; x: number; y: number; color: string }[] = [];
+    for (const entry of Object.values(cursors)) {
+      const pos = entry.cursorUpdate?.position;
+      if (!pos || pos.x < -1000) continue;
+      const color = colorByClientId.get(entry.member.clientId ?? "");
+      if (!color) continue;
+      out.push({
+        id: entry.member.connectionId,
+        x: pos.x,
+        y: pos.y,
+        color,
+      });
+    }
+    return out;
+  }, [cursors, colorByClientId]);
+
+  const handleFindUser = useCallback(() => {
+    if (cursorList.length === 0) return;
+
+    const idx = cycleIndex % cursorList.length;
+    const cursor = cursorList[idx];
+    if (!cursor) return;
+
+    const targetY = Math.max(0, cursor.y - window.innerHeight / 2);
+    window.scrollTo({ top: targetY, behavior: "smooth" });
+
+    setHighlighted(cursor);
+    setTimeout(() => setHighlighted(null), 2000);
+
+    setCycleIndex((i) => i + 1);
+  }, [cursorList, cycleIndex]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.isContentEditable)
+      )
+        return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key.toLowerCase() !== "f") return;
+      if (count === 0) return;
+
+      e.preventDefault();
+      handleFindUser();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [handleFindUser, count]);
+
   return (
-    <AnimatePresence>
-      {count > 0 && !dismissed && (
-        <m.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 24 }}
-          transition={{ type: "spring", stiffness: 240, damping: 22 }}
-          className="fixed bottom-6 right-6 z-[82] flex items-center gap-3 rounded-full border border-edge bg-surface/90 px-4 py-2 font-mono text-xs text-muted shadow-2xl backdrop-blur"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-          </span>
-          <span className="text-ink">
-            {count} {count === 1 ? "other" : "others"} here
-          </span>
-          <span className="text-muted/60">·</span>
-          <span>
-            press{" "}
-            <kbd className="rounded border border-edge bg-canvas px-1 py-0.5 text-[10px] text-ink">
-              1–{REACTIONS.length}
-            </kbd>{" "}
-            to react
-          </span>
-          <span className="ml-1 flex items-center gap-1">
-            {REACTIONS.map(({ key }) => (
-              <ReactionIcon key={key} reactionKey={key} size={22} />
-            ))}
-          </span>
-          <button
-            onClick={() => {
-              setDismissed(true);
-              sessionStorage.setItem("multiplayer-hint-dismissed", "1");
-            }}
-            className="ml-1 text-muted/60 transition hover:text-ink"
-            aria-label="Dismiss"
+    <>
+      <AnimatePresence>
+        {highlighted && (
+          <CursorHighlight
+            x={highlighted.x}
+            y={highlighted.y}
+            color={highlighted.color}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {count > 0 && !dismissed && (
+          <m.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ type: "spring", stiffness: 240, damping: 22 }}
+            className="fixed bottom-6 right-6 z-[82] flex items-center gap-3 rounded-full border border-edge bg-surface/90 px-4 py-2 font-mono text-xs text-muted shadow-2xl backdrop-blur"
           >
-            ×
-          </button>
-        </m.div>
-      )}
-    </AnimatePresence>
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+            <span className="text-ink">
+              {count} {count === 1 ? "other" : "others"} here
+            </span>
+            <button
+              onClick={handleFindUser}
+              className="flex items-center gap-1 rounded-full border border-edge bg-canvas/80 px-2 py-0.5 text-[10px] text-ink transition hover:bg-canvas hover:text-accent"
+              aria-label={`Find ${count === 1 ? "user" : "users"}`}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <kbd className="rounded border border-edge bg-canvas px-1 py-0.5 text-[10px] text-muted">
+                F
+              </kbd>
+            </button>
+            <button
+              onClick={() => {
+                setDismissed(true);
+                sessionStorage.setItem("multiplayer-hint-dismissed", "1");
+              }}
+              className="ml-1 text-muted/60 transition hover:text-ink"
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+          </m.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
+
+const CursorHighlight = memo(function CursorHighlight({
+  x,
+  y,
+  color,
+}: {
+  x: number;
+  y: number;
+  color: string;
+}) {
+  const layerRef = useScrollCompensateRef<HTMLDivElement>();
+
+  return (
+    <div
+      ref={layerRef}
+      className="pointer-events-none fixed inset-0 z-[79] will-change-transform"
+    >
+      <m.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.5 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        className="absolute"
+        style={{ left: x, top: y }}
+      >
+        <m.div
+          animate={{
+            scale: [1, 1.5, 1],
+            opacity: [0.8, 0.4, 0.8],
+          }}
+          transition={{
+            duration: 1.2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            width: 60,
+            height: 60,
+            background: `radial-gradient(circle, ${color}40 0%, ${color}00 70%)`,
+            boxShadow: `0 0 20px ${color}60, 0 0 40px ${color}30`,
+          }}
+        />
+        <m.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          className="absolute -translate-x-1/2 -translate-y-1/2"
+          style={{ width: 50, height: 50 }}
+        >
+          <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+            <circle
+              cx="25"
+              cy="25"
+              r="22"
+              stroke={color}
+              strokeWidth="2"
+              strokeDasharray="8 6"
+              opacity="0.6"
+            />
+          </svg>
+        </m.div>
+      </m.div>
+    </div>
+  );
+});

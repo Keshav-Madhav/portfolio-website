@@ -8,6 +8,7 @@ import {
 import {
   ragSearch,
   getEmbeddingsIndex,
+  getRandomChunkSnippet,
   RAG_CONFIG,
   type RetrievalResult,
 } from "@/lib/embeddings";
@@ -95,6 +96,47 @@ function friendlyError(err: unknown): string {
     return "Chat is misconfigured on the server.";
   }
   return "Chat hit a snag. Please try again shortly.";
+}
+
+/**
+ * Parse the structured intro response to extract greeting and questions.
+ * Expected format:
+ *   GREETING: <greeting text>
+ *   QUESTIONS:
+ *   - question 1
+ *   - question 2
+ *   ...
+ */
+function parseIntroResponse(response: string): {
+  greeting: string;
+  questions: string[];
+} {
+  // Try to parse structured format
+  const greetingMatch = response.match(/GREETING:\s*(.+?)(?=\nQUESTIONS:|$)/is);
+  const questionsMatch = response.match(/QUESTIONS:\s*([\s\S]*)/i);
+
+  let greeting = greetingMatch?.[1]?.trim() || response.trim();
+  const questions: string[] = [];
+
+  if (questionsMatch) {
+    const questionsText = questionsMatch[1];
+    const lines = questionsText.split("\n");
+    for (const line of lines) {
+      const cleaned = line.replace(/^[-•*]\s*/, "").trim();
+      if (cleaned && cleaned.length > 5 && cleaned.length < 60) {
+        questions.push(cleaned);
+      }
+    }
+  }
+
+  // If parsing failed, clean up the greeting (remove any stray format markers)
+  greeting = greeting
+    .replace(/^GREETING:\s*/i, "")
+    .replace(/\nQUESTIONS:[\s\S]*/i, "")
+    .trim();
+
+  // Take at most 4 questions
+  return { greeting, questions: questions.slice(0, 4) };
 }
 
 // =============================================================================
@@ -300,7 +342,8 @@ export async function POST(req: Request) {
   let retrieval: RetrievalResult | null = null;
 
   if (isIntro) {
-    systemPrompt = buildIntroSystemPrompt();
+    const randomSnippet = getRandomChunkSnippet();
+    systemPrompt = buildIntroSystemPrompt(randomSnippet ?? undefined);
   } else if (isRagAvailable()) {
     try {
       const recentUserMessages = messages
@@ -429,8 +472,31 @@ export async function POST(req: Request) {
       });
 
       try {
-        for await (const delta of streamResult.stream) {
-          send("delta", delta);
+        if (isIntro) {
+          // For intro, collect full response to parse greeting + questions
+          let fullResponse = "";
+          for await (const delta of streamResult.stream) {
+            fullResponse += delta;
+          }
+
+          // Parse the structured response
+          const { greeting, questions } = parseIntroResponse(fullResponse);
+
+          // Stream the greeting as deltas (for nice typing effect)
+          const words = greeting.split(" ");
+          for (let i = 0; i < words.length; i++) {
+            send("delta", (i > 0 ? " " : "") + words[i]);
+          }
+
+          // Send questions as separate event
+          if (questions.length > 0) {
+            send("questions", questions);
+          }
+        } else {
+          // Normal Q&A: stream deltas as they come
+          for await (const delta of streamResult.stream) {
+            send("delta", delta);
+          }
         }
         
         // Send usage stats if available (OpenAI only)

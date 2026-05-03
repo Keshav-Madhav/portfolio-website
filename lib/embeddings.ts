@@ -145,6 +145,34 @@ export function getEmbeddingsIndex(): EmbeddingsIndex {
   return cachedIndex;
 }
 
+/**
+ * Get a random chunk from the embeddings for intro variation.
+ * Filters out identity/contact chunks to keep intros interesting.
+ */
+export function getRandomChunkSnippet(): string | null {
+  try {
+    const index = getEmbeddingsIndex();
+    if (!index.chunks || index.chunks.length === 0) return null;
+
+    // Filter out identity/contact (boring for intro), keep interesting content
+    const interesting = index.chunks.filter(
+      (c) =>
+        !c.section.includes("identity") &&
+        !c.section.includes("contact") &&
+        !c.section.includes("urls-reference") &&
+        c.text.length > 200,
+    );
+
+    if (interesting.length === 0) return null;
+
+    const randomChunk = interesting[Math.floor(Math.random() * interesting.length)];
+    // Return a snippet, not the whole chunk
+    return randomChunk.text.slice(0, 400).trim();
+  } catch {
+    return null;
+  }
+}
+
 // =============================================================================
 // COSINE SIMILARITY
 // =============================================================================

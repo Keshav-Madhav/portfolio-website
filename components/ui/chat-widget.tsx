@@ -37,6 +37,13 @@ const STORAGE_KEY = "keshav-chat-history-v1";
 const STORAGE_MAX_BYTES = 200 * 1024; // 200 KB cap
 const STORAGE_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 30; // 30 days
 
+const FALLBACK_QUESTIONS = [
+  "What projects have you built?",
+  "Tell me about your AI work",
+  "What simulations have you made?",
+  "What's your tech stack?",
+];
+
 type StoredHistory = { messages: Msg[]; savedAt: number };
 
 export default function ChatWidget() {
@@ -48,6 +55,7 @@ export default function ChatWidget() {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enabled, setEnabled] = useState(false);
+  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -213,6 +221,11 @@ export default function ChatWidget() {
               });
             } else if (evtName === "meta") {
               if (data.model) assistantModel = data.model as string;
+            } else if (evtName === "questions") {
+              // Dynamic questions from the intro
+              if (Array.isArray(data) && data.length > 0) {
+                setSuggestedQuestions(data as string[]);
+              }
             } else if (evtName === "error") {
               throw new Error(data.message ?? "Stream error");
             }
@@ -276,6 +289,7 @@ export default function ChatWidget() {
     setMessages([]);
     setAttachment(null);
     setError(null);
+    setSuggestedQuestions([]); // clear dynamic questions for fresh intro
     introFiredRef.current = false; // re-fire intro on next render
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -402,6 +416,26 @@ export default function ChatWidget() {
                     }
                   />
                 ))}
+
+              {/* Suggested questions — show after intro, hide once user asks */}
+              {!streaming &&
+                messages.filter((m) => !m.hidden).length === 1 &&
+                messages.some((m) => m.role === "assistant" && m.content) && (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {(suggestedQuestions.length > 0
+                      ? suggestedQuestions
+                      : FALLBACK_QUESTIONS
+                    ).map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => sendMessage(q)}
+                        className="rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1.5 text-xs text-violet-200 transition hover:border-violet-500/50 hover:bg-violet-500/20"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
               {error && (
                 <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-300">

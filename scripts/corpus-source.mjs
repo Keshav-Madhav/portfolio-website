@@ -1380,6 +1380,3901 @@ https://github.com/Keshav-Madhav.
 `,
 };
 
+const projectsAI = {
+  id: "projects-ai-ml",
+  title: "AI & Machine Learning Projects",
+  content: `
+Topics covered here: AI projects, machine learning, reinforcement learning,
+sentiment analysis, uno ai, ai battle, llm, draw calculator, sketchculator,
+apple calculator clone, handwriting recognition, generative ai projects.
+
+Keshav has several AI/ML side projects beyond his work at VerbaFlo:
+
+**Uno Sim — Reinforcement Learning Agent:**
+One of Keshav's most technically impressive ML projects. Built a complete
+reinforcement learning pipeline to train an AI agent that learns to play
+Uno through self-play. The agent starts knowing nothing about Uno strategy
+and through thousands of simulated games, discovers optimal play patterns:
+when to hold wild cards vs play them immediately, how to time +4s for
+maximum damage, hand management to avoid getting stuck, and reading
+opponent hand sizes to decide aggression levels.
+
+Technical implementation: Python with custom game environment following
+OpenAI Gym patterns. The reward function was the tricky part — raw
+win/loss signal is too sparse, so Keshav designed intermediate rewards
+for card reduction, successful blocks, and chain combos. Used Q-learning
+initially, then experimented with policy gradient methods. The trained
+agent beats random play ~85% of the time and competent human players
+about 60% of the time.
+
+What made this hard: Uno has hidden information (you don't know opponent
+hands) and high variance (sometimes you just get bad draws). The agent
+had to learn probabilistic reasoning without explicit modeling.
+GitHub: https://github.com/Keshav-Madhav/Uno_Sim
+
+**Draw Calculator / Sketch-Culator — Apple Calculator Clone:**
+Replicates Apple's iPad Math Notes calculator feature. You sketch
+handwritten math equations on a canvas and the app solves them live.
+Built when Apple announced this feature — Keshav shipped a working clone
+within days.
+
+How it works: Canvas captures strokes as the user draws. On each stroke
+completion, the canvas is sent to Gemini's vision API which extracts the
+mathematical expression. A separate call evaluates the expression and
+returns results. The UI shows the solution appearing next to your
+handwriting, just like Apple's version.
+
+Features: multiple colors for organization, text insertion for labels,
+undo/redo, clear canvas, and a traditional calculator mode as fallback.
+The latency is surprisingly good — ~200-400ms from stroke completion to
+answer appearing.
+
+What was hard: Getting reliable OCR for messy handwriting. Gemini is
+good but not perfect — Keshav added preprocessing (contrast boost, stroke
+smoothing) and prompt engineering to improve accuracy on edge cases like
+distinguishing "x" (variable) from "×" (multiply).
+Live: https://sketchculator.netlify.app/
+GitHub: https://github.com/Keshav-Madhav/draw_calculator
+
+**Sentiment Analysis Tool:**
+A full sentiment analysis pipeline that classifies text as positive,
+negative, or neutral with confidence scores. Built to understand NLP
+fundamentals before transformer models made everything easy. Implements
+both rule-based (lexicon scoring) and ML-based (trained classifier)
+approaches.
+
+Features: paste or type text, get instant classification with explanation
+of which words drove the sentiment. Useful for analyzing reviews, tweets,
+or any text where you want to gauge emotional tone.
+GitHub: https://github.com/Keshav-Madhav/Sentiment-Analysis
+
+**AI Battle JS — Emergent AI Combat:**
+A simulation where multiple AI agents with simple rules compete in an
+arena. Each agent has basic behaviors: seek food, avoid threats, attack
+when advantageous, flee when hurt. The fun is watching complex emergent
+behaviors arise from these simple rules — ambush patterns, territory
+control, and even primitive cooperation.
+
+No neural networks — just parameterized rule systems. Keshav experimented
+with evolving the parameters through genetic algorithms to find optimal
+strategies.
+GitHub: https://github.com/Keshav-Madhav/AI-Battle-JS
+
+**File Conversation — RAG Chat System:**
+A full-stack RAG (Retrieval Augmented Generation) system for chatting
+with your documents. Upload PDFs, Word docs, or text files, and ask
+questions in natural language. The system chunks your documents, embeds
+them, and retrieves relevant context to answer queries accurately.
+
+This was Keshav's first RAG project before building the much more
+sophisticated system at VerbaFlo. It taught him the fundamentals: chunking
+strategies, embedding model selection, retrieval thresholds, and prompt
+construction for grounded answers.
+
+Frontend: TypeScript/React with drag-drop upload and chat interface.
+Backend: Python with document parsing, embedding generation, vector
+search, and LLM integration.
+GitHub: https://github.com/Keshav-Madhav/file_conversation
+Backend: https://github.com/Keshav-Madhav/file-conversation-backend
+
+**Infinite Craft — GPT-Powered Merge Game:**
+An infinitely expandable crafting game powered by GPT-4o. Start with
+basic elements (water, fire, earth, air). Drag any two items together
+and the AI invents what they combine into. Water + Fire = Steam. Steam
++ Earth = Mud. The possibilities are literally infinite — the game tree
+grows forever.
+
+The magic is in the prompt engineering: getting the AI to be creative
+but consistent (combining the same items should give the same result),
+and keeping responses short and game-appropriate. Uses caching so repeat
+combinations don't cost API calls.
+Live: https://infinite-craft-nine.vercel.app/
+GitHub: https://github.com/Keshav-Madhav/infinite-craft
+`,
+};
+
+const projectsGames = {
+  id: "projects-games-complete",
+  title: "Games & Interactive Projects — Complete List",
+  content: `
+Topics covered here: games, arcade games, puzzle games, board games,
+classic games, tetris, snake, pong, chess, minesweeper, sudoku, 2048,
+flappy bird, space invaders, brick breaker, doodle jump, hangman,
+slide puzzle, tic tac toe, whack a mole, dinosaur game, minecraft,
+3d games, platformer, parkour.
+
+Keshav has built **30+ games**, mostly in vanilla JavaScript with no game
+engine. The throughline: if you can hit 60fps without an engine, you truly
+understand your platform. Each game taught specific skills:
+
+**BOARD & PUZZLE GAMES:**
+
+**Chess** — Full implementation with ALL rules: castling (both sides),
+en passant, pawn promotion, check/checkmate detection, stalemate. The
+hardest part was move validation — a move is only legal if it doesn't
+leave your king in check, which means every candidate move needs a
+lookahead simulation. No AI opponent yet, two-player only.
+GitHub: https://github.com/Keshav-Madhav/Chess-HTML-CSS-JS
+
+**Othello/Reversi** — Classic Othello with an AI opponent using minimax
+with alpha-beta pruning. The AI looks 4-6 moves ahead depending on
+difficulty. Includes move highlighting, score tracking, and valid move
+indicators.
+GitHub: https://github.com/Keshav-Madhav/Othello-JS
+
+**Sudoku** — Complete Sudoku with puzzle generation, solver, and hints.
+The generator creates valid puzzles with unique solutions at various
+difficulty levels. The solver uses backtracking with constraint propagation.
+GitHub: https://github.com/Keshav-Madhav/Sudoku-HTML-CSS-JS
+
+**Minesweeper** — Classic minesweeper with customizable grid size and
+mine count. Implements the recursive reveal algorithm for empty cells.
+GitHub: https://github.com/Keshav-Madhav/MineSweeper-JS
+
+**2048** — The sliding number puzzle. Also built a 5x5 variant that's
+significantly harder. Clean state management, smooth tile animations.
+GitHub: https://github.com/Keshav-Madhav/2048
+
+**ARCADE CLASSICS:**
+
+**Tetris (React)** — Polished Tetris with next-piece preview, hold piece,
+ghost piece showing where the current piece will land, scoring with combos
+and T-spins. State managed through React with careful attention to avoiding
+re-renders during the game loop.
+GitHub: https://github.com/Keshav-Madhav/Tetris-Game-React
+
+**Snake** — Multiple versions, from basic to enhanced with power-ups,
+obstacles, and speed ramping. Good exercise in queue-based movement and
+collision detection.
+GitHub: https://github.com/Keshav-Madhav/Snake-Game-Original
+
+**Space Invaders** — Classic arcade shooter with enemy formations, shooting,
+shields that degrade when hit, and progressive difficulty. 
+GitHub: https://github.com/Keshav-Madhav/Space-Invaders-HTML-CSS-JS
+
+**Brick Breaker** — Breakout clone with ball physics, paddle control,
+power-ups (multi-ball, paddle size, slow-mo), and level progression.
+GitHub: https://github.com/Keshav-Madhav/Brick-Breaker-HTML-CSS-JS
+
+**Flappy Bird** — The viral game. Gravity + tap physics, pipe generation,
+collision detection with rotation-aware hitboxes.
+GitHub: https://github.com/Keshav-Madhav/Flappy-Bird-HTML-CSS-JS
+
+**Doodle Jump** — Vertical endless platformer with procedural platform
+generation, various platform types (moving, breaking, springs), and
+tilt/keyboard controls.
+GitHub: https://github.com/Keshav-Madhav/Doodle-Jump-HTML-CSS-JS
+
+**Dinosaur Chrome Game** — Recreation of Chrome's offline T-Rex runner.
+Obstacle spawning, jump physics, ducking, day/night cycle, high score.
+GitHub: https://github.com/Keshav-Madhav/Dinosaur-Chrome-Game
+
+**ACTION & PLATFORMERS:**
+
+**Multi-Level Platformer** — Parkour-style platformer with multiple
+hand-designed levels, checkpoints, hazards (spikes, moving platforms,
+enemies), and level progression. Proper collision response, not just
+detection. This was Keshav's deep-dive into platformer physics.
+GitHub: https://github.com/Keshav-Madhav/Multi-Level-Platformer-HTML-CSS-JS
+
+**Lazer Game** — Puzzle game where you redirect lasers using mirrors,
+splitters, and filters to hit targets. Ray tracing for laser paths,
+rotation mechanics for mirrors. Each level is a logic puzzle.
+GitHub: https://github.com/Keshav-Madhav/Lazer-Game-HTML-JS
+
+**Chain Reaction** — Chain reaction puzzle game where explosions trigger
+adjacent cells. Strategy game with multiplayer support.
+Live: https://chain-reaction-eta.vercel.app
+
+**3D GAMES:**
+
+**Minecraft JS** — Voxel world rendering in the browser. Procedural terrain
+generation with Perlin noise, block placing/breaking, basic lighting,
+infinite world (chunked loading). Uses Three.js for rendering but custom
+voxel meshing for performance (greedy meshing to reduce triangle count).
+Live: https://keshav-madhav.github.io/minecraft-JS/
+
+**3D Maze** — Procedurally-generated 3D mazes with first-person navigation.
+Maze generation using recursive backtracking, rendering with Canvas/WebGL.
+GitHub: https://github.com/Keshav-Madhav/3D-Maze-HTML-CSS-JS
+
+**ThreeJS RPG** — 3D exploration game built with Three.js. Character
+movement, third-person camera, basic world with objects to interact with.
+GitHub: https://github.com/Keshav-Madhav/ThreeJS-RPG-Game
+
+**FPS Shooter** — First-person raycast shooter. Raycasting for rendering
+(Wolfenstein-style), weapon system, enemy AI, level design.
+Live: https://keshav-madhav.github.io/FPS-Shooter-HTML-CSS-JS/
+
+All games are playable directly in the browser. Most have GitHub Pages
+deployments. The collection represents Keshav's journey learning game
+development fundamentals without relying on engines.
+`,
+};
+
+const projectsSimulations = {
+  id: "projects-simulations",
+  title: "Simulation & Physics Projects — Deep Dive",
+  content: `
+Topics covered here: simulations, physics, n-body, gravity, particles,
+falling sand, wave simulation, fourier, raycasting, conway game of life,
+perlin noise, boids, fractals, ball physics, billiards, physics maze,
+string physics, waves to sound, particle life.
+
+Keshav's simulations are where he explores math, physics, and performance
+optimization. Each project pushes Canvas/WebGL to its limits.
+
+**PARTICLE LIFE** — One of the most mesmerizing projects. Colored particles
+follow simple attraction/repulsion rules toward other colors. From these
+rules, complex life-like behavior emerges: clusters form, move, and seem
+to "hunt" each other. Red might be attracted to blue but repelled by green,
+while green chases red. The emergent patterns are hypnotic — hours of
+watching swarms form, collide, and reform. Based on the viral "Particle
+Life" concept. Completely deterministic but looks alive.
+GitHub: https://github.com/Keshav-Madhav/Particle-Life
+
+**WAVES TO SOUND** — Interactive tool connecting visual waves to actual
+audio. See a wave, hear it. Adjust frequency (pitch), amplitude (volume),
+and wave type (sine sounds smooth, square sounds buzzy, sawtooth sounds
+harsh). The visualization updates in real-time as you adjust sliders,
+and you hear the corresponding changes. Built to truly understand the
+relationship between wave math and sound perception.
+Live: https://keshav-madhav.github.io/waves-to-sound/
+
+**FALLING SAND** — Classic cellular automaton simulation. Multiple particle
+types with different behaviors: sand falls and piles, water flows and
+pools, fire rises and spreads, stone is static, acid destroys. Click to
+spawn particles, watch physics play out. Performance challenge: updating
+thousands of cells per frame without lag.
+GitHub: https://github.com/Keshav-Madhav/Falling-Sand-HTML-CSS-JS
+
+**FOURIER DRAWER** — Draw any shape, and the app decomposes it into
+Fourier series. Then watch a chain of rotating circles (epicycles)
+recreate your drawing, one point at a time. It's a beautiful visualization
+of how ANY periodic signal can be represented as a sum of sine waves.
+The more epicycles, the more accurate the reproduction.
+GitHub: https://github.com/Keshav-Madhav/Fourier-Drawer-HTML-CSS-JS
+
+**WAVE SIMULATION** — 2D wave propagation with interference and reflection.
+Drop multiple wave sources and watch interference patterns form. Barriers
+cause reflection. Adjustable wavelength, speed, and damping. Great for
+understanding wave physics visually.
+GitHub: https://github.com/Keshav-Madhav/Wave-Sim-HTML-CSS-JS
+
+**BALL BOUNCE SIM** — Physics playground with bouncing balls. Gravity,
+elasticity (bounciness), friction, ball-to-ball collisions with momentum
+transfer. Spawn dozens of balls, adjust parameters, watch chaos unfold.
+Proper 2D collision resolution was the learning goal.
+GitHub: https://github.com/Keshav-Madhav/Ball-Bounce-Sim-HTML-CSS-JS
+
+**PHYSICS MAZE** — Navigate a ball through a maze using tilt/keyboard.
+The ball has momentum — you can't stop instantly. Ice patches (low
+friction), sand (high friction), moving obstacles. Some levels require
+momentum management, not just steering.
+GitHub: https://github.com/Keshav-Madhav/Phyisics-maze-HTML-CSS-JS
+
+**BILLIARDS** — Full pool game with realistic physics. Cue aiming and
+power control, ball-to-ball collisions, wall bounces, pocketing. The
+collision physics (angle of incidence, momentum transfer) were the
+hard part.
+GitHub: https://github.com/Keshav-Madhav/Billiards-Game-HTML-CSS-JS
+
+**CONWAY'S GAME OF LIFE** — The classic cellular automaton. Draw patterns,
+load presets (gliders, glider guns, spaceships), step through generations,
+adjust speed. Endless fascination with emergent complexity from simple rules.
+GitHub: https://github.com/Keshav-Madhav/Conways-Game-Of-Life-JavaScript
+
+**FRACTAL GENERATOR** — Mandelbrot and Julia set explorer. Infinite zoom
+(limited only by floating-point precision), customizable color palettes,
+iteration count adjustment. GPU-accelerated for smooth deep zooming.
+GitHub: https://github.com/Keshav-Madhav/FractalGen-HTML-CSS-JS
+
+**PERLIN NOISE LOOP** — Procedural noise that loops seamlessly. Used for
+generative art, terrain generation understanding, and as a screensaver.
+GitHub: https://github.com/Keshav-Madhav/PerlinNoise-Loop-HTML-CSS-JS
+
+**RAYCASTER FPS** — Wolfenstein 3D-style renderer using raycasting. Casts
+rays from player viewpoint to render 3D-looking world from 2D map. 
+Features fog-of-war (distant walls darker), texture mapping, basic
+enemy sprites. All in Canvas 2D, no WebGL.
+Live: https://keshav-madhav.github.io/Raycasting-HTML-CSS-JS/
+
+**RUST PARTICLE SIM** — Rebuilt particle physics in Rust to learn the
+language. Ownership model was tricky but forced good architecture.
+Performance was noticeably better than JavaScript version.
+GitHub: https://github.com/Keshav-Madhav/rust_particle_sim
+`,
+};
+
+const projectsWebApps = {
+  id: "projects-web-apps",
+  title: "Web Applications & Tools",
+  content: `
+Topics covered here: web apps, full stack, tools, clones, zoom clone,
+threads clone, spotify clone, netflix clone, youtube clone, pinterest,
+uber eats, codepen clone, video call, notes app, task manager, docs app.
+
+**FULL-STACK APPS:**
+- **Chatter**: Discord-clone with real-time chat, servers, channels,
+  video calls via LiveKit, Convex backend.
+  Live: https://chatter-pink-two.vercel.app
+- **Yoom/Zoom Clone**: Video meetings with instant, scheduled, recorded
+  meetings. Stream.io + Clerk auth.
+  Live: https://zoom-clone-black-sigma.vercel.app/
+- **Threads/Knots**: Threads-style social app.
+  Live: https://knotsapp-killos-projects.vercel.app
+- **Zen Notes**: Modern note-taking app.
+  Live: https://zen-notes-keshav.vercel.app
+- **Docs Mini App**: Google Docs-style collaborative editing.
+  Live: https://docs-mini-app-react-phi.vercel.app
+- **Task Manager**: Task management app in React.
+  GitHub: https://github.com/Keshav-Madhav/Task_manager-_React
+
+**CLONES (learning projects):**
+- **Netflix Clone**: Netflix UI recreation.
+  GitHub: https://github.com/Keshav-Madhav/Netflix-clone--React-
+- **Spotify Clone**: Spotify UI.
+  GitHub: https://github.com/Keshav-Madhav/Spotify-Clone--React-
+- **YouTube Clone**: YouTube UI.
+  GitHub: https://github.com/Keshav-Madhav/Youtube-Clone--React-
+- **Pinterest Clone**: Pinterest UI.
+  GitHub: https://github.com/Keshav-Madhav/Pinterest-Clone--React-
+- **UberEats Clone**: UberEats UI.
+  GitHub: https://github.com/Keshav-Madhav/UberEats-Clone--React-
+- **ClonePen/CodePen Clone**: Multi-pane HTML/CSS/JS playground.
+  GitHub: https://github.com/Keshav-Madhav/codepen-clone
+
+**TOOLS:**
+- **Live Jinja (VS Code)**: Real-time Jinja2 preview with Pyodide.
+  Marketplace: https://marketplace.visualstudio.com/items?itemName=KilloWatts.live-jinja-renderer
+- **Live Jinja (Web)**: Same as above, browser-based.
+  Live: https://keshav-madhav.github.io/live_jinja/
+- **Grid Visualizer**: DSA visualization tool for grids/pathfinding.
+  Live: https://keshav-madhav.github.io/grid-visualizer/
+- **Retention Radar**: Analytics dashboard.
+  Live: https://retention-radar.vercel.app
+- **SplitEase**: Bill splitting app.
+  GitHub: https://github.com/Keshav-Madhav/SplitEase
+- **MERN Authorization**: Full auth system boilerplate.
+  GitHub: https://github.com/Keshav-Madhav/mern-authorization
+- **CarHub**: Next.js car showcase.
+  GitHub: https://github.com/Keshav-Madhav/CarHub-Next_TS
+
+**VIDEO:**
+- **Video Call**: WebRTC video calling.
+  GitHub: https://github.com/Keshav-Madhav/videocall
+`,
+};
+
+const projectsExperimental = {
+  id: "projects-experimental",
+  title: "Experimental & Learning Projects",
+  content: `
+Topics covered here: experiments, learning, rust, webgl, custom formats,
+image format, kesh format, kif, custom encoding, low level, systems
+programming, internship analysis, valentine, animations, axon.
+
+Keshav uses side projects to explore technologies at a deeper level than
+work usually allows. These are learning-focused, often unfinished, but
+represent genuine curiosity.
+
+**KESH IMAGE FORMAT (.kif) — Custom Image Encoding:**
+A from-scratch custom image format to understand how image encoding works.
+Rather than just using PNG/JPEG, Keshav built his own format with:
+- Custom header structure (magic bytes, dimensions, color depth)
+- Run-length encoding for compression
+- Custom pixel packing
+- Encoder and decoder in JavaScript
+
+The goal wasn't to beat existing formats (it doesn't) but to understand
+the decisions PNG/JPEG make. Writing a format spec, implementing it,
+and debugging edge cases taught more about image encoding than any
+tutorial could.
+GitHub: https://github.com/Keshav-Madhav/kesh-image-format
+
+**AXON — Code Intelligence Graph Engine:**
+A graph-powered code intelligence engine. Indexes codebases into a
+knowledge graph exposed via MCP tools for AI agents. Still in development,
+but the vision is: point it at a codebase, it builds a semantic graph
+of relationships (function calls, imports, inheritance, data flow), then
+exposes that graph to AI agents for intelligent code navigation and
+understanding.
+GitHub: https://github.com/Keshav-Madhav/axon
+
+**WEBGL LEARNING:**
+Raw WebGL experiments without Three.js or other abstractions. Shaders,
+buffer management, matrix transforms, texture mapping — the hard way.
+Keshav believes understanding the layer below makes you better at the
+layer above. This fed into his Space Sandbox WebGL renderer.
+GitHub: https://github.com/Keshav-Madhav/WebGL-Learning
+
+**RUST LEARNING:**
+Multiple Rust projects to learn the language:
+- **hello_world**: First Rust project, understanding ownership
+- **rust_particle_sim**: Particle physics rebuilt in Rust
+The borrow checker was initially frustrating but taught better memory
+management patterns that transferred back to other languages.
+GitHub: https://github.com/Keshav-Madhav/rust_particle_sim
+
+**DSA PRACTICE:**
+Data structures and algorithms practice in Java. Standard interview prep
+but also genuine interest in algorithm design. Includes implementations
+of trees, graphs, sorting, searching, dynamic programming problems.
+GitHub: https://github.com/Keshav-Madhav/DSA-Practice
+
+**GRID VISUALIZER:**
+Interactive tool for visualizing pathfinding algorithms. See BFS, DFS,
+Dijkstra's, A* run step-by-step on custom grids. Draw walls, place
+start/end points, watch the algorithm explore. Great for understanding
+how different algorithms approach the same problem differently.
+Live: https://keshav-madhav.github.io/grid-visualizer/
+
+**FIZZI DRINKS:**
+3D animated soda can landing page built with Three.js. The can rotates,
+liquid sloshes, and the whole thing responds to scroll. A showcase of
+3D web capabilities and scroll-driven animation.
+Live: https://fizzi-drinks.vercel.app
+
+**INTERNSHIP ANALYSIS:**
+Data analysis and visualization project examining internship data.
+Charts, graphs, and insights from real data.
+GitHub: https://github.com/Keshav-Madhav/internship-analysis
+
+**VALENTINE PLEASEEEE:**
+A cute valentine's day request page. Button runs away when you try to
+click "No", eventually you're forced to click "Yes". Built for fun.
+GitHub: https://github.com/Keshav-Madhav/valentine-pleaseeee
+
+**PORTFOLIO SITES:**
+Keshav has built multiple portfolio sites over the years:
+- **Portfolio (old)**: Earlier version, simpler
+- **Portfolio Website (current)**: This site — Next.js 14 App Router,
+  real-time multiplayer cursors (Ably), companion spirit guide orb,
+  RAG-powered chat, 6 rounds of documented performance optimization.
+  Live: https://portfolio-website-rust-phi.vercel.app
+`,
+};
+
+// ============================================================================
+// DETAILED PER-PROJECT CHUNKS
+// ============================================================================
+
+const projectAxonDeepDive = {
+  id: "project-axon-deep-dive",
+  title: "Axon — MCP-Powered Code Knowledge Graph (Deep Dive)",
+  content: `
+Topics covered here: axon, mcp, model context protocol, code intelligence,
+knowledge graph, code graph, ai agent tools, codebase indexing, semantic
+search, impact analysis, dead code detection, community detection, leiden
+algorithm, bm25, vector search, hybrid search, call graph, execution flow.
+
+**Axon** is Keshav's most sophisticated MCP (Model Context Protocol) project.
+It's a graph-powered code intelligence engine that indexes any codebase into
+a structural knowledge graph, then exposes it through smart MCP tools so AI
+agents (Claude Code, Cursor) never miss code.
+
+**The Problem Axon Solves:**
+When an AI agent edits UserService.validate(), it doesn't know that 47
+functions depend on that return type, 3 execution flows pass through it,
+and payment_handler.py changes alongside it 80% of the time. Breaking
+changes ship because AI agents work with flat text — they grep for callers,
+miss indirect ones, and have no understanding of how code is *connected*.
+
+**How Axon Works:**
+A 12-phase pipeline runs once over your repo:
+1. Walking files — finds all source files
+2. Parsing code — builds AST for each file
+3. Tracing calls — resolves 800+ call relationships
+4. Analyzing types — maps type relationships
+5. Detecting communities — Leiden algorithm finds clusters
+6. Detecting execution flows — traces from entry points
+7. Finding dead code — multi-pass unreachable symbol detection
+8. Analyzing git history — finds change coupling patterns
+9. Generating embeddings — 384-dim vectors for semantic search
+
+**MCP Tools Exposed:**
+- \`axon_impact("validate")\` — returns all affected symbols grouped by
+  depth (will break / may break / review) with confidence scores
+- \`axon_query("auth handler")\` — hybrid-ranked results grouped by
+  execution flow, not flat name matches
+- \`axon_context("UserService")\` — callers, callees, type refs,
+  community membership, dead code status
+
+**Technical Implementation:**
+- **Hybrid Search**: BM25 + vector (BAAI/bge-small-en-v1.5) + fuzzy,
+  fused with Reciprocal Rank Fusion
+- **Impact Analysis**: Traces upstream through call graph, type refs,
+  and git coupling history
+- **Dead Code Detection**: Not just "zero callers" — understands
+  framework patterns, exempts entry points, exports, decorators,
+  Protocol conformance
+- **Execution Flows**: Framework-aware entry point detection
+  (@app.route, @click.command, test_* functions, __main__ blocks)
+- **Community Detection**: Leiden algorithm via igraph finds functional
+  clusters automatically
+
+**Key Innovation:**
+Most code intelligence gives agents raw files and hopes they read enough.
+Axon precomputes structure at index time so every tool call returns
+complete, actionable context. One tool call instead of a 10-query search
+chain. Even smaller models get full architectural clarity.
+
+**Zero Cloud Dependencies:** Everything runs locally — parsing, graph
+storage, embeddings, search. No API keys, no data leaving your machine.
+
+Usage:
+\`\`\`bash
+pip install axoniq
+cd your-project && axon analyze .
+axon serve --watch  # MCP server with live reload
+axon ui             # Web UI at localhost:8420
+\`\`\`
+
+GitHub: https://github.com/Keshav-Madhav/axon
+`,
+};
+
+const projectVfSimulationMcp = {
+  id: "project-vf-simulation-mcp",
+  title: "VerbaFlo CID MCP Server — Conversation Intelligence Tools",
+  content: `
+Topics covered here: vf-simulation, verbaflo mcp, mcp server, cid,
+conversation intelligence, trace exploration, opik traces, elasticsearch,
+model context protocol, ai debugging tools, vf-cid, widget tester.
+
+**VerbaSuper (vf-simulation)** is Keshav's Electron desktop app at VerbaFlo
+that includes a first-class **MCP Server** exposing Conversation Intelligence
+Data (CID) and trace exploration tools to AI assistants.
+
+**The MCP Server** (\`mcp/server.ts\`) uses \`@modelcontextprotocol/sdk\`:
+
+\`\`\`typescript
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+\`\`\`
+
+**Tools Exposed:**
+
+1. **cid_fetch** — Fetch a conversation by lead ID:
+   - Pulls from MongoDB (vf-core conversations)
+   - Returns full message history, lead data, PMS queries
+   - Supports multiple environments (production, staging, testing)
+
+2. **cid_enrich** — Enrich messages with Opik traces:
+   - For each bot message, fetches the Opik trace that generated it
+   - Shows router decisions, Text2SQL queries, FAQ retrieval
+   - Critical for debugging "why did the bot say that?"
+
+3. **cid_investigate** — Combined fetch + enrich:
+   - One-shot fetch conversation and enrich all messages
+   - Most common operation for debugging
+
+4. **trace_search** — Search Elasticsearch traces:
+   - Find traces by text, time range, client
+   - Useful for finding patterns across conversations
+
+5. **trace_spans** — Get spans within a trace:
+   - Drill into trace internals
+   - See individual LLM calls, retrievals, decisions
+
+6. **trace_by_id** — Fetch specific trace:
+   - Direct lookup when you have a trace ID
+
+**Formatting Layer:**
+All tools have careful output formatting (fmtTs, fmtRole, fmtLeadData,
+fmtPmsData, fmtConversation) to make responses readable for both humans
+and LLMs.
+
+**Parity Constraint:**
+The MCP server (mcp/server.ts) must stay in parity with the in-app HTTP
+server (src/main/mcp/localMcpServer.ts). Both expose identical tool names,
+schemas, and formatters so AI clients see identical behavior over either
+transport.
+
+**Setup:**
+\`\`\`bash
+npm run mcp:setup
+npm run mcp:build
+# Then add to .mcp.json or Claude/Cursor settings
+\`\`\`
+
+**Why This Matters:**
+Before this MCP server, debugging a bad bot response meant:
+1. Open VerbaSuper manually
+2. Paste lead ID
+3. Wait for enrichment
+4. Read through traces
+5. Manually correlate with conversation
+
+With MCP tools, an AI agent can investigate in seconds:
+"Why did the bot say X to lead abc123?" → Agent calls cid_investigate,
+reads the trace, identifies the router decision that led to the response.
+
+This is the tooling that makes VerbaFlo's AI debuggable by AI.
+`,
+};
+
+const projectVfCopilotDeepDive = {
+  id: "project-vf-copilot-deep-dive",
+  title: "VerbaFlo Copilot — Multi-Agent Internal Tool (Deep Dive)",
+  content: `
+Topics covered here: vf-copilot, multi-agent, copilot, internal tool,
+mongodb query, postgres query, milvus, faq search, analyst agent,
+text to sql, t2s, natural language to database, verbaflo internal.
+
+**vf-copilot** is VerbaFlo's internal multi-agent system that answers
+natural-language questions by querying MongoDB, PostgreSQL, and Milvus
+in parallel, then synthesizing results through an Analyst agent.
+
+**Architecture:**
+\`\`\`
+User Question
+     ↓
+  Orchestrator
+     ↓
+   Triage Agent (classifies question type)
+     ↓
+  ┌──────────────────────────────────────┐
+  │  Parallel Specialist Agents:         │
+  │  • 8 Mongo Specialists (diff DBs)    │
+  │  • Milvus FAQ Agent                  │
+  │  • Postgres Property Agent           │
+  └──────────────────────────────────────┘
+     ↓
+  Analyst Agent (synthesizes, streams response)
+     ↓
+  SSE Streaming to User
+\`\`\`
+
+**Technical Stack:**
+- FastAPI with async throughout
+- Motor (async MongoDB)
+- asyncpg (async PostgreSQL)
+- pymilvus for vector search
+- OpenAI + Anthropic via LiteLLM
+- Instructor for structured outputs
+- Opik for tracing
+- Jinja2 for prompts
+
+**Key Features:**
+
+1. **Schema Sampling:**
+   On startup, samples schemas from MongoDB collections into context.
+   LLM knows what fields exist without loading full schemas.
+
+2. **Query Expansion:**
+   For FAQ search, expands user query into multiple variations
+   to improve recall.
+
+3. **Hybrid Milvus Search:**
+   Combines dense vectors with sparse (BM25-style) for FAQ retrieval.
+
+4. **Streaming:**
+   Analyst streams its response via SSE. Users see thinking in real-time.
+
+5. **Follow-ups:**
+   Session memory enables multi-turn conversations. "What about last month?"
+   works because context is preserved.
+
+**Example Queries It Handles:**
+- "How many leads did client X get last week?"
+- "What's the conversion rate for property Y?"
+- "Show me all conversations where the bot mentioned pricing"
+- "Which FAQ is triggered most often?"
+- "Compare response times across clients"
+
+**What Keshav Built:**
+The Milvus FAQ agent, the schema sampling system, and the streaming
+infrastructure. The parallel query pattern was his design — run all
+specialists simultaneously, let the fastest inform the analyst first.
+
+Note: The "MCP" mentioned in copilot's docs means "Multi-agent Conversation
+Protocol" (agent handoffs), NOT the Anthropic Model Context Protocol.
+`,
+};
+
+const projectCookieClickerDeepDive = {
+  id: "project-cookie-clicker-deep-dive",
+  title: "Cookie Clicker Reimagined — Full Clone (Deep Dive)",
+  content: `
+Topics covered here: cookie clicker, incremental game, idle game, clicker
+game, grandmapocalypse, wrinklers, prestige, heavenly chips, stock market,
+arbitrary precision, bignum, vanilla js game, optimization.
+
+**Cookie Clicker Reimagined** is a complete from-scratch clone of the
+original Cookie Clicker, built in vanilla JavaScript with no frameworks.
+
+**Why This Project Matters:**
+Cookie Clicker seems simple but hides incredible complexity. Keshav's clone
+implements nearly every feature of the original — a 10K+ line codebase that's
+a masterclass in incremental game design and JavaScript optimization.
+
+**Features Implemented:**
+
+**Core Mechanics:**
+- Click to produce cookies
+- 15+ building types (Cursor, Grandma, Farm, Mine, Factory, Bank, Temple...)
+- Each building has base CPS (cookies per second)
+- 200+ upgrades that modify production
+- Golden cookies that spawn randomly with bonuses
+
+**Prestige System:**
+- Heavenly chips earned on reset
+- Prestige upgrades that persist across runs
+- Prestige multiplier that grows with each reset
+
+**Grandmapocalypse:**
+- Special event triggered by certain upgrades
+- Grandmas become "Grandmatriarchs"
+- Wrinklers spawn and "eat" your cookies
+- Clicking wrinklers gives back 1.1x what they ate
+- Elder Pledge/Covenant to appease them
+
+**Stock Market Minigame:**
+- Buy/sell goods that fluctuate
+- Office upgrades affect trading
+- Loans with interest
+
+**Technical Implementation:**
+
+**Arbitrary Precision Math:**
+Cookie counts can exceed JavaScript's number precision (10^308+).
+Keshav implemented a CookieNum class handling arbitrary-precision arithmetic:
+\`\`\`javascript
+class CookieNum {
+  // Handles numbers beyond JavaScript's limits
+  // Custom add, multiply, divide, format
+}
+\`\`\`
+
+**Performance Optimization:**
+- Particle system with caps (\_particleMaxNonAmbient)
+- Throttled visual updates (not every frame)
+- DOM caching for frequently accessed elements
+- RequestAnimationFrame-based game loop
+
+**Architecture:**
+\`\`\`
+main.js
+  └── js/game.js (Game class)
+        ├── Building (production)
+        ├── Upgrade (modifications)
+        ├── PrestigeManager
+        ├── VisualEffects (particles, rain)
+        ├── SoundManager
+        ├── SaveLoadMixin (localStorage)
+        ├── NewspaperMixin
+        └── WrinklerManager
+\`\`\`
+
+**What Made This Hard:**
+- Balancing the economy (numbers that feel right)
+- Performance at scale (10^15 cookies/second with particles)
+- State management (hundreds of upgrade interactions)
+- The sheer scope — implementing 5+ years of original features
+
+Play: https://keshav-madhav.github.io/Cookie-Clicker/
+GitHub: https://github.com/Keshav-Madhav/Cookie-Clicker
+`,
+};
+
+const projectFpsShooterDeepDive = {
+  id: "project-fps-shooter-deep-dive",
+  title: "FPS Raycaster — Wolfenstein-Style Shooter (Deep Dive)",
+  content: `
+Topics covered here: fps shooter, raycaster, raycasting, wolfenstein,
+doom style, dda algorithm, fog of war, 3d rendering, canvas 2d, pseudo 3d,
+vanilla javascript game, texture mapping.
+
+**FPS Shooter** is a Wolfenstein 3D-style first-person shooter built
+entirely in vanilla JavaScript with Canvas 2D — no WebGL, no Three.js.
+
+**How Raycasting Works:**
+The classic technique from Wolfenstein 3D: cast rays from the player's
+viewpoint, one for each vertical column of the screen. When a ray hits
+a wall, calculate the distance and draw that wall column proportionally
+taller (closer = taller).
+
+**Technical Implementation:**
+
+**DDA (Digital Differential Analyzer) Algorithm:**
+\`\`\`javascript
+// Cast ray until it hits a wall
+while (!hit) {
+  if (sideDistX < sideDistY) {
+    sideDistX += deltaDistX;
+    mapX += stepX;
+    side = 0; // NS wall
+  } else {
+    sideDistY += deltaDistY;
+    mapY += stepY;
+    side = 1; // EW wall
+  }
+  if (map[mapX][mapY] > 0) hit = true;
+}
+\`\`\`
+
+**Z-Buffer:**
+Maintains depth information for each column to properly composite
+sprites and transparent surfaces.
+
+**Fog of War:**
+- Distance-based darkening (distant walls fade)
+- Per-cell boundary maps track which cells are visible
+- Dynamic lighting system with cost awareness
+
+**Floor Casting:**
+Renders the floor/ceiling using similar raycasting principles,
+but per-pixel instead of per-column.
+
+**Architecture:**
+\`\`\`
+script.js (entry)
+  ├── core/
+  │   ├── GameLoop.js
+  │   ├── RaycastManager.js
+  │   └── InputManager.js
+  ├── utils/
+  │   └── render3DFunction.js (main renderer)
+  ├── maps/
+  │   ├── testMap.js
+  │   ├── mazeMap.js
+  │   └── showcaseMap.js
+  ├── ui/
+  │   └── HUD, minimap
+  └── entities/
+      ├── UserClass.js (player)
+      └── enemies
+\`\`\`
+
+**Performance Optimizations:**
+- LOD (Level of Detail) by distance threshold
+- Pre-allocated typed arrays for render caches
+- Three stacked canvases (background, main, minimap)
+- Column-batching for wall rendering
+
+**Features:**
+- Multiple map types (test, maze, showcase, enemy test)
+- Enemy AI with basic pathfinding
+- Minimap showing player position and FOV
+- Weapon system
+- FPS overlay
+
+**What Made This Hard:**
+- Getting the math right (fisheye correction, wall heights)
+- Texture mapping without WebGL
+- Performance — 60fps with hundreds of rays per frame
+- The "feel" — movement speed, mouse sensitivity, collision response
+
+Live: https://keshav-madhav.github.io/FPS-Shooter-HTML-CSS-JS/
+GitHub: https://github.com/Keshav-Madhav/FPS-Shooter-HTML-CSS-JS
+`,
+};
+
+const projectSpaceSandboxDeepDive = {
+  id: "project-space-sandbox-deep-dive",
+  title: "Space Sandbox — N-Body Gravity Simulation (Deep Dive)",
+  content: `
+Topics covered here: space sandbox, n-body simulation, gravity simulation,
+barnes-hut, quadtree, orbital mechanics, celestial bodies, black holes,
+canvas physics, webgl particles, astronomy simulation.
+
+**Space Sandbox** is a high-performance browser-based gravitational sandbox
+that simulates orbital mechanics with up to 21,000 bodies at 30fps.
+
+**The N-Body Problem:**
+Every body attracts every other body. With N bodies, that's O(N²) force
+calculations per frame. At 60fps with 1000 bodies, that's 60 million
+calculations per second. This doesn't scale.
+
+**Barnes-Hut Algorithm:**
+The breakthrough: distant bodies can be approximated as a single mass.
+Build a quadtree (2D) or octree (3D) where each node stores:
+- Center of mass of all bodies inside
+- Total mass of all bodies inside
+
+For each body, traverse the tree:
+- If node is far enough (θ = node_width / distance < threshold), treat
+  it as one body
+- If too close, recurse into children
+
+This reduces O(N²) to O(N log N). Keshav implemented this with an
+object pool (BHNodePool, BHNode) to avoid GC pressure.
+
+**Technical Implementation:**
+
+**PhysicsSystem.js:**
+\`\`\`javascript
+class PhysicsSystem {
+  constructor() {
+    this.bhTree = new BarnesHutTree();
+    this.nodePool = new BHNodePool(10000);
+  }
+  
+  step(bodies, dt) {
+    this.bhTree.build(bodies, this.nodePool);
+    for (const body of bodies) {
+      const force = this.bhTree.calculateForce(body);
+      body.applyForce(force, dt);
+    }
+  }
+}
+\`\`\`
+
+**Multi-Canvas Layering:**
+\`\`\`
+Canvas 1: Background stars (static, rarely redrawn)
+Canvas 2: Trails (accumulated, fades slowly)
+Canvas 3: Bodies (redrawn every frame)
+\`\`\`
+
+**Features:**
+- Spawn different body types: planets, stars, black holes
+- Presets: three-body, cluster, galaxy spiral, solar system
+- Collisions and merges (conservation of momentum + mass)
+- Trails showing orbital paths
+- Camera: pan, zoom, follow body, follow center of mass
+- Time scale control (speed up/slow down simulation)
+- FPS overlay
+
+**Body Types:**
+- **Planet**: Standard mass, no special properties
+- **Star**: Higher mass, glows
+- **Black Hole**: Extreme mass, no visual escape radius but pulls hard
+
+**What Made This Hard:**
+- Barnes-Hut implementation (edge cases everywhere)
+- Performance at scale (typed arrays, object pooling)
+- Numerical stability (bodies getting too close → forces explode)
+- The "feel" — making orbits look natural requires careful softening
+
+Live: https://keshav-madhav.github.io/Space-Simulation-HTML-CSS-JS/
+GitHub: https://github.com/Keshav-Madhav/Space-Simulation-HTML-CSS-JS
+`,
+};
+
+const project3dNBodyDeepDive = {
+  id: "project-3d-nbody-deep-dive",
+  title: "3D N-Body Simulation — Canvas 2D Rendering (Deep Dive)",
+  content: `
+Topics covered here: 3d n-body, 3d gravity simulation, octree, barnes-hut 3d,
+leapfrog integration, canvas 2d 3d, weak perspective, no webgl 3d,
+gravitational softening.
+
+**3D N-Body Sim** renders real-time 3D gravitational physics using ONLY
+Canvas 2D — no WebGL, no Three.js. This was an intentional constraint to
+understand projection math deeply.
+
+**The Challenge:**
+Render a true 3D simulation where bodies move in X, Y, Z space, using only
+Canvas 2D's lineTo, arc, fillRect primitives.
+
+**Weak Perspective Projection:**
+\`\`\`javascript
+// Project 3D point to 2D screen
+function project(x, y, z, camera) {
+  const dx = x - camera.x;
+  const dy = y - camera.y;
+  const dz = z - camera.z;
+  
+  // Rotate around camera
+  const [rx, ry, rz] = rotatePoint(dx, dy, dz, camera.rotation);
+  
+  // Perspective divide
+  const scale = camera.focalLength / (camera.focalLength + rz);
+  return {
+    screenX: rx * scale + canvas.width / 2,
+    screenY: ry * scale + canvas.height / 2,
+    depth: rz,
+    scale: scale
+  };
+}
+\`\`\`
+
+**Barnes-Hut Octree (3D):**
+Same principle as quadtree but in 3D. Each node has 8 children instead of 4.
+Significantly more complex to implement correctly.
+
+**Leapfrog Integration:**
+More stable than Euler for orbital mechanics:
+\`\`\`javascript
+// Half-step velocity, full-step position, half-step velocity
+v += (a * dt) / 2;
+x += v * dt;
+a = calculateAcceleration(x);
+v += (a * dt) / 2;
+\`\`\`
+
+**Gravitational Softening:**
+Prevents infinite forces when bodies get very close:
+\`\`\`javascript
+const force = G * m1 * m2 / (distance² + softening²);
+\`\`\`
+
+**Rendering Pipeline:**
+1. Project all bodies to screen coordinates
+2. Z-sort (painter's algorithm — draw far to near)
+3. Frustum culling (don't draw off-screen bodies)
+4. Draw with size based on projected depth
+
+**Camera Modes:**
+- Free camera (WASD + mouse look)
+- Orbit around point
+- Follow specific body
+- Follow center of mass
+
+**Features:**
+- Same body types as 2D version (planets, stars, black holes)
+- 3D trails
+- 3D starfield background
+- Multiple spawn presets
+- Collision detection in 3D (sphere-sphere)
+
+**What Made This Hard:**
+- Matrix math for camera rotation (easy to mess up axes)
+- Z-sorting performance (sort every frame)
+- Depth-based sizing that looks right
+- Octree implementation (8x complexity vs quadtree)
+
+GitHub: https://github.com/Keshav-Madhav/3D_N-Body_Sim
+`,
+};
+
+const projectGridVisualizerDeepDive = {
+  id: "project-grid-visualizer-deep-dive",
+  title: "Grid Visualizer / Grid Math — WebGL Particle System (Deep Dive)",
+  content: `
+Topics covered here: grid visualizer, grid math, webgl, point sprites,
+particle system, audio visualization, microphone input, electron app,
+creative coding, generative art, dot grid, wave modes.
+
+**Grid Visualizer** is an Electron desktop app that renders an infinite
+dot grid driven by math wave modes, mouse forces, and audio input. The
+flagship creative coding project with 500K+ GPU particles.
+
+**Technical Architecture:**
+
+**WebGL Point Sprites:**
+\`\`\`javascript
+// Vertex shader
+attribute vec2 a_position;
+attribute float a_size;
+attribute vec4 a_color;
+
+void main() {
+  gl_Position = vec4(a_position, 0.0, 1.0);
+  gl_PointSize = a_size;
+}
+
+// Fragment shader — draw circle, not square
+void main() {
+  vec2 coord = gl_PointCoord - vec2(0.5);
+  if (length(coord) > 0.5) discard;
+  gl_FragColor = v_color;
+}
+\`\`\`
+
+**Interleaved Float32Array:**
+\`\`\`javascript
+// Pack all particle data contiguously
+// [x, y, vx, vy, size, r, g, b, a, ...]
+const STRIDE = 9;
+const particles = new Float32Array(MAX_DOTS * STRIDE);
+\`\`\`
+
+**Wave Modes:**
+- Ripple: Circular waves from center or mouse
+- Spiral: Particles rotate around center
+- Vortex: Sucking spiral effect
+- Interference: Multiple wave sources
+- Gravity: Particles fall and bounce
+- Noise: Perlin noise displacement
+- Text: Particles arrange into text
+
+**Physics System:**
+\`\`\`javascript
+for each particle:
+  // Spring back to home position
+  force += (home - position) * springK;
+  
+  // Neighbor repulsion
+  for each neighbor within radius:
+    force += repel(neighbor);
+  
+  // Mouse interaction
+  force += mouseForce(mousePos, position);
+  
+  // Apply with damping
+  velocity = velocity * damping + force * dt;
+  position += velocity * dt;
+  
+  // Sleep optimization
+  if (velocity < threshold) sleep = true;
+\`\`\`
+
+**Audio Integration:**
+- Microphone input via Web Audio API
+- System audio capture (macOS: requires Swift helper)
+- Custom FFT length for frequency analysis
+- Beat detection drives wave intensity
+
+**Electron Features:**
+- Tray behavior (minimize to tray)
+- Transparent window mode (use as wallpaper)
+- Fullscreen mode
+- Theme system
+- Auto-update via electron-updater
+
+**Performance:**
+- 50K+ particles at 60fps
+- Sleep optimization: particles that aren't moving skip physics
+- WebGL batching: one draw call for all particles
+- Float32Array: no GC pressure from particle data
+
+**Native Helpers:**
+macOS audio capture requires native code. Keshav's Swift helpers:
+- Capture system audio
+- Get now-playing info
+- Path to helpers in package.json build config
+
+Live (web version): https://keshav-madhav.github.io/grid-visualizer/
+GitHub: https://github.com/Keshav-Madhav/grid-visualizer
+`,
+};
+
+const projectMinecraftJsDeepDive = {
+  id: "project-minecraft-js-deep-dive",
+  title: "Minecraft JS — Voxel Engine in the Browser (Deep Dive)",
+  content: `
+Topics covered here: minecraft js, voxel engine, voxel rendering, three.js,
+greedy meshing, chunked world, procedural terrain, perlin noise, block
+placing, infinite world, webgl 3d.
+
+**Minecraft JS** is a browser-based voxel world with procedural terrain,
+block interaction, and infinite chunks — built with Three.js.
+
+**The Voxel Challenge:**
+A naive approach: render each block as a cube (6 faces, 12 triangles).
+A 16×16×256 chunk = 65,536 blocks = 786,432 triangles. That's just one chunk.
+With 9 loaded chunks (3×3 around player), you're at 7+ million triangles.
+WebGL chokes.
+
+**Greedy Meshing:**
+The solution: merge adjacent faces of the same block type into larger quads.
+A flat ground of 16×16 stone blocks becomes 1 face instead of 256.
+
+\`\`\`javascript
+function greedyMesh(chunk) {
+  for each axis (X, Y, Z):
+    for each slice:
+      mask = create 2D mask of faces on this slice
+      for each cell in mask:
+        if face exists:
+          expand width while same material
+          expand height while same material
+          create one quad for entire region
+          clear mask for merged region
+}
+\`\`\`
+
+**Chunked World:**
+\`\`\`
+World
+  ├── Chunk (0, 0) — 16×16×256 blocks
+  ├── Chunk (1, 0)
+  ├── Chunk (0, 1)
+  └── ...
+\`\`\`
+
+- Only chunks near player are loaded
+- Chunks beyond view distance are unloaded
+- Chunk boundaries require special handling (faces between chunks)
+
+**Procedural Terrain:**
+\`\`\`javascript
+function getHeight(x, z) {
+  const baseHeight = 64;
+  const noise = perlin2D(x * 0.02, z * 0.02);
+  const hills = perlin2D(x * 0.005, z * 0.005) * 20;
+  return baseHeight + noise * 10 + hills;
+}
+\`\`\`
+
+**Block Interaction:**
+- Raycasting from camera to find target block
+- Place block on face of target
+- Break block at target
+- Block types: grass, dirt, stone, water, wood, leaves
+
+**Lighting:**
+- Ambient occlusion on block edges
+- Sky light propagates down
+- Block light (torches) propagates outward
+
+**Performance Optimizations:**
+- Only re-mesh chunks that changed
+- Frustum culling (don't render chunks behind camera)
+- LOD: distant chunks could use simpler meshes (not implemented)
+- Object pooling for chunk geometry
+
+**What Made This Hard:**
+- Greedy meshing edge cases (block type boundaries, transparent blocks)
+- Chunk boundary rendering (seams between chunks)
+- Performance tuning (tried many approaches before greedy mesh)
+- Water transparency (requires special rendering order)
+
+Live: https://keshav-madhav.github.io/minecraft-JS/
+GitHub: https://github.com/Keshav-Madhav/minecraft-JS
+`,
+};
+
+const projectLiveJinjaDeepDive = {
+  id: "project-live-jinja-deep-dive",
+  title: "Live Jinja Renderer — VS Code Extension (Deep Dive)",
+  content: `
+Topics covered here: live jinja, vs code extension, jinja2, pyodide,
+python in browser, template preview, real-time rendering, developer tools,
+intellisense, extension development.
+
+**Live Jinja Renderer** is a VS Code extension for real-time Jinja2 template
+preview using actual Python Jinja2 via Pyodide (Python compiled to WebAssembly).
+
+**10,000+ Installs** on the VS Code Marketplace.
+
+**Why This Extension:**
+Most Jinja preview tools use JavaScript approximations of Jinja2 syntax.
+They break on advanced features (macros, custom filters, whitespace control).
+Keshav's extension runs REAL Python Jinja2, so it matches production exactly.
+
+**Technical Architecture:**
+
+**Pyodide Integration:**
+\`\`\`javascript
+// In webview
+const pyodide = await loadPyodide();
+await pyodide.loadPackage('jinja2');
+
+const result = pyodide.runPython(\`
+import jinja2
+env = jinja2.Environment()
+template = env.from_string(template_str)
+output = template.render(variables)
+output
+\`);
+\`\`\`
+
+**Extension Components:**
+\`\`\`
+extension.js (entry point)
+  ├── jinjaRendererViewProvider (webview panel)
+  ├── IntelliSense provider
+  ├── Decorators (syntax highlighting)
+  └── Commands
+\`\`\`
+
+**Features:**
+
+**Real-Time Preview:**
+- Edit template, see output instantly
+- Variable panel (JSON/YAML/TOML input)
+- Split view: template left, output right
+
+**Jinja Features Supported:**
+- Variables: {{ var }}
+- Control structures: {% if %}, {% for %}, {% macro %}
+- Includes and extends: {% include 'partial.jinja' %}
+- Filters: {{ name | upper }}
+- Custom filters: define in variables panel
+- Whitespace control: {%- -%}, {{- -}}
+
+**IntelliSense:**
+- Autocomplete for variables (reads from variable panel)
+- Autocomplete for Jinja keywords
+- Hover documentation
+
+**Additional Features:**
+- Markdown rendering toggle (for .md.jinja templates)
+- Mermaid diagram support
+- Dependency graph visualization
+- Variable inspector
+- Preset import/export
+- Detached preview window
+
+**AI Integration Hooks:**
+- Error debugging integration
+- Template generation suggestions
+
+**Development Challenges:**
+- Pyodide initial load is slow (~2s). Cached after first load.
+- Variable panel sync with active editor
+- Handling Jinja errors gracefully (show meaningful messages)
+- Template inheritance (resolving {% extends %} paths)
+
+**Usage at VerbaFlo:**
+The entire vf-prompts system uses Jinja2 templates. This extension became
+essential for prompt engineers to iterate quickly without deploying.
+
+VS Code Marketplace: https://marketplace.visualstudio.com/items?itemName=KilloWatts.live-jinja-renderer
+Open VSX: https://open-vsx.org/extension/KilloWatts/live-jinja-renderer
+GitHub: https://github.com/Keshav-Madhav/live-jinja-renderer
+`,
+};
+
+const projectBoidsSim = {
+  id: "project-boids-sim-deep-dive",
+  title: "3D Boids + N-Body — Python Physics Simulation (Deep Dive)",
+  content: `
+Topics covered here: boids, flocking simulation, n-body python, numba,
+pygame, pyopengl, spatial hashing, gpu simulation, video export,
+barnes-hut python, metal backend.
+
+**3D-boids** is actually two projects in one repo:
+1. Real-time 3D boids (flocking) visualization
+2. Large-scale N-body gravity with recording/playback
+
+**3D BOIDS SIMULATION:**
+
+**Boid Rules:**
+\`\`\`python
+@njit  # Numba JIT compilation
+def boid_rules(positions, velocities, ...):
+    for i in prange(n_boids):  # Parallel loop
+        # Separation: steer away from nearby boids
+        # Alignment: match velocity of neighbors
+        # Cohesion: steer toward center of neighbors
+        
+        # Spatial hashing for neighbor lookup
+        cell = get_cell(positions[i])
+        neighbors = cells[cell] + adjacent_cells
+\`\`\`
+
+**Spatial Hashing:**
+Instead of O(N²) neighbor checks, divide space into cells. Each boid only
+checks its own cell and adjacent cells. With proper cell size (~2× boid
+perception radius), this is nearly O(N).
+
+**OpenGL VBOs:**
+\`\`\`python
+class Flock:
+    def __init__(self):
+        self.vbo = glGenBuffers(1)
+        # Store positions in GPU buffer
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+        glBufferData(GL_ARRAY_BUFFER, positions, GL_DYNAMIC_DRAW)
+\`\`\`
+
+**N-BODY GRAVITY:**
+
+**Barnes-Hut Octree (Python):**
+Python with Numba JIT. The README documents extensive optimization:
+- Object pooling for tree nodes
+- Parallel force calculation with prange
+- GPU backends for truly large simulations
+
+**GPU Backends:**
+- CUDA backend (NVIDIA)
+- Metal backend (Apple Silicon) — custom Metal shaders!
+
+**Recording System:**
+\`\`\`bash
+python tools/record.py --preset galaxy --frames 3600
+# Records to .npz (compressed NumPy)
+# Then export to video with ffmpeg
+\`\`\`
+
+**Technical Stack:**
+- Python 3
+- Pygame for window management
+- PyOpenGL for rendering
+- NumPy + SciPy for math
+- Numba for JIT compilation
+- zstandard for compression
+
+**Performance:**
+- Boids: 10,000+ at 60fps with Numba
+- N-body: Depends on GPU backend, but handles 100K+ bodies
+
+**What Makes This Special:**
+The combination of real-time visualization AND offline recording with
+video export. Used as a generative video source — the compressed outputs
+become art pieces.
+
+GitHub: https://github.com/Keshav-Madhav/3d-spatial-sim-for-boid-and-nbody
+`,
+};
+
+const projectDrawCalculatorDeepDive = {
+  id: "project-draw-calculator-deep-dive",
+  title: "Draw Calculator / Sketch-Culator — Gemini Vision (Deep Dive)",
+  content: `
+Topics covered here: draw calculator, sketchculator, apple calculator clone,
+ipad math notes, handwriting recognition, gemini vision, canvas drawing,
+ocr, math solver.
+
+**Draw Calculator (Sketch-Culator)** replicates Apple's iPad Math Notes
+calculator feature: sketch handwritten math equations and get live solutions.
+
+**How It Works:**
+
+1. **Drawing Layer:**
+   \`\`\`javascript
+   canvas.addEventListener('pointerdown', startStroke);
+   canvas.addEventListener('pointermove', drawStroke);
+   canvas.addEventListener('pointerup', endStroke);
+   
+   function endStroke() {
+     // Debounce: wait 500ms after last stroke
+     clearTimeout(recognitionTimer);
+     recognitionTimer = setTimeout(recognize, 500);
+   }
+   \`\`\`
+
+2. **Recognition (Gemini Vision):**
+   \`\`\`javascript
+   async function recognize() {
+     const imageData = canvas.toDataURL('image/png');
+     
+     const response = await gemini.generateContent([
+       {
+         inlineData: {
+           mimeType: 'image/png',
+           data: imageData.split(',')[1]
+         }
+       },
+       "Extract the mathematical expression from this handwriting. 
+        Return ONLY the expression, nothing else."
+     ]);
+     
+     const expression = response.text;
+     const result = await evaluate(expression);
+     displayResult(result);
+   }
+   \`\`\`
+
+3. **Evaluation:**
+   Separate API call (or local math.js) to safely evaluate the expression.
+
+**Features:**
+- **Multiple Colors**: Organize equations with different colors
+- **Text Insertion**: Add typed labels alongside drawings
+- **Undo/Redo**: Full stroke history
+- **Clear Canvas**: Start fresh
+- **Traditional Calculator**: Fallback mode with buttons
+
+**Preprocessing:**
+\`\`\`javascript
+function preprocessCanvas() {
+  // Increase contrast
+  // Smooth strokes (Bezier interpolation)
+  // Crop to content
+  // Resize to optimal dimension for API
+}
+\`\`\`
+
+**Prompt Engineering:**
+Getting reliable OCR for messy handwriting required iteration:
+- Explicit instruction to distinguish "x" (variable) from "×" (multiply)
+- Examples of ambiguous symbols
+- Request for structured output format
+
+**Performance:**
+- ~200-400ms from stroke completion to answer
+- Debouncing prevents multiple API calls during drawing
+- Canvas preprocessing improves accuracy
+
+**What Was Hard:**
+- Handwriting variability (everyone writes differently)
+- Mathematical notation (fractions, exponents, roots)
+- Latency management (feel instant while waiting for API)
+- Edge cases: "x" vs "×", "1" vs "l", "0" vs "O"
+
+Live: https://sketchculator.netlify.app/
+GitHub: https://github.com/Keshav-Madhav/draw_calculator
+`,
+};
+
+const projectChainReaction = {
+  id: "project-chain-reaction",
+  title: "Chain Reaction — Strategy Puzzle Game",
+  content: `
+Topics covered here: chain reaction, strategy game, puzzle game, multiplayer
+game, cell explosion, turn based game.
+
+**Chain Reaction** is a strategic chain reaction game where players take
+turns placing orbs in cells. When a cell reaches critical mass, it explodes
+and sends orbs to adjacent cells, potentially triggering cascading reactions.
+
+**Game Rules:**
+- Grid of cells, each can hold limited orbs based on position
+  - Corner cells: max 2 orbs
+  - Edge cells: max 3 orbs
+  - Inner cells: max 4 orbs
+- Players take turns placing orbs in their cells
+- When a cell hits critical mass, it explodes:
+  - Orbs fly to adjacent cells
+  - Adjacent cells may also explode
+  - Chain reactions can wipe the board
+- Capture opponent's cells by exploding into them
+- Last player with orbs wins
+
+**Technical Implementation:**
+\`\`\`typescript
+interface Cell {
+  orbs: number;
+  owner: Player | null;
+  criticalMass: number;  // Based on position
+}
+
+function placeOrb(x: number, y: number, player: Player) {
+  const cell = grid[y][x];
+  cell.orbs++;
+  cell.owner = player;
+  
+  if (cell.orbs >= cell.criticalMass) {
+    explode(x, y);
+  }
+}
+
+async function explode(x: number, y: number) {
+  const cell = grid[y][x];
+  cell.orbs = 0;
+  
+  // Animate explosion
+  await animateExplosion(x, y);
+  
+  // Send orbs to neighbors
+  for (const [nx, ny] of getNeighbors(x, y)) {
+    grid[ny][nx].orbs++;
+    grid[ny][nx].owner = cell.owner;  // Capture!
+    
+    if (grid[ny][nx].orbs >= grid[ny][nx].criticalMass) {
+      await explode(nx, ny);  // Chain reaction
+    }
+  }
+}
+\`\`\`
+
+**Features:**
+- 2-8 player support
+- Animated explosions and chain reactions
+- Board size options
+- Win detection
+
+**Strategy Depth:**
+- Corner cells are safest (only 2 to explode)
+- Setting up chain reactions is key
+- Defensive play vs aggressive expansion
+- Reading opponent's near-critical cells
+
+Live: https://chain-reaction-eta.vercel.app
+GitHub: https://github.com/Keshav-Madhav/chain_reaction
+`,
+};
+
+const projectOthello = {
+  id: "project-othello",
+  title: "Othello / Reversi — Minimax AI",
+  content: `
+Topics covered here: othello, reversi, board game, minimax, alpha-beta
+pruning, game ai, strategy game.
+
+**Othello** (Reversi) implementation with an AI opponent using minimax
+search with alpha-beta pruning.
+
+**Game Rules:**
+- 8×8 board, two players (black and white)
+- Place disc to outflank opponent's discs
+- Outflanked discs flip to your color
+- Most discs at end wins
+
+**AI Implementation:**
+
+**Minimax with Alpha-Beta:**
+\`\`\`javascript
+function minimax(board, depth, alpha, beta, maximizing) {
+  if (depth === 0 || gameOver(board)) {
+    return evaluate(board);
+  }
+  
+  const moves = getValidMoves(board);
+  
+  if (maximizing) {
+    let maxEval = -Infinity;
+    for (const move of moves) {
+      const newBoard = makeMove(board, move);
+      const eval = minimax(newBoard, depth - 1, alpha, beta, false);
+      maxEval = Math.max(maxEval, eval);
+      alpha = Math.max(alpha, eval);
+      if (beta <= alpha) break;  // Prune
+    }
+    return maxEval;
+  } else {
+    // Similar for minimizing player
+  }
+}
+\`\`\`
+
+**Evaluation Function:**
+\`\`\`javascript
+function evaluate(board) {
+  let score = 0;
+  
+  // Disc count
+  score += (myDiscs - oppDiscs) * 1;
+  
+  // Corners (most valuable)
+  score += countCorners(board, me) * 25;
+  
+  // Edges (valuable)
+  score += countEdges(board, me) * 5;
+  
+  // Mobility (available moves)
+  score += getValidMoves(board, me).length * 3;
+  
+  return score;
+}
+\`\`\`
+
+**Difficulty Levels:**
+- Easy: depth 2
+- Medium: depth 4
+- Hard: depth 6
+
+**Features:**
+- Move highlighting (show valid moves)
+- Flip animation
+- Score tracking
+- Undo move
+- Game history
+
+GitHub: https://github.com/Keshav-Madhav/Othello-JS
+`,
+};
+
+const projectVfAiBackend = {
+  id: "project-vf-ai-backend",
+  title: "VerbaFlo AI Backend — Main Orchestration System",
+  content: `
+Topics covered here: vf-ai, verbaflo backend, ai orchestration, fastapi,
+rag pipeline, property search, faq retrieval, llm routing, multi-tenant,
+conversation ai, student accommodation.
+
+**vf-ai** is VerbaFlo's main FastAPI AI backend that powers prospect chat
+across webchat, WhatsApp, email, SMS, voice (VAPI), and social channels.
+
+**What It Does:**
+When a prospective tenant messages a property (via any channel), vf-ai:
+1. Classifies the query (FAQ? Property search? Booking? General chat?)
+2. Routes to appropriate handler
+3. Retrieves relevant context (property details, FAQs, conversation history)
+4. Generates response via LLM
+5. Tracks analytics, updates CRM
+
+**Technical Stack:**
+- **FastAPI** with async throughout
+- **MongoDB** (Motor) for conversations, leads, config
+- **Redis** for caching, rate limiting
+- **Milvus** for vector search (FAQs, embeddings)
+- **LiteLLM** for multi-provider LLM routing (OpenAI, Gemini, Claude)
+- **Opik** + Elasticsearch for observability
+- **Jinja2** for prompt templates (from vf-prompts)
+
+**Architecture:**
+\`\`\`
+Request → Middleware Stack
+  ├── Global config middleware
+  ├── Client config middleware (multi-tenant)
+  └── Context vars for region/industry/settings
+
+→ Router
+  ├── /client/* (client management)
+  ├── /prompt/* (prompt CRUD)
+  ├── /customer/* (conversation handling)
+  ├── /vapi/* (voice integration)
+  └── /campaign/* (outbound campaigns)
+
+→ Flow Handlers
+  ├── FAQ flow (Milvus semantic search)
+  ├── PMS flow (property management query)
+  ├── Lead extraction flow
+  ├── Booking flow
+  └── General conversation flow
+\`\`\`
+
+**Key Keshav Contributions:**
+- The flow routing system
+- Milvus FAQ integration
+- Opik tracing integration (kibana_trace)
+- Client-specific behavior system
+- Prompt injection from MongoDB
+
+**Multi-Tenant Architecture:**
+Each client (property company) has their own:
+- Prompts (customized tone, information)
+- FAQ corpus (their specific FAQs)
+- Property data (their buildings)
+- Configuration (response style, features enabled)
+
+All isolated via middleware that injects client context before handlers run.
+
+**Observability:**
+Every conversation is traced:
+- Which flow was triggered
+- What context was retrieved
+- What the LLM saw and generated
+- Performance metrics
+
+This feeds into vf-simulation for debugging (why did the bot say X?).
+`,
+};
+
+const projectVfPrompts = {
+  id: "project-vf-prompts",
+  title: "VerbaFlo Prompts — Prompt Management System",
+  content: `
+Topics covered here: vf-prompts, prompt engineering, prompt management,
+jinja2 templates, mongodb sync, version control, prompt versioning.
+
+**vf-prompts** is VerbaFlo's single source of truth for all AI prompts.
+Jinja2 templates organized on disk, synced to MongoDB for runtime use.
+
+**Why This System:**
+- Prompts are code. They need version control.
+- But runtime needs fast lookup from MongoDB.
+- Solution: disk is source of truth, MongoDB is synced.
+
+**Directory Structure:**
+\`\`\`
+prompts/
+  ├── faq_response/
+  │   ├── default/
+  │   │   ├── system.jinja
+  │   │   └── user.jinja
+  │   ├── client_abc/
+  │   │   └── system.jinja  # Client override
+  │   └── config.json
+  ├── lead_extraction/
+  │   ├── default/
+  │   └── config.json
+  └── ...
+\`\`\`
+
+**Sync Flow:**
+\`\`\`bash
+python sync_prompt.py
+# 1. Read all prompts from disk
+# 2. Validate Jinja syntax
+# 3. Validate config.json schemas
+# 4. Push to MongoDB collections:
+#    - default_prompts (base prompts)
+#    - <client>_prompts (overrides)
+\`\`\`
+
+**Runtime Resolution (in vf-ai):**
+\`\`\`python
+def get_prompt(key: str, client_id: str) -> str:
+    # Check client-specific first
+    prompt = db[f"{client_id}_prompts"].find_one({"key": key})
+    if prompt:
+        return prompt["template"]
+    
+    # Fall back to default
+    return db["default_prompts"].find_one({"key": key})["template"]
+\`\`\`
+
+**Template Variables:**
+\`\`\`jinja
+{# system.jinja #}
+You are an assistant for {{ client_name }}.
+
+{% if property_details %}
+Property Information:
+{{ property_details | tojson }}
+{% endif %}
+
+{{ conversation_history }}
+\`\`\`
+
+**Pre-commit Validation:**
+- Jinja syntax check (catches template errors before deploy)
+- Config schema validation
+- Required fields check
+
+**Why Keshav Built the Live Jinja Extension:**
+Working on vf-prompts, he needed fast iteration on templates. The VS Code
+extension lets prompt engineers see rendered output instantly without
+deploying to test environment.
+`,
+};
+
+// ============================================================================
+// DEVELOPMENT TIMELINES & EVOLUTION STORIES
+// ============================================================================
+
+const devTimelineSpaceSim = {
+  id: "dev-timeline-space-sim",
+  title: "Space Sandbox Development Timeline — 2+ Years of Evolution",
+  content: `
+Topics covered here: space sandbox development, how space sim was built,
+why barnes-hut, development process, evolution, timeline, history,
+performance optimization journey.
+
+**Space Sandbox** was developed over **2+ years** (Dec 2023 - Feb 2026), 
+evolving from a basic gravity simulator to a sophisticated physics engine.
+
+**PHASE 1: Foundation (Dec 2023)**
+- Dec 15, 2023: Initial commit - basic gravity between bodies
+- Dec 15: Added trails to visualize orbits
+- Dec 16: Camera system with follow mode, labels for names/velocity
+- Dec 17: Background stars, black holes, body interactions
+- Dec 18: Improved collision handling
+
+**PHASE 2: Core Features (2024)**
+- Feb 2024: FPS display, performance improvements
+- Mar 2024: Cluster spawning, toggle options
+- Aug 2024: Constant FPS function, collision toggles
+- Oct 2024: Major UI overhaul - added three-body spawning (T key),
+  density-based weight calculation, spawning UI, camera smoothing
+- Oct 23: **Major refactor** - broke code into separate files for
+  maintainability, added JSDoc types
+- Nov 2024: Solar system preset, camera drag, trail optimization using
+  ring buffer and point elimination
+
+**PHASE 3: Barnes-Hut Revolution (Dec 2024)**
+- Dec 6, 2024: **BREAKTHROUGH** - Implemented Barnes-Hut algorithm
+  "Revamped physics system for gravity calculation using barnes-hut
+  SIGNIFICANT performance improvement"
+- Dec 7: Moved collision detection to use Barnes-Hut for additional gains
+
+**WHY Barnes-Hut?**
+Before: O(N²) force calculations. 1000 bodies = 1 million calculations/frame.
+After: O(N log N). Same bodies = ~10,000 calculations. 100x improvement.
+
+The insight: distant bodies can be approximated as a single mass point.
+A quadtree groups nearby bodies, and if a node is "far enough" (θ threshold),
+treat all bodies in that node as one. This is exact same approach used by
+actual astrophysics simulations.
+
+**PHASE 4: Polish & WebGL (2025)**
+- Mar-Aug 2025: Trajectory preview, time scale control, velocity optimization
+- Sep 2025: Pinning, mass transfer toggle, glow effects, adaptive trail
+  decimation, Path2D caching for performance
+- Dec 2025: **WebGL rendering** for bodies and trails (massive perf gain)
+
+**PHASE 5: Scientific Visualization (Feb 2026)**
+- Feb 4, 2026: Added probe mode for gravity observability
+- Feb 4: "Added comprehensive scientific visualisations for heatmap,
+  grid warping, contours and vector arrows"
+
+**Performance Evolution:**
+- Initial: ~100 bodies before lag
+- After trail optimization: ~500 bodies
+- After Barnes-Hut: ~5,000 bodies at 60fps
+- After WebGL: **21,000 bodies at 30fps**
+
+**Key Technical Decisions:**
+1. **Quadtree with object pooling** - Avoid GC pressure by reusing nodes
+2. **Ring buffer for trails** - Constant memory regardless of simulation length
+3. **Multi-canvas layering** - Separate background/trails/bodies for partial redraws
+4. **Leapfrog integration** - More stable than Euler for orbital mechanics
+
+GitHub: https://github.com/Keshav-Madhav/Space-Simulation-HTML-CSS-JS
+`,
+};
+
+const devTimelineCookieClicker = {
+  id: "dev-timeline-cookie-clicker",
+  title: "Cookie Clicker Development Timeline — From Basic to Full Clone",
+  content: `
+Topics covered here: cookie clicker development, how cookie clicker was built,
+development process, grandmapocalypse implementation, prestige system,
+minigames, sound design.
+
+**Cookie Clicker Reimagined** evolved over **1 year** (Mar 2025 - Mar 2026)
+from a basic clicker to a feature-complete 10K+ line clone.
+
+**PHASE 1: Core Loop (Mar 2025)**
+- Mar 13: Initial mechanics - clicking, buildings, pricing
+- Mar 14: Balancing, bug fixes
+
+**PHASE 2: Feature Explosion (Feb 2026)**
+This is where the project took off:
+
+- Feb 12: Tons of upgrades, achievements, animations, milk visualization,
+  middle window with baker counts
+- Feb 12: Tutorial system, easter eggs with fun prompts
+- Feb 12: Dynamic cookie rain (raining cookies that match click rate)
+- Feb 13: Encrypted localStorage (security), offline earnings calculation
+- Feb 13: Better balancing with cost acceleration
+- Feb 14: **Prestige system overhaul** - late game progression,
+  animated banners, stylized baker rows, custom icons
+
+**WHY Prestige matters:**
+Without prestige, incremental games hit a wall. Numbers get meaningless.
+Prestige gives players a reason to reset: trade current progress for
+permanent multipliers. It's the "new game+" that keeps players engaged.
+
+Keshav's prestige system: resets all cookies but grants "heavenly chips"
+based on total cookies earned. These chips unlock permanent upgrades.
+Balanced so first prestige feels impactful (~2x boost) but later prestiges
+have diminishing returns.
+
+**PHASE 3: Sound & Music (Mar 2026)**
+- Mar 1: Sound library, clicking symphonies, 1.5x sync bonus
+- Mar 2: Ambient sounds, now-playing indicator, music player
+- Mar 14: Full soundtrack with custom compositions, volume 3 music
+- Mar 15: Bug fixing, balancing around music feedback
+
+**PHASE 4: Grandmapocalypse (Mar 2026)**
+- Mar 14: **Implemented Grandmapocalypse** - the major late-game event
+  where grandmas become sinister, wrinklers spawn, and you must choose:
+  appease them (Elder Pledge) or embrace chaos for bonuses
+
+**HOW Grandmapocalypse works:**
+1. Buy "One Mind" upgrade - grandmas start acting weird
+2. Wrath cookies replace golden cookies (can be bad or good)
+3. Wrinklers spawn - they drain your CPS but pay back 1.1x when popped
+4. Visual transformation - grandmas change appearance
+
+**PHASE 5: Minigames (Mar 2026)**
+- Mar 21: Safe cracker (TLOU2-inspired dial puzzle)
+- Mar 21: Dungeon crawl (turn-based combat with smart AI)
+- Mar 21: Cookie launch (slingshot physics)
+- Mar 21: Cookie wordle (baking-themed word guessing)
+- Mar 22: Cookie alchemy, Cookie Chronicle newspaper
+- Mar 22: Balance pass, achievement updates
+
+**Technical Challenges Solved:**
+1. **Arbitrary precision math**: CookieNum class for numbers > 10^16
+2. **Particle performance**: Caps, pooling, throttled updates
+3. **Save corruption**: Encrypted localStorage with validation
+4. **Sound sync**: Music beats aligned with click feedback
+
+GitHub: https://github.com/Keshav-Madhav/Cookie-Clicker
+`,
+};
+
+const devTimelineFpsShooter = {
+  id: "dev-timeline-fps-shooter",
+  title: "FPS Raycaster Development — From Copy to Custom Engine",
+  content: `
+Topics covered here: fps shooter development, raycasting evolution,
+how raycaster was built, fog of war, lighting system, floor casting.
+
+**FPS Shooter** development: Aug 2024 - Mar 2026, evolved from copied
+raycasting code to a custom engine with unique features.
+
+**PHASE 1: Foundation (Aug 2024)**
+- Aug 16: "Copy over existing code from raycasting project"
+- Aug 16: **Critical fix** - "Removed all bloat code, completely fixed
+  fish eye lens effect, added darkness mapping to texture, improved
+  performance" (6-hour coding session!)
+- Aug 17: Minor adjustments
+
+**WHY fisheye correction matters:**
+Raw raycasting produces a "fishbowl" effect - walls curve outward because
+rays at screen edges travel further than center rays. Fix: multiply distance
+by cos(angle from center). This single fix transforms unusable distortion
+into a convincing 3D effect.
+
+**PHASE 2: Code Architecture (Nov 2024)**
+- Nov 16: **Major refactor** - Separated classes into files, defined
+  structure, cleaned up entire codebase
+- Nov 17: Added gradient background, delta time, textures class
+- Nov 17: Pointer lock API for smooth camera movement
+- Nov 18: Minimap system, user class restructure
+- Nov 20-22: Boundary rotation, enemy class with detection and movement,
+  enemy AI with turret-like auto-rotation
+
+**PHASE 3: Advanced Features (Jan 2026)**
+- Jan 8: Tiled textures, curved wall optimization
+- Jan 10: **Multiple innovations in one session:**
+  - Uncapped FPS mode
+  - Translucent walls (alpha blending in raycaster!)
+  - Map switching system
+  - Maze generation algorithm
+- Jan 10: Proper collision physics (not just detection)
+- Jan 11: Jumping and crouching with depth perception shift
+- Jan 18: Alert timer, enemy range fixes, path visualization
+- Jan 21: Major code structure update, scoring system
+- Jan 28: Wall collision fixes, control remapping
+- Jan 31: **Floor casting** - rendering floor/ceiling (not just walls)
+- Jan 31: Fog of war map, web worker offloading for better FPS
+
+**PHASE 4: 3D Camera & Lighting (Mar 2026)**
+- Mar 5: **Vertical camera movement** using y-shearing
+  "Added vertical camera movement support using y-shearing to allow
+  full 3D camera movement"
+- Mar 5: **Advanced lighting system** (at cost of performance)
+- Mar 6: Performance tracking, boundary management optimization
+- Mar 7: Visual improvements, QoL features
+
+**WHY y-shearing for vertical look:**
+True vertical camera in raycasting requires recalculating every ray.
+Y-shearing is a trick: keep rays horizontal, but shift the rendered
+column up/down based on look angle. It's "fake" but visually convincing
+and much cheaper than true 3D raymarching.
+
+**Technical Evolution:**
+- Initial: Basic Wolfenstein clone
+- Final: Floor/ceiling casting, dynamic lighting, fog of war,
+  vertical look, enemy AI, procedural mazes, web workers
+
+GitHub: https://github.com/Keshav-Madhav/FPS-Shooter-HTML-CSS-JS
+`,
+};
+
+const devTimelineLiveJinja = {
+  id: "dev-timeline-live-jinja",
+  title: "Live Jinja Extension Development — 6 Months to 10K+ Installs",
+  content: `
+Topics covered here: live jinja development, vs code extension evolution,
+how live jinja was built, pyodide integration, intellisense implementation,
+feature development timeline.
+
+**Live Jinja Renderer** grew from a simple preview to a full IDE experience
+in **6 months** (Oct 2025 - Mar 2026), reaching **10,000+ installs**.
+
+**PHASE 1: MVP (Oct 2025)**
+- Oct 17: Initial extension - basic Jinja preview
+- Oct 18-19: UI improvements, variable extraction, auto-resize
+- Oct 20: **v1.1.0** - Variable presets (save/load configurations)
+- Oct 25-28: Bug fixes, extraction fixes, file update handling
+
+**WHY Pyodide was chosen:**
+Most Jinja preview tools use JavaScript approximations. They fail on:
+- Custom filters, macros, whitespace control
+- Template inheritance ({% extends %})
+- Python-specific behavior
+
+Pyodide runs REAL Python/Jinja2 in WebAssembly. Initial load is slow (~2s)
+but then behavior matches production exactly. No JavaScript approximation.
+
+**PHASE 2: Power Features (Nov 2025)**
+- Nov 3: **v1.3.0** - Clickable error navigation, visual highlighting
+- Nov 5-7: Ghost save (auto-save variables), context menu actions
+- Nov 8: Selection-based rendering (render just a portion)
+- Nov 9-10: Enhanced variable extraction (40+ filters, ternary, slices)
+- Nov 11: Import/export system for variables
+- Nov 12: **v1.6.0** - Jinja2 extensions support (i18n, loops, etc.)
+- Nov 13: **v1.7.0** - MAJOR: Complete IntelliSense system
+- Nov 22-23: **v1.8.0** - Detached output window, performance improvements
+- Nov 25-29: Mermaid diagram support, template includes/extends
+
+**HOW IntelliSense was implemented:**
+1. Parse active template to find all variables, macros, blocks
+2. Build completion provider with types inferred from usage
+3. Hover provider shows macro signatures, filter documentation
+4. Go-to-definition jumps to macro/block definitions
+5. Semantic tokenization for syntax highlighting
+
+**PHASE 3: AI Integration (Dec 2025)**
+- Dec 6: **v1.10.0** - Smart data generator for test data
+- Dec 6: GitHub Copilot integration for variable generation
+- Dec 6: OpenAI API integration with streaming
+- Dec 7: Gemini API + Anthropic Claude integration
+- Dec 13: Variable inspector, dependency graph visualization
+- Dec 18: **v1.11.1** - AI-powered error analysis with root cause detection
+
+**PHASE 4: Polish (Jan-Mar 2026)**
+- Jan 31: AI debugger upgrade (GPT-5.2, Claude Opus 4.5)
+- Feb 7: Cursor-to-output synchronization
+- Feb 15: Output search with highlighting
+- Feb 22: Standard editor shortcuts for Jinja comments
+- Mar 5: **v1.12.0** - Multi-format variables (JSON, YAML, TOML)
+
+**Growth Timeline:**
+- v1.0: Basic preview
+- v1.5: Selection rendering, presets, import/export
+- v1.7: Full IntelliSense
+- v1.10: AI-powered features
+- v1.12: Multi-format support, 10K+ installs
+
+**Why it succeeded:**
+1. Solves real problem (accurate Jinja preview)
+2. Works with real Python, not approximation
+3. Constant feature iteration based on user feedback
+4. AI features make it feel modern
+
+Marketplace: https://marketplace.visualstudio.com/items?itemName=KilloWatts.live-jinja-renderer
+`,
+};
+
+const devTimelineGridVisualizer = {
+  id: "dev-timeline-grid-visualizer",
+  title: "Grid Visualizer Development — 4 Days of Intense Optimization",
+  content: `
+Topics covered here: grid visualizer development, grid math evolution,
+webgl particle system, electron app development, performance optimization.
+
+**Grid Visualizer** was built in an **intense 4-day sprint** (Apr 10-13, 2026)
+with multiple major optimization passes.
+
+**DAY 1: Initial Release (Apr 10)**
+- "Initial release — audio-reactive dot grid visualizer"
+- System audio sensitivity tuning
+- Now-playing overlay with persistent text
+
+**DAY 2: Features (Apr 11)**
+- **v1.3.0**: Wallpaper mode (desktop background), physics toggle, tray menu
+- **v1.4.0**: Dual-platform UI, app icon, Windows build
+- **v1.5.0**: MAJOR optimization pass
+  "66% less memory, 56% fewer GC pauses, wallpaper power mode"
+
+**WHY these optimizations mattered:**
+Running constantly as a desktop wallpaper means:
+- Can't hog CPU/GPU (laptop battery, heat)
+- Can't leak memory (runs for hours/days)
+- Must handle minimize/focus changes gracefully
+
+**DAY 3: Deep Optimization (Apr 12)**
+- **v1.6.0**: Another optimization pass
+  "51% less RAM, faster physics, occlusion pause"
+
+Key techniques:
+1. **Float32Array interleaving** - pack position, velocity, color contiguously
+2. **Sleep optimization** - particles that aren't moving skip physics
+3. **Occlusion pause** - stop rendering when window not visible
+4. **Object pooling** - zero allocations in hot loop
+
+**DAY 4: Stability (Apr 13)**
+- **v1.6.1**: Fixed wallpaper crash loop, gated wallpaper mode to macOS
+
+**Technical Architecture:**
+
+**WebGL Point Sprites:**
+Each particle is a GL_POINT rendered as a circle via fragment shader.
+50K+ particles = 50K vertices in one draw call. No individual object overhead.
+
+**Physics Update:**
+\`\`\`javascript
+for (let i = 0; i < n; i++) {
+  // Springs back to home
+  const dx = homeX[i] - posX[i];
+  const dy = homeY[i] - posY[i];
+  velX[i] += dx * springK;
+  velY[i] += dy * springK;
+  
+  // Mouse interaction
+  // ... force from mouse position
+  
+  // Damping
+  velX[i] *= damping;
+  velY[i] *= damping;
+  
+  // Sleep check
+  if (Math.abs(velX[i]) + Math.abs(velY[i]) < sleepThreshold) {
+    continue; // Skip position update
+  }
+  
+  posX[i] += velX[i];
+  posY[i] += velY[i];
+}
+\`\`\`
+
+**Audio Integration:**
+- Web Audio API for mic input
+- Custom Swift helpers for macOS system audio capture
+- FFT analysis for frequency visualization
+- Beat detection drives wave intensity
+
+**Result:** Desktop screensaver/wallpaper that runs at 60fps with 50K+
+particles while using minimal resources.
+
+GitHub: https://github.com/Keshav-Madhav/grid-visualizer
+`,
+};
+
+const devTimelineVfSimMcp = {
+  id: "dev-timeline-vf-sim-mcp",
+  title: "VerbFlo MCP Server Development — Building AI-Debuggable Systems",
+  content: `
+Topics covered here: mcp development, why mcp, model context protocol,
+vf-simulation mcp evolution, how mcp server was built, ai debugging tools.
+
+**VF-Simulation MCP Server** evolved over **6 weeks** (Mar-Apr 2026) from
+a basic widget tester to a full AI debugging platform.
+
+**WHY MCP (Model Context Protocol)?**
+
+Before MCP, debugging a VerbFlo conversation meant:
+1. Open VerbaSuper app manually
+2. Paste lead ID
+3. Wait for MongoDB fetch
+4. Wait for trace enrichment from Opik/Elasticsearch
+5. Manually read through traces
+6. Correlate traces with conversation messages
+7. Form hypothesis about what went wrong
+
+With MCP, an AI agent (Claude, Cursor) can:
+1. Call cid_investigate(lead_id)
+2. Get full conversation + enriched traces in seconds
+3. Identify the issue automatically
+
+**DEVELOPMENT TIMELINE:**
+
+**PHASE 1: Foundation (Mar 2026)**
+- Mar 23: Initial commit - basic Electron setup
+- Mar 23: Sidebar, README
+
+**PHASE 2: Core Simulator (Apr 8-13)**
+- Apr 8: "Simulation stabilized" - Puppeteer-based widget replay
+- Apr 8: Bot stability, Chrome tab management for RAM
+- Apr 9: Simulation with evaluation metrics
+- Apr 9: Node-based Electron migration complete
+- Apr 10: CID integration begins
+- Apr 13: Batch execution, paste mode UI
+- Apr 13: Toast/notification system
+
+**PHASE 3: ClickUp Integration (Apr 14-18)**
+- Apr 14: Per-env database switching
+- Apr 15: Browser detection, prefetched leads optimization
+- Apr 16-17: ClickUp task management, QA status, denial reasons
+
+**PHASE 4: MCP Server (Apr 16-20)**
+- Apr 16: "feat(mcp): introduce MCP server for AI-assisted CID investigation"
+- Apr 16: MCP auto-start, client configuration
+- Apr 17: Lead ID scraper fixes for anonymous leads
+- Apr 19: MCP verification UI, parallel client detection
+- Apr 20: **Trace explorer module** - search Elasticsearch traces/spans
+
+**HOW the MCP Server Works:**
+
+\`\`\`typescript
+// mcp/server.ts
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+
+const server = new McpServer('vf-cid')
+
+server.tool('cid_fetch', async ({ lead_id, env }) => {
+  const conv = await cidFetch(lead_id, env)
+  return fmtConversation(conv)
+})
+
+server.tool('cid_enrich', async ({ lead_id, env }) => {
+  const enriched = await runEnrichment(lead_id, env)
+  return fmtEnriched(enriched)
+})
+
+server.tool('trace_search', async ({ query, time_range }) => {
+  const traces = await searchTraces(query, time_range)
+  return fmtTraces(traces)
+})
+\`\`\`
+
+**PARITY CONSTRAINT:**
+The MCP server (mcp/server.ts) MUST stay in parity with the in-app HTTP
+server (localMcpServer.ts). Both expose identical tool schemas so AI
+clients behave the same regardless of transport. This was learned after
+drift caused bugs.
+
+**PHASE 5: Polish (Apr 20-29)**
+- Apr 20: Theme system (light/dark/system)
+- Apr 20: Translation API for non-English conversations
+- Apr 22: Color palette selection, settings migration
+- Apr 29: S3-based auto-update system
+
+**What MCP Enables:**
+"Why did the bot say X?" is now a 10-second answer instead of 10-minute
+investigation. AI agents can self-diagnose VerbFlo issues, suggest fixes,
+and even create ClickUp tickets with root cause analysis.
+
+This is the tooling that makes VerbFlo's AI debuggable BY AI.
+`,
+};
+
+const devTimelineAxon = {
+  id: "dev-timeline-axon",
+  title: "Axon Development — Building Code Knowledge Graphs for AI",
+  content: `
+Topics covered here: axon development, why axon, knowledge graph for code,
+mcp tools development, how axon works, code intelligence.
+
+**Axon** development: Feb-Mar 2026, building a code intelligence engine
+that AI agents can query for deep codebase understanding.
+
+**THE PROBLEM:**
+
+AI agents edit code without understanding consequences. They grep for
+callers, miss indirect ones, have no concept of how code connects.
+
+Imagine an agent edits \`validate()\`. It doesn't know:
+- 47 functions depend on that return type
+- 3 execution flows pass through it
+- \`payment_handler.py\` changes alongside it 80% of the time
+
+Breaking changes ship.
+
+**THE SOLUTION:**
+
+Precompute code structure into a knowledge graph. Every query returns
+complete context in a single tool call.
+
+**DEVELOPMENT TIMELINE:**
+
+**PHASE 1: Core Engine (Feb 21)**
+- Initial version 0.2.1
+- Method resolution, dead code detection
+- Call relationship handling
+
+**PHASE 2: Intelligence Features (Feb 24)**
+- **6 features in one commit:**
+  1. Embeddings for semantic search
+  2. Noise filtering (test file down-ranking)
+  3. Confidence tags on relationships
+  4. Depth grouping for impact analysis
+  5. Process/execution flow search
+  6. Multi-repo registry
+
+**WHY embeddings + BM25 + fuzzy?**
+Each has strengths:
+- BM25: Exact name matches ("UserService" finds UserService)
+- Embeddings: Conceptual matches ("auth handler" finds validate_token)
+- Fuzzy: Typo tolerance ("UserServce" still finds UserService)
+
+Reciprocal Rank Fusion combines results from all three.
+
+**PHASE 3: Stability (Feb 27-28)**
+- Watcher rewrite with debounced incremental updates
+- Targeted delete/upsert for live editing
+- FTS index rebuilding
+- File deletion tracking
+
+**PHASE 4: Web UI (Feb 28 - Mar 4)**
+- Graph visualization canvas
+- Explorer sidebar, detail panel
+- Cypher query console
+- Analysis dashboard
+- SSE live reload
+- Minimap, layout modes, error states
+
+**HOW Impact Analysis Works:**
+
+\`\`\`python
+def impact_analysis(symbol, depth=3):
+    affected = {}
+    
+    # Direct callers (depth 1 = will break)
+    callers = graph.query(f"MATCH (c)-[:CALLS]->(s) WHERE s.name = '{symbol}' RETURN c")
+    affected['depth_1'] = [(c, confidence=1.0) for c in callers]
+    
+    # Type references (depth 1-2)
+    refs = graph.query(f"MATCH (r)-[:REFERENCES_TYPE]->(s) ... RETURN r")
+    affected['depth_1'].extend([(r, confidence=0.9) for r in refs])
+    
+    # Git coupling (any depth)
+    coupled = graph.query(f"MATCH (s)-[:CHANGES_WITH]->(o) WHERE ... RETURN o")
+    # Group by coupling strength
+    
+    # Transitive callers (depth 2-3)
+    for d in range(2, depth+1):
+        transitive = graph.query(f"MATCH path = (c)-[:CALLS*{d}]->(s) ...")
+        affected[f'depth_{d}'] = transitive
+    
+    return affected
+\`\`\`
+
+**WHY Leiden for Community Detection:**
+
+Leiden algorithm finds natural clusters in code (auth module, payment
+module, etc.) without manual tagging. When an agent asks "what does this
+belong to?", Axon can answer "it's part of the auth cluster, cohesion
+score 0.85, related to these 12 other functions."
+
+**Result:** AI agents get complete architectural understanding from a
+single tool call. No multi-step exploration that misses code.
+
+GitHub: https://github.com/Keshav-Madhav/axon
+`,
+};
+
+const devTimelineVfCopilot = {
+  id: "dev-timeline-vf-copilot",
+  title: "VerbFlo Copilot Development — Multi-Agent Architecture Evolution",
+  content: `
+Topics covered here: vf-copilot development, text to sql, t2s, multi-agent
+system development, how copilot was built, milvus integration.
+
+**VF-Copilot** development: Jan-Apr 2026, building an internal multi-agent
+system for querying VerbFlo's data across MongoDB, Postgres, and Milvus.
+
+**THE PROBLEM:**
+
+VerbFlo has data spread across:
+- MongoDB (core): leads, conversations, clients
+- MongoDB (AI): traces, enrichments
+- PostgreSQL: property data (PMS)
+- Milvus: FAQ vectors
+
+Business questions need multiple data sources. "Show me conversion rates
+for leads who asked about pricing" requires joining conversation data,
+lead data, and property data.
+
+**DEVELOPMENT TIMELINE:**
+
+**PHASE 1: Text-to-SQL (Jan-Feb 2026)**
+- Jan 29: Hot-swap functionality for instructor models
+- Feb 2: Non-stream API with follow-ups
+- Feb 5: Milvus FAQ specialist improvements
+- Feb 16-17: **T2S accuracy improvements** - minified prompts,
+  property identifier accuracy, academic year handling
+- Feb 18: Keyword filter fixes, parenthesis issues
+- Feb 24: Coupling fixes, distinct/groupby, having clauses
+- Feb 27: Model migration from GPT-3.5 to GPT-4.5
+
+**WHY Text-to-SQL is hard:**
+
+User says: "properties with 2+ bedrooms under £500/week in London"
+
+T2S must:
+1. Identify tables: properties, rooms, pricing
+2. Join correctly: property → rooms → pricing
+3. Handle ambiguity: "bedrooms" = room_type='bedroom' or bed_count≥2?
+4. Apply filters: price<500, city='London'
+5. Avoid hallucinating columns that don't exist
+
+**PHASE 2: Multi-Query & Retry (Mar 2026)**
+- Mar 2: Walking distance/duration queries
+- Mar 3: Model switch to GPT-4.1, verbose data instructions
+- Mar 4: Aggregates fixes, coupled data
+- Mar 5: Math queries, nested queries
+- Mar 9: Nearby data handling refactored
+- Mar 14: Multi-query support with retry logic
+  "Added multi query and improved retry logic with descending
+  number of filters to avoid null returning"
+
+**HOW retry logic works:**
+
+If query returns null:
+1. Try removing least certain filter
+2. Try simplifying aggregation
+3. Try wider date range
+4. Return partial results with explanation
+
+**PHASE 3: Accuracy Push (Mar-Apr 2026)**
+- Mar 16: Fixed LiteLLM version
+- Apr 2: AWS Secrets Manager integration
+- Apr 6: Sum post-processing
+- Apr 7: Available-from range fixes
+- Apr 21: Room size in property options
+- Apr 27-28: Viewing slots with timezone handling
+
+**PHASE 4: Token Optimization (Apr 2026)**
+- Apr 28: JSONB EXISTS handling
+- Apr 28: "Implement token-based trimming for T2S query results"
+- Apr 29: Tenant isolation with join paths
+
+**Technical Architecture:**
+
+\`\`\`
+User Question
+    ↓
+Triage Agent (classifies: FAQ? Property? Analytics?)
+    ↓
+Parallel Specialists:
+├── Mongo Specialist 1 (core DB)
+├── Mongo Specialist 2 (AI DB)
+├── ...
+├── Postgres Property Agent (PMS)
+└── Milvus FAQ Agent
+    ↓
+Analyst Agent (synthesizes, streams response)
+\`\`\`
+
+**WHY parallel specialists?**
+
+Latency. Sequential queries = sum of all query times.
+Parallel queries = max of all query times.
+
+If Mongo takes 500ms, Postgres 800ms, Milvus 300ms:
+- Sequential: 1600ms
+- Parallel: 800ms
+
+50% faster perceived latency.
+
+**Keshav's Contributions:**
+- Milvus FAQ agent with query expansion
+- Schema sampling system
+- Streaming infrastructure
+- T2S retry logic with filter degradation
+`,
+};
+
+const devTimelineMinecraft = {
+  id: "dev-timeline-minecraft-js",
+  title: "Minecraft JS Development — Building a Voxel Engine from Scratch",
+  content: `
+Topics covered here: minecraft js development, voxel engine, three.js,
+greedy meshing, infinite world, procedural terrain, how minecraft was built.
+
+**Minecraft JS** was built in **2 weeks** (Aug 18 - Sep 4, 2024), implementing
+a full voxel engine with infinite terrain from scratch.
+
+**WEEK 1: Core Engine (Aug 18-24)**
+
+Day 1 (Aug 18):
+- Initial commit, basic setup
+- "Experimentation with three js and basic cubes"
+- GUI with lil-gui for debugging
+- **Instancing** - key optimization for block rendering
+- Simplex noise for procedural terrain
+- Seed-based RNG for reproducibility
+- Block types and colors
+- Resource generation
+
+Day 2 (Aug 19):
+- Textures added to blocks
+- Shadows and mesh optimization
+- Player camera with 2-axis movement
+- GUI for camera/coordinates
+
+**WHY instancing matters:**
+Without instancing: 1 draw call per block. 65K blocks = 65K draw calls = lag
+With instancing: 1 draw call for ALL blocks of same type. 65K blocks = ~10 calls
+
+Day 3-6 (Aug 22-24):
+- **Collision detection** - hardest part
+- Chunk-based world structure
+- Infinite chunk loading based on player movement
+- Async chunk loading to prevent freezes
+- Fog for depth perception
+
+**WEEK 2: Gameplay (Aug 27 - Sep 4)**
+
+Aug 27-29:
+- **Raycasting for block selection** - identify which block player is looking at
+- Block highlighting on hover
+- Remove block functionality
+- Place block functionality
+- Data persistence for placed/removed blocks
+
+Sep 1:
+- Tree generation (procedural)
+- Textures for trees and sand
+- Cloud layer
+- Water layer
+- Fixed raycasting issues
+- Pickaxe tool with mining animation
+
+Sep 4:
+- Toolbar UI
+- Save/load system
+
+**Technical Challenges Solved:**
+
+1. **Greedy Meshing** (implied by performance):
+   Instead of 6 faces per block, merge adjacent same-type faces.
+   Flat ground: 256 faces → 1 face
+
+2. **Chunk Boundaries:**
+   When blocks span chunks, need to update BOTH chunk meshes.
+   Edge case hell.
+
+3. **Collision in Voxel World:**
+   Can't use standard physics. Need to check block occupancy at player position.
+   Implemented AABB vs voxel grid collision.
+
+4. **Procedural Trees:**
+   Random but natural-looking. Trunk + layers of leaves with variance.
+
+**Result:** Playable Minecraft in browser with infinite world, block interaction,
+save/load, and decent performance.
+
+Live: https://keshav-madhav.github.io/minecraft-JS/
+GitHub: https://github.com/Keshav-Madhav/minecraft-JS
+`,
+};
+
+const devTimelineChainReaction = {
+  id: "dev-timeline-chain-reaction",
+  title: "Chain Reaction Development — Multiplayer Strategy Game",
+  content: `
+Topics covered here: chain reaction development, multiplayer game, peerjs,
+real-time game, strategy game development.
+
+**Chain Reaction** was built in **2 phases**: initial (Sep 2025) and
+major update (Feb 2026) adding animations and reconnection.
+
+**PHASE 1: Core Game (Sep 20-22, 2025)**
+
+Day 1 (Sep 20):
+- Initial Next.js setup
+- PeerJS for P2P multiplayer
+
+Day 2 (Sep 21):
+- Basic test chat screen
+- Peer manager for connections
+- Proper joining workflow and room management
+- Peer disconnection handling
+- GameBoard and GameSidebar components
+- Full game functionality with start, state tracking
+- Winner modal and statistics
+- Current turn display
+- Chat with typing indicators, system messages
+- Responsive design with mobile-first approach
+- Atom rendering with SVG components
+
+Day 3 (Sep 22):
+- Framer Motion animations
+- Enhanced connection handling with retry logic
+- Explosion count safeguards
+
+**WHY PeerJS for multiplayer:**
+- No server needed for game state (P2P)
+- Low latency (direct connection)
+- Free (no hosting costs)
+- Simple API for signaling
+
+**PHASE 2: Polish (Feb 2026)**
+
+Feb 1, 2026:
+- **Proper chain reaction animations** - the core visual feedback
+- Session storage for reconnection/rejoining
+- Version update
+
+**HOW Chain Reactions Work:**
+
+\`\`\`javascript
+async function explode(x, y, owner) {
+  const cell = grid[y][x];
+  cell.orbs = 0;
+  
+  // Animate explosion
+  await animateExplosion(x, y, cell.color);
+  
+  // Orbs fly to neighbors (with animation)
+  for (const [nx, ny] of getNeighbors(x, y)) {
+    await animateOrbFlight(x, y, nx, ny);
+    grid[ny][nx].orbs++;
+    grid[ny][nx].owner = owner; // Capture!
+    
+    if (grid[ny][nx].orbs >= grid[ny][nx].criticalMass) {
+      // Recursive chain reaction
+      await explode(nx, ny, owner);
+    }
+  }
+}
+\`\`\`
+
+**Game Balance:**
+- Corners: Critical mass 2 (safest)
+- Edges: Critical mass 3
+- Center: Critical mass 4 (most vulnerable)
+
+Strategic depth: Setting up chain reactions vs defensive play.
+
+Live: https://chain-reaction-eta.vercel.app
+GitHub: https://github.com/Keshav-Madhav/chain_reaction
+`,
+};
+
+const devTimelineZenNotes = {
+  id: "dev-timeline-zen-notes",
+  title: "Zen Notes Development — Real-Time Collaborative Notes",
+  content: `
+Topics covered here: zen notes development, collaborative editing, liveblocks,
+real-time collaboration, firebase, blocknote editor.
+
+**Zen Notes** was built in **1 week** (Aug 6-12, 2024), implementing
+Google Docs-style real-time collaboration.
+
+**Day 1-2 (Aug 6-7):**
+- Initial setup, cleanup
+- Clerk authentication
+- Firebase + Firebase Admin
+- Header and Sidebar components
+- SideBarOption for document navigation
+- Database structure for users and collections
+- "New document" functionality
+
+**Day 3 (Aug 8-9):**
+- Liveblocks installation (real-time collaboration engine)
+- Follow pointers (see where others' cursors are)
+- Basic document and live cursors
+- Breadcrumbs navigation
+- Document page with name editing
+
+**Day 4 (Aug 10-11):**
+- **BlockNote editor** - the rich text engine
+- Inviting users functionality
+- Delete document functionality
+- Name updates synced to URL path
+- Manage users modal
+- "Currently editing" user indicators
+
+**Day 5 (Aug 12):**
+- **Chat with doc modal** - AI integration
+- Translation feature via Cloudflare API
+- Bug fixes
+
+**Nov 2024:**
+- Dark mode across entire app
+- Firebase service key security
+
+**WHY Liveblocks:**
+- Handles conflict resolution (CRDTs)
+- Presence system (who's online, cursor positions)
+- Room-based collaboration
+- Works with any editor (we used BlockNote)
+
+**Architecture:**
+\`\`\`
+User → Clerk Auth → Firebase (user data)
+                 ↓
+Document → Liveblocks Room → Other Users
+                 ↓
+         BlockNote Editor (CRDT-synced)
+\`\`\`
+
+**Real-Time Features:**
+1. Live cursors with user names
+2. Selection highlighting
+3. Presence indicators
+4. Instant text sync
+5. Conflict-free merging
+
+Live: https://zen-notes-keshav.vercel.app
+GitHub: https://github.com/Keshav-Madhav/zen-notes
+`,
+};
+
+const devTimelineOthello = {
+  id: "dev-timeline-othello",
+  title: "Othello Development — AI with Minimax",
+  content: `
+Topics covered here: othello development, minimax algorithm, alpha-beta pruning,
+game ai, multiplayer peerjs.
+
+**Othello** was built in **2 days** (Mar 29-30, 2025) then polished (Apr 3).
+
+**Day 1 (Mar 29-30):**
+- Initial commit - Board UI
+- Basic game logic (valid moves, flipping)
+- Turn-based movement
+- **Multiplayer with PeerJS**
+- Connection UI for multiplayer
+- Winning screen
+- Player color display
+
+**Day 2 (Mar 30):**
+- **AI algorithm** - simplistic at first
+- Better algorithm for computer play
+- Room code from query params
+- Metadata and favicon
+
+**April Polish (Apr 3):**
+- Code refactored into separate files
+- **Previous move highlight** - shows opponent's last move
+- Better data efficiency
+
+**HOW the AI Works:**
+
+\`\`\`javascript
+function minimax(board, depth, isMaximizing, alpha, beta) {
+  if (depth === 0 || gameOver(board)) {
+    return evaluate(board);
+  }
+  
+  const moves = getValidMoves(board, currentPlayer);
+  
+  if (isMaximizing) {
+    let maxEval = -Infinity;
+    for (const move of moves) {
+      const newBoard = makeMove(board, move);
+      const eval = minimax(newBoard, depth - 1, false, alpha, beta);
+      maxEval = Math.max(maxEval, eval);
+      alpha = Math.max(alpha, eval);
+      if (beta <= alpha) break; // Alpha-beta pruning
+    }
+    return maxEval;
+  }
+  // ... similar for minimizing
+}
+
+function evaluate(board) {
+  let score = 0;
+  // Corners are most valuable (can't be flipped)
+  score += countCorners(board, AI) * 25;
+  // Edges are valuable
+  score += countEdges(board, AI) * 5;
+  // Mobility (available moves) matters
+  score += getValidMoves(board, AI).length * 3;
+  // Disc count
+  score += (aiDiscs - opponentDiscs);
+  return score;
+}
+\`\`\`
+
+**WHY Alpha-Beta Pruning:**
+Minimax alone: explores ALL possible game trees
+With pruning: skips branches that can't affect the outcome
+Result: Same answer, 10-100x fewer nodes explored
+
+GitHub: https://github.com/Keshav-Madhav/Othello-JS
+`,
+};
+
+const devTimelineZoomClone = {
+  id: "dev-timeline-zoom-clone",
+  title: "Yoom (Zoom Clone) Development — Video Calling App",
+  content: `
+Topics covered here: zoom clone development, video calling, stream.io,
+clerk auth, webrtc, meeting scheduling.
+
+**Yoom** was built in **2 days** (Jun 15-16, 2024) using Stream.io for
+video infrastructure.
+
+**Day 1 (Jun 15):**
+- Initial Next.js setup
+- Basic folder structure and layout
+- Sidebar and navigation
+- Pages for all routes
+- Top navigation
+- Mobile responsive navbar
+- **Clerk authentication**
+- Custom sign in/sign up pages
+
+**Day 2 (Jun 16):**
+- Home page UI
+- Meeting modal
+- **Stream.io integration** for video
+- Call setup and join meeting
+- Meeting created toast notifications
+- Meeting room layout
+- **Meeting scheduling** (future meetings)
+- Previous meetings page
+- Upcoming meetings page
+- **Recordings page**
+- Personal room (instant meeting link)
+- Join meeting modal
+
+**WHY Stream.io instead of raw WebRTC:**
+Raw WebRTC is complex:
+- Signaling server needed
+- STUN/TURN servers for NAT traversal
+- Handling multiple participants
+- Recording, screen sharing, etc.
+
+Stream.io provides:
+- Ready-made video infrastructure
+- React components
+- Recording built-in
+- Handles all edge cases
+
+**Features Implemented:**
+1. Instant meetings (click to start)
+2. Scheduled meetings (calendar integration)
+3. Meeting recordings (watch later)
+4. Personal meeting room (persistent link)
+5. Join via link
+
+Live: https://zoom-clone-black-sigma.vercel.app
+GitHub: https://github.com/Keshav-Madhav/zoom-clone
+`,
+};
+
+const devTimelineWavesToSound = {
+  id: "dev-timeline-waves-to-sound",
+  title: "Waves to Sound Development — Audio Visualization",
+  content: `
+Topics covered here: waves to sound development, audio visualization,
+web audio api, wave physics, sound synthesis.
+
+**Waves to Sound** was built in **3 days** (Jun 2-4, 2025), connecting
+visual wave math to actual audio.
+
+**Day 1 (Jun 2):**
+- Initial commit
+- Wave creation logic in JS
+- Frequency and amplitude controls
+- Wave formulas (sine, square, triangle, sawtooth)
+- Code split for cleaner development
+- Fixed wave visualization
+- Max frequency limits
+
+**Day 2 (Jun 3):**
+- Main wave visualizer (sum of all waves)
+- Multiple waves that combine
+- Wave cycle visualization
+- More controls, improved CSS
+- Phase shift control
+
+**Day 3 (Jun 4):**
+- **Web Audio API integration** - the key feature
+- AudioContext for actual sound generation
+- Dynamic base frequency
+- Audio syncs with visual wave
+- Updates on activation and formula change
+- Minor fixes
+
+**WHY this project exists:**
+
+Most people learn waves as abstract math:
+  y = A * sin(2πft + φ)
+
+But what does that SOUND like? This tool answers:
+- Higher frequency (f) = higher pitch
+- Higher amplitude (A) = louder
+- Sine wave = smooth sound
+- Square wave = buzzy/harsh
+- Sawtooth = rich harmonics
+
+**Technical Implementation:**
+
+\`\`\`javascript
+const audioContext = new AudioContext();
+const oscillator = audioContext.createOscillator();
+const gainNode = audioContext.createGain();
+
+oscillator.type = 'sine'; // or 'square', 'sawtooth', 'triangle'
+oscillator.frequency.value = frequency;
+gainNode.gain.value = amplitude;
+
+oscillator.connect(gainNode);
+gainNode.connect(audioContext.destination);
+oscillator.start();
+\`\`\`
+
+**Educational Value:**
+See a wave, hear it. Change frequency, hear pitch change.
+The abstract becomes tangible.
+
+Live: https://keshav-madhav.github.io/waves-to-sound/
+GitHub: https://github.com/Keshav-Madhav/waves-to-sound
+`,
+};
+
+const devTimelineParticleLife = {
+  id: "dev-timeline-particle-life",
+  title: "Particle Life Development — Emergent Behavior Simulation",
+  content: `
+Topics covered here: particle life development, emergent behavior, artificial
+life, cellular automata, particle simulation.
+
+**Particle Life** was built in **2 days** (Nov 14-15, 2024), implementing
+the viral "Particle Life" concept.
+
+**Day 1 (Nov 14):**
+- Initial commit
+- Basic particle class
+- Particle rendering on Canvas
+- World translate and scale
+- Camera for world traversal
+- **Force application between particles** - the core mechanic
+
+**Day 2 (Nov 15):**
+- Delta time function for stable simulation
+- Balanced attraction/repulsion values
+- Fixed deployment bugs
+
+**HOW Particle Life Works:**
+
+Each color has attraction/repulsion rules toward every other color:
+\`\`\`javascript
+rules = {
+  red: { red: 0.1, green: -0.5, blue: 0.3 },
+  green: { red: 0.2, green: -0.1, blue: -0.3 },
+  blue: { red: -0.2, green: 0.4, blue: 0.1 }
+}
+
+// Positive = attraction, Negative = repulsion
+\`\`\`
+
+From these simple rules, complex behavior emerges:
+- Clusters form and move together
+- "Predator-prey" relationships appear
+- Cells seem to "hunt" each other
+- Stable structures emerge and dissolve
+
+**WHY it looks alive:**
+
+The rules create feedback loops:
+1. Red attracts green → green clusters around red
+2. Green repels blue → blue flees green
+3. Blue attracts red → blue chases red
+4. Result: Dynamic ecosystem with apparent "behavior"
+
+**No AI involved** - just physics rules, yet it looks like life.
+
+**Technical Challenge:**
+O(N²) force calculations (every particle affects every other).
+For 1000 particles: 1 million calculations per frame.
+Optimized with spatial hashing (only check nearby particles).
+
+GitHub: https://github.com/Keshav-Madhav/Particle-Life
+`,
+};
+
+const devTimelineChess = {
+  id: "dev-timeline-chess",
+  title: "Chess Development — Full Rules Implementation",
+  content: `
+Topics covered here: chess development, chess rules, legal moves, check
+detection, pawn promotion, en passant, castling.
+
+**Chess** was built in **2 days** (Feb 10-11, 2024), implementing ALL
+official chess rules.
+
+**Day 1 (Feb 10):**
+- Initial commit
+- Draw board
+- Piece SVG images
+- Pieces drawn to board
+- Moving pieces with drag/drop
+- Board flip functionality
+- Code documentation
+- Pawn promotion
+- Captures
+- Legal move display
+- Move restrictions (can't move wrong piece)
+- Touch-to-move (mobile support)
+- From/to square highlighting
+
+**Day 2 (Feb 11):**
+- **Advanced legal move checking** - the hard part
+- Turn-based movement
+- Board orientation correction
+- Improved pawn legal moves
+- **King in check highlights**
+- Favicon and accessibility
+
+**WHY Legal Move Checking is Hard:**
+
+Simple approach: "Can this piece reach that square?"
+But that's not enough. A move is only legal if:
+1. Piece can physically move there
+2. Path is not blocked (for sliding pieces)
+3. Move doesn't leave YOUR king in check
+4. Special rules: castling, en passant, promotion
+
+For every candidate move, you must:
+\`\`\`javascript
+function isLegalMove(from, to) {
+  // 1. Basic move validation
+  if (!canPieceMoveHere(from, to)) return false;
+  
+  // 2. Simulate the move
+  const boardCopy = copyBoard();
+  makeMove(boardCopy, from, to);
+  
+  // 3. Check if own king is in check after move
+  const kingPos = findKing(boardCopy, currentPlayer);
+  if (isSquareAttacked(boardCopy, kingPos, opponent)) {
+    return false; // Move leaves king in check
+  }
+  
+  return true;
+}
+\`\`\`
+
+**Special Rules Implemented:**
+- **Castling**: King moves 2 squares, rook jumps over
+  - Can't castle through check
+  - Can't castle if king/rook has moved
+- **En Passant**: Pawn captures pawn that just double-moved
+- **Pawn Promotion**: Pawn reaches end → becomes queen/rook/bishop/knight
+- **Check/Checkmate**: King in check with no legal moves
+- **Stalemate**: No legal moves but not in check
+
+GitHub: https://github.com/Keshav-Madhav/Chess-HTML-CSS-JS
+`,
+};
+
+const devTimelineFizzi = {
+  id: "dev-timeline-fizzi",
+  title: "Fizzi Drinks Development — 3D Product Landing Page",
+  content: `
+Topics covered here: fizzi development, 3d landing page, three.js, react three
+fiber, gsap animations, scroll-driven animation.
+
+**Fizzi Drinks** was built in **3 days** (Sep 20-22, 2024), creating a
+stunning 3D animated product page.
+
+**Day 1 (Sep 20):**
+- Initial commit with Prismic CMS
+- Code cleanup
+- Hero components
+
+**Day 2 (Sep 21):**
+- **GSAP animations** for hero text
+- Three.js and React Three Fiber setup
+- **Soda can 3D component** - the star of the show
+- Three.js canvas rendering
+
+**Day 3 (Sep 22):**
+- Landing page with can animations
+- **Bubbles effect** (particles around can)
+- Performance optimizations
+- Skydiving can section (can falls as you scroll)
+- Choose your flavor carousel
+- Alternating text sections
+- Footer and final section
+- Favicon
+
+**WHY React Three Fiber:**
+Three.js alone is imperative:
+\`\`\`javascript
+const geometry = new THREE.CylinderGeometry(...);
+const material = new THREE.MeshStandardMaterial(...);
+const mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
+\`\`\`
+
+React Three Fiber is declarative:
+\`\`\`jsx
+<mesh>
+  <cylinderGeometry args={[...]} />
+  <meshStandardMaterial color="red" />
+</mesh>
+\`\`\`
+
+Benefits:
+- React's component model for 3D
+- Hooks for animation state
+- Easy integration with rest of app
+
+**Scroll-Driven Animation:**
+\`\`\`javascript
+useGSAP(() => {
+  gsap.to(canRef.current.rotation, {
+    y: Math.PI * 2,
+    scrollTrigger: {
+      trigger: sectionRef.current,
+      start: "top bottom",
+      end: "bottom top",
+      scrub: true
+    }
+  });
+});
+\`\`\`
+
+Can rotates as user scrolls. "Scrub: true" ties animation progress
+to scroll position.
+
+**Performance Tricks:**
+- Instanced bubbles (one draw call for all)
+- LOD (Level of Detail) for distant objects
+- Lazy loading 3D assets
+- Compressed textures
+
+Live: https://fizzi-drinks.vercel.app
+GitHub: https://github.com/Keshav-Madhav/fizzi-drinks
+`,
+};
+
+// ============================================================================
+// VERBAFLO DETAILED CONTRIBUTIONS
+// ============================================================================
+
+const vfContributionsOverview = {
+  id: "vf-contributions-overview",
+  title: "Keshav's VerbFlo Contributions — Overview of 6 Months of Work",
+  content: `
+Topics covered here: verbaflo contributions, what keshav built at verbaflo,
+verbaflo experience, keshav's work, ai engineer contributions, verbaflo role.
+
+**Keshav joined VerbaFlo in late 2025** and has made **200+ commits** across
+four major codebases in 6 months. Here's the high-level impact:
+
+**vf-ai (Main AI Backend):**
+- Built the **custom tracing system (k_trace)** that replaced Opik
+- Integrated **LiteLLM** with retry/fallback logic across all LLM calls
+- Implemented **structured output support** for prompt-driven schemas
+- Added **global config middleware** for timeouts, fallbacks, and feature flags
+- Fixed dozens of production bugs in property extraction, FAQ routing, etc.
+
+**vf-copilot (Multi-Agent Internal Tool):**
+- **Built from the ground up** (Dec 2025 initial commit)
+- Designed the multi-agent architecture with parallel specialists
+- Implemented **PostgreSQL Text-to-SQL** system with retry logic
+- Built **Milvus FAQ agent** with query expansion
+- Created **streaming infrastructure** and React UI
+- Added memory, caching, and follow-up question generation
+
+**vf-simulation (MCP + Widget Tester):**
+- **Built the entire Electron app** from scratch (Mar-Apr 2026)
+- Implemented the **MCP server** for AI-assisted debugging
+- Built CID (Conversation Intelligence Data) investigator
+- Created ClickUp integration for QA workflow
+- Implemented auto-update system via S3
+
+**verbaflo-playground (Evaluation Toolkit):**
+- **Built the entire system** (Mar 2026 onwards)
+- Created benchmark extraction from Opik/Snowflake traces
+- Built **LLM Judge system** for automated evaluation
+- Implemented **Trace Explorer** with full observability UI
+- Migrated to Next.js with new features (Prompt Playground, span errors)
+- Added GitHub OAuth, session management, bulk operations
+
+**Key Themes Across All Work:**
+1. **Observability obsession** — every system has tracing, logging, debugging tools
+2. **LLM reliability** — retry logic, fallbacks, structured outputs
+3. **Developer experience** — MCP tools, eval tooling, debugging UI
+4. **Performance** — caching, streaming, parallel execution
+`,
+};
+
+const vfContributionsAiBackend = {
+  id: "vf-contributions-ai-backend",
+  title: "Keshav's vf-ai Contributions — Main AI Backend Deep Dive",
+  content: `
+Topics covered here: vf-ai contributions, keshav vf-ai work, ai backend,
+litellm integration, k_trace, structured output, global config, faq routing.
+
+**vf-ai** is VerbaFlo's main FastAPI AI backend. Keshav's contributions
+span Jan-Apr 2026 with **80+ commits**.
+
+**JANUARY 2026: Global Config & Middleware**
+
+Problem: Timeouts and fallbacks were hardcoded everywhere.
+Solution: Centralized global config middleware.
+
+- Jan 12: "Added global config and updated fallbacks and timeout to use
+  global config values"
+- Jan 21: "Added new middleware for global config fetching and updated
+  orchestrator and timeouts and fallbacks"
+- Jan 21: "Move industry to config with enum and get set function"
+
+**Impact:** Single source of truth for all LLM timeouts, fallback models,
+and feature flags. No more hunting through code to change a timeout.
+
+**FEBRUARY 2026: FAQ DB Splitting & Property Validation**
+
+- Feb 20: "First/Second Testing PR consolidated changes for faq_db Splitting"
+  Split FAQ database to improve query performance and enable per-client FAQs.
+
+- Feb 23: "Fixed property name validation, alias mapping, and tenant_type bug"
+- Feb 27: "Added faq_chunk sorting based on channel"
+
+**MARCH 2026: Custom Tracing System (k_trace)**
+
+Problem: Opik (the existing tracing tool) had issues — memory leaks,
+missing data, hard to query.
+
+Solution: Build a custom tracing library.
+
+- Mar 24: "Added custom decorator logging library of k_trace to replace opik"
+- Mar 25: "Updated k_trace to be optimized, have proper output and input
+  and keep tags and other extra columns for searching"
+- Mar 26: "Full rename: folder, class, env vars, logger name, contextvar
+  names, all 66 app file imports/aliases"
+
+**HOW k_trace Works:**
+\`\`\`python
+@k_trace(name="flow_router", tags=["routing"])
+async def route_flow(input: str) -> FlowResult:
+    # ... logic ...
+    return result
+# Automatically logs: input, output, duration, tags
+# Sends to Elasticsearch for querying
+\`\`\`
+
+**Impact:** Custom tracing integrated with Elasticsearch. VerbaSuper
+can now query traces directly.
+
+**APRIL 2026: LiteLLM Integration & Structured Outputs**
+
+Problem: Each agent had its own LLM client code. No unified retry logic.
+
+- Apr 6: "Full LiteLLM integration"
+- Apr 7: "Added updated retry/fallback + timeout logic living on prompt
+  config basis"
+- Apr 13: "Add structured_output and tool_calls support for prompt-driven
+  LLM response schemas"
+- Apr 14: "Enhance prompt handling by introducing active_fields and updating
+  response_format across multiple agents"
+
+**HOW Structured Output Works:**
+\`\`\`python
+# Before: Parse JSON from string, hope it's valid
+response = llm.generate(prompt)
+data = json.loads(response)  # Might fail!
+
+# After: LLM returns validated Pydantic model
+@k_trace
+async def extract_lead(text: str) -> LeadData:
+    return await llm.generate(
+        prompt,
+        response_format=LeadData,  # Pydantic model
+        active_fields=["name", "email", "phone"]  # Dynamic fields
+    )
+\`\`\`
+
+**Impact:** Reliable structured outputs across all agents. Failed parses
+retry automatically.
+
+**Also Added:**
+- Apr 9: "Added Grok from xAI and removed deprecated models"
+- Apr 22: "Implement lost reason configuration retrieval"
+- Apr 30: "Refactor VapiService: streamline viewing availability processing"
+`,
+};
+
+const vfContributionsCopilot = {
+  id: "vf-contributions-copilot",
+  title: "Keshav's vf-copilot Contributions — Built From Scratch",
+  content: `
+Topics covered here: vf-copilot contributions, multi-agent system, text to sql,
+t2s, milvus faq, streaming, copilot architecture, keshav built copilot.
+
+**vf-copilot** is VerbaFlo's internal multi-agent tool for querying data.
+**Keshav built it from scratch** starting Dec 2025.
+
+**DECEMBER 2025: Foundation (Initial Commits)**
+
+- Dec 10: "Initial commit" — Keshav started the project
+- Dec 10: "Add Jinja2 templating for agent system prompts"
+- Dec 11: "Refactor MongoDB agent, add parallel agent calls, Opik tracing"
+- Dec 11: "Add campaign execution logs agent, conversations agent"
+- Dec 12: "Add viewings agent, handoffs between agents"
+- Dec 15: "Add streaming response for analyst agent"
+- Dec 17: "Add mermaid syntax self-fixing functionality using LLM"
+- Dec 18: "Add prefetch to triage, TTL cache for schema, multi-Mongo connections"
+- Dec 20: "Add Milvus and Milvus RAG querying"
+- Dec 21: "Add Milvus FAQ agent"
+
+**In 11 days, Keshav built:**
+- Multi-agent orchestration
+- 8+ MongoDB specialist agents
+- Streaming response infrastructure
+- Milvus vector search integration
+- Schema caching system
+- Agent handoff logic
+
+**JANUARY 2026: PostgreSQL Text-to-SQL**
+
+- Jan 2: "Fully integrated Postgres text-to-sql system with PMS specialist"
+- Jan 3: "Add follow-up questioning as quick replies"
+- Jan 4: "Add semantic caching for user queries"
+- Jan 9: "Add query returning functionality with downloadable Excel"
+- Jan 10: "Add React-based UI"
+- Jan 13: "Add env control for base URL in React UI"
+- Jan 16: "Add summarizer agent for data summaries"
+- Jan 17: "Add result truncation to reduce token bloat"
+- Jan 25-29: "Migrate to Instructor+LiteLLM for unified model handling"
+
+**HOW Text-to-SQL Works:**
+\`\`\`
+User: "Show properties under £500/week in London"
+    ↓
+T2S Agent:
+  1. Parse intent → property search
+  2. Extract filters → price<500, city=London
+  3. Generate SQL → SELECT * FROM properties WHERE ...
+  4. Execute → [results]
+  5. Format → table or Excel download
+\`\`\`
+
+**FEBRUARY 2026: T2S Accuracy & Milvus Improvements**
+
+- Feb 5: "Refactored and improved Milvus FAQ specialist with custom filters"
+- Feb 16-17: "Property identifier accuracy improvements using GPT-4.1 mini"
+- Feb 17: "Fixed keyword as filter rejection issue"
+- Feb 24: "Fixed T2S: coupling, distinct/groupby, having clauses"
+
+**MARCH 2026: Multi-Query & Retry Logic**
+
+- Mar 2: "Added walking distance/duration queries"
+- Mar 5: "Fixed math queries, nested queries, ghost column hallucination"
+- Mar 14: "Added multi-query with retry logic and descending filter removal"
+
+**HOW Retry Logic Works:**
+\`\`\`python
+async def query_with_retry(user_query: str) -> Result:
+    filters = extract_filters(user_query)
+    
+    for attempt in range(3):
+        sql = generate_sql(user_query, filters)
+        result = execute(sql)
+        
+        if result is not None:
+            return result
+        
+        # Remove least certain filter and retry
+        filters = filters[:-1]
+    
+    return partial_result_with_explanation()
+\`\`\`
+
+**APRIL 2026: Viewing Slots & Token Optimization**
+
+- Apr 27: "Add viewing slot date/time handling with timezone conversion"
+- Apr 28: "Implement token-based trimming for T2S results"
+- Apr 28: "Implement JSONB EXISTS handling for array columns"
+- Apr 29: "Refactor tenant isolation with join paths"
+
+**Final Architecture:**
+\`\`\`
+User → Triage → Parallel Specialists → Analyst → Streaming Response
+          ↓
+   [Mongo×8, Milvus FAQ, Postgres PMS]
+\`\`\`
+`,
+};
+
+const vfContributionsSimulation = {
+  id: "vf-contributions-simulation",
+  title: "Keshav's vf-simulation Contributions — MCP Server & Widget Tester",
+  content: `
+Topics covered here: vf-simulation contributions, mcp server, cid, widget tester,
+electron app, clickup integration, auto-update, keshav built simulation.
+
+**vf-simulation (VerbaSuper)** is VerbaFlo's Electron desktop app.
+**Keshav built the entire application** from scratch in Apr 2026.
+
+**WEEK 1: Foundation (Apr 8-13)**
+
+- Apr 8: "Simulation stabilized" — Puppeteer-based widget replay working
+- Apr 9: "Simulation with evaluation done"
+- Apr 9: "Migration to node-based Electron app successful"
+- Apr 10: "Added batch ClickUp execute"
+- Apr 13: "Toast/notification system, batch keeps running when unfocused"
+- Apr 13: "AWS Secrets Manager + admin-password enrollment"
+- Apr 13: "Fallback to deleted_conversations for missing leads"
+
+**WEEK 2: CID & ClickUp (Apr 14-18)**
+
+- Apr 14: "Per-env DB, Excel export, ClickUp task IDs, persona echo guard"
+- Apr 15: "Browser detection, prefetched leads optimization"
+- Apr 15: "Windows build support, macOS packaging"
+- Apr 16: **"Introduce MCP server for AI-assisted CID investigation"**
+- Apr 17: "Lead ID scraper fixes for anonymous leads"
+- Apr 18: "ClickUp task management: status updates, QA status, denial reasons"
+
+**WEEK 3: MCP & Polish (Apr 19-29)**
+
+- Apr 19: "Google Translate integration for non-English conversations"
+- Apr 19: "User-specific ClickUp key management"
+- Apr 20: "Theme system (light/dark/system)"
+- Apr 20: "Trace explorer module for Elasticsearch traces"
+- Apr 20: "Per-client widget URL overrides"
+- Apr 22: "Color palette selection, settings migration"
+- Apr 29: **"S3-based auto-update functionality"**
+
+**THE MCP SERVER:**
+
+Keshav built a Model Context Protocol server that exposes CID tools:
+
+\`\`\`typescript
+// mcp/server.ts
+server.tool('cid_fetch', async ({ lead_id, env }) => {
+  const conv = await cidFetch(lead_id, env);
+  return fmtConversation(conv);
+});
+
+server.tool('cid_enrich', async ({ lead_id }) => {
+  const enriched = await runEnrichment(lead_id);
+  return fmtEnriched(enriched);
+});
+
+server.tool('trace_search', async ({ query }) => {
+  return await searchTraces(query);
+});
+\`\`\`
+
+**WHY This Matters:**
+Before: Debug conversation → 10 minutes of manual clicking
+After: AI agent calls cid_investigate → 10 seconds
+
+**CLICKUP INTEGRATION:**
+
+Full workflow automation:
+1. Pull tasks from ClickUp lists
+2. Auto-fetch leads mentioned in task
+3. Run simulation/CID investigation
+4. Update task status
+5. Add denial/approval reasons
+6. Create bug report with RCA
+
+**AUTO-UPDATE:**
+
+- App checks S3 for new versions on launch
+- Downloads in background
+- Swaps in-place after user closes
+- TOTP-authorized enrollment for credentials
+
+**What Keshav Built in 3 Weeks:**
+- Complete Electron app (React + TypeScript)
+- MCP server with 6+ tools
+- CID investigator with trace enrichment
+- ClickUp bi-directional integration
+- Widget replay engine (Puppeteer)
+- Batch simulation runner
+- AWS Secrets Manager integration
+- S3 auto-update system
+- Theme system, translation, multi-env support
+`,
+};
+
+const vfContributionsPlayground = {
+  id: "vf-contributions-playground",
+  title: "Keshav's Playground Contributions — Evaluation Toolkit",
+  content: `
+Topics covered here: verbaflo playground contributions, eval toolkit, benchmark,
+llm judge, trace explorer, prompt playground, keshav built playground.
+
+**verbaflo-playground** is VerbaFlo's prompt evaluation toolkit.
+**Keshav built the entire system** starting Mar 2026.
+
+**MARCH 2026: Foundation**
+
+- Mar 6: "Added Claude and Make files" — Initial structure
+- Mar 10: "Added benchmark file manager, prompt runner pages"
+- Mar 10: "Added judge system" for automated evaluation
+- Mar 10: "Added multi-threading for benchmark runs"
+- Mar 11: "Separated Streamlit UI code from logic code"
+- Mar 11: "Added FastAPI to expose logic via API"
+- Mar 12: "Added eval criteria generator page"
+- Mar 13: "Added bulk client prompt extraction"
+- Mar 16: "Implemented OR logic for OQL filters with parallelism"
+- Mar 26: **"Add Trace Explorer — full observability UI for LLM traces"**
+- Mar 27: "Massive visual update, light/dark mode, performance improvements"
+- Mar 30: "Multi-environment trace fetching"
+- Mar 31: "SQL filtering, cache fixes"
+
+**THE BENCHMARK SYSTEM:**
+
+\`\`\`
+1. Extract traces from Opik/Snowflake
+   ↓
+2. Re-run prompts with modified templates
+   ↓
+3. Compare outputs using LLM Judge
+   ↓
+4. Generate evaluation report
+\`\`\`
+
+**HOW THE JUDGE WORKS:**
+
+\`\`\`python
+async def judge_response(original: str, new: str, criteria: List[str]) -> Score:
+    prompt = f"""
+    Compare these two responses:
+    Original: {original}
+    New: {new}
+    
+    Score on: {criteria}
+    - Accuracy (1-5)
+    - Helpfulness (1-5)
+    - Tone (1-5)
+    """
+    return await llm.generate(prompt, response_format=Score)
+\`\`\`
+
+**APRIL 2026: Next.js Migration & New Features**
+
+- Apr 6: "Added AWS Secret Manager"
+- Apr 8: "Added batch exporting"
+- Apr 11: "Major performance improvements"
+- Apr 14: "Multiple updates, ghost commit"
+- Apr 16: "Searching optimizations"
+- Apr 17: "Merge feature/migrate-nextjs" — Full Next.js rewrite
+- Apr 22: "Server-side Jinja2 rendering for playground"
+- Apr 23: "Prompt Playground with URL parameter handling"
+- Apr 24: "Span error handling and exploration"
+- Apr 27: "Structured output schema support in Prompt Playground"
+- Apr 28: "ClickUp ticket creation from span errors"
+- Apr 28: "Resizable splitter in Span Errors Explorer"
+- Apr 29: "GitHub OAuth authentication"
+- Apr 29: "Bulk run functionality"
+- May 1: "DB-backed session management replacing JWT"
+
+**TRACE EXPLORER:**
+
+Full observability UI:
+- Search traces by text, time range, client
+- Drill into individual spans
+- See LLM inputs/outputs
+- Filter by error status
+- Export to Excel/CSV
+- Create ClickUp tickets for errors
+
+**PROMPT PLAYGROUND:**
+
+Test prompts in browser:
+- Select prompt template
+- Inject variables (Jinja2)
+- Choose model (GPT, Claude, Gemini, etc.)
+- See response with timing
+- Compare multiple runs
+
+**What Keshav Built:**
+- Streamlit-based benchmark tool
+- FastAPI backend with all logic
+- LLM Judge for automated evaluation
+- Trace Explorer with full search
+- Next.js frontend rewrite
+- Prompt Playground
+- Span Error Explorer
+- GitHub OAuth + session management
+- Multi-model support (OpenAI, Anthropic, Together, Cerebras, Azure)
+`,
+};
+
+const vfContributionsTracing = {
+  id: "vf-contributions-tracing",
+  title: "Keshav's Observability Work — k_trace, Kibana, Trace Explorer",
+  content: `
+Topics covered here: k_trace, kibana tracing, observability, llm tracing,
+elasticsearch, opik replacement, custom tracing library.
+
+**Observability is a theme across all of Keshav's VerbFlo work.** He built
+custom tracing infrastructure when existing tools didn't meet requirements.
+
+**THE PROBLEM WITH OPIK:**
+
+Opik (VerbFlo's original tracing tool) had issues:
+- Memory leaks in long-running processes
+- Missing data in complex async flows
+- Hard to query specific traces
+- No integration with Elasticsearch
+
+**THE SOLUTION: k_trace**
+
+Keshav built a custom tracing library in Mar 2026:
+
+\`\`\`python
+# Simple decorator-based tracing
+@k_trace(name="faq_retrieval", tags=["milvus", "faq"])
+async def retrieve_faqs(query: str) -> List[FAQ]:
+    # Function body
+    return faqs
+
+# Automatic capture of:
+# - Input arguments
+# - Output (serialized)
+# - Duration
+# - Tags for filtering
+# - Nested span hierarchy
+# - Error traces
+\`\`\`
+
+**Key Commits:**
+- Mar 24: "Added custom decorator logging library of k_trace to replace opik"
+- Mar 25: "Updated k_trace to be optimized, have proper output and input"
+- Mar 26: "Full rename across 66 app files"
+
+**KIBANA INTEGRATION:**
+
+k_trace sends to Elasticsearch, queryable via Kibana:
+
+\`\`\`
+trace_id: abc123
+spans:
+  - name: flow_router, duration: 45ms
+    - name: faq_retrieval, duration: 30ms
+    - name: llm_call, duration: 200ms
+      input: "What is the price?"
+      output: "The price is £500/week"
+      model: gpt-4o-mini
+      tokens: 150
+\`\`\`
+
+**Apr 2026 Kibana Improvements:**
+- Apr 7: "Updated Kibana version and code"
+- Apr 8: "Updated and improved Kibana tracing with tags, names, input, output"
+- Apr 13: "Updated Kibana error capturing"
+
+**TRACE EXPLORER IN PLAYGROUND:**
+
+Not just logging — a full UI for trace analysis:
+
+- Mar 26: "Add Trace Explorer — full observability UI"
+- Mar 27: "Massive visual update, performance improvements"
+- Apr 11: "Major performance improvements"
+- Apr 24: "Span error handling and exploration"
+
+**Features:**
+1. Search by text across all trace fields
+2. Filter by time range, client, error status
+3. Drill into individual spans
+4. See full LLM input/output
+5. Export matching traces
+6. Create ClickUp tickets for errors
+
+**VF-SIMULATION MCP INTEGRATION:**
+
+The MCP server queries the same Elasticsearch indices:
+
+\`\`\`typescript
+server.tool('trace_search', async ({ query, time_range }) => {
+  const traces = await searchTraces(query, time_range);
+  return formatTraces(traces);
+});
+
+server.tool('trace_by_id', async ({ trace_id }) => {
+  return await fetchTraceById(trace_id);
+});
+\`\`\`
+
+**End-to-End Observability:**
+1. Code runs with @k_trace decorators
+2. Traces flow to Elasticsearch
+3. Kibana for dashboards
+4. Trace Explorer for detailed analysis
+5. MCP tools for AI-assisted debugging
+6. ClickUp integration for issue tracking
+
+**WHY This Matters:**
+
+"The bot said something wrong" used to mean hours of debugging.
+Now: search traces → find the span → see exact input/output → identify bug.
+
+Keshav built the entire pipeline.
+`,
+};
+
+const devTimelineDrawCalc = {
+  id: "dev-timeline-draw-calculator",
+  title: "Draw Calculator Development — Apple Math Notes Clone",
+  content: `
+Topics covered here: draw calculator development, handwriting recognition,
+gemini vision, apple calculator clone, canvas drawing.
+
+**Draw Calculator (Sketch-Culator)** was built in **4 days** (Sep 28 - Oct 1, 2024)
+replicating Apple's iPad Math Notes feature.
+
+**Day 1 (Sep 28):**
+- Initial commit
+- Basic canvas with drawing functionality
+- Color changing
+- Reset/clear canvas
+
+**Day 2 (Sep 29):**
+- **LaTeX processing** for math results
+- Draggable LaTeX equations on screen
+- Copy and remove buttons
+
+**Day 3 (Oct 1):**
+- Icon, title, download button
+- Eraser tool
+- UI improvements and fixes
+- **Undo/redo** - stroke history
+- Text insertion onto canvas
+- Touch screen support
+
+**Day 4 (Oct 1):**
+- Responsiveness for all screen sizes
+
+**HOW It Works:**
+
+1. **Drawing Layer:**
+   Canvas captures strokes via pointer events.
+   Each stroke is stored for undo/redo.
+
+2. **Debounced Recognition:**
+   After 500ms of no drawing, send canvas to Gemini.
+
+3. **Gemini Vision:**
+   \`\`\`javascript
+   const response = await gemini.generateContent([
+     { inlineData: { mimeType: 'image/png', data: canvasData }},
+     "Extract the mathematical expression from this handwriting."
+   ]);
+   \`\`\`
+
+4. **LaTeX Rendering:**
+   Result rendered as draggable LaTeX equation.
+
+**WHY Gemini Vision:**
+- Best OCR for handwriting among available models
+- Handles messy writing
+- Understands math notation (fractions, exponents)
+- Fast enough for near-real-time (~300ms)
+
+**Challenges Solved:**
+- "x" vs "×" disambiguation (variable vs multiply)
+- Fraction recognition
+- Multi-step expressions
+- Latency management (debouncing)
+
+**Apple shipped this same feature** weeks before Keshav's version.
+He shipped a working clone within days of seeing it announced.
+
+Live: https://sketchculator.netlify.app/
+GitHub: https://github.com/Keshav-Madhav/draw_calculator
+`,
+};
+
+const projectVerbafloPlayground = {
+  id: "project-verbaflo-playground",
+  title: "VerbaFlo Playground — Prompt Evaluation Toolkit",
+  content: `
+Topics covered here: verbaflo playground, prompt evaluation, llm evaluation,
+benchmark, a/b testing, opik traces, streamlit, eval toolkit.
+
+**verbaflo-playground** is VerbaFlo's internal tool for benchmarking and
+evaluating prompts against production conversation traces.
+
+**The Problem It Solves:**
+"Is this prompt change better?" Without systematic evaluation, prompt
+engineering is guesswork. Playground provides data-driven answers.
+
+**Architecture:**
+\`\`\`
+┌─────────────────────────────────────────┐
+│  Data Sources                           │
+│  • Opik traces (production)             │
+│  • Elasticsearch (conversation logs)    │
+│  • Snowflake (analytics)                │
+└─────────────────┬───────────────────────┘
+                  ↓
+┌─────────────────────────────────────────┐
+│  Shared Logic (logic/)                  │
+│  • Trace extraction                     │
+│  • Prompt rendering (Jinja)             │
+│  • LLM execution                        │
+│  • Evaluation scoring                   │
+└─────────────────┬───────────────────────┘
+                  ↓
+┌─────────────────┴───────────────────────┐
+│            │                            │
+│  Streamlit │   FastAPI    │   Next.js   │
+│   UI       │   (:25503)   │   (:3000)   │
+│            │              │             │
+└────────────┴──────────────┴─────────────┘
+\`\`\`
+
+**Workflow:**
+
+1. **Extract Traces:**
+   Pull real production conversations from Opik.
+
+2. **Re-run with New Prompt:**
+   Take the same input, run through modified prompt.
+
+3. **LLM-Judge Evaluation:**
+   Use a judge LLM to compare original vs new response:
+   - Accuracy (did it answer the question?)
+   - Helpfulness (was it useful?)
+   - Tone (appropriate for brand?)
+   - Safety (no harmful content?)
+
+4. **Aggregate Results:**
+   Statistical comparison: is the new prompt better?
+
+**Features:**
+- Side-by-side comparison view
+- Batch evaluation (run 100 traces)
+- A/B metrics dashboard
+- Export results for analysis
+- ClickUp integration (link results to tickets)
+
+**Tech Stack:**
+- Streamlit for quick internal UI
+- FastAPI for API endpoints
+- Next.js + React for richer UI components
+- LiteLLM for multi-provider LLM calls
+- Monaco editor for prompt editing
+- Recharts for visualization
+
+**Keshav's Contribution:**
+Built the trace extraction pipeline and the evaluation scoring system.
+The key insight: use production data, not synthetic test cases. Real
+conversations have edge cases you'd never think to test.
+`,
+};
+
 // ============================================================================
 // PERSONALITY, INTERESTS, PHILOSOPHY
 // ============================================================================
@@ -2479,6 +6374,24 @@ export const CORPUS_SECTIONS = [
   prudentbitOverview, prudentbitImmune, prudentbitMigration, prudentbitLessons,
   projectGridMath, projectLiveJinja, projectCookieClicker, projectSpaceSandbox,
   projectAxon, projectBrainfuck, projectZenNotes, projectFizzi, projectChatter, projectsOther,
+  projectsAI, projectsGames, projectsSimulations, projectsWebApps, projectsExperimental,
+  // Detailed per-project deep dives
+  projectAxonDeepDive, projectVfSimulationMcp, projectVfCopilotDeepDive,
+  projectCookieClickerDeepDive, projectFpsShooterDeepDive, projectSpaceSandboxDeepDive,
+  project3dNBodyDeepDive, projectGridVisualizerDeepDive, projectMinecraftJsDeepDive,
+  projectLiveJinjaDeepDive, projectBoidsSim, projectDrawCalculatorDeepDive,
+  projectChainReaction, projectOthello,
+  projectVfAiBackend, projectVfPrompts, projectVerbafloPlayground,
+  // Development timelines and evolution stories (why/how)
+  devTimelineSpaceSim, devTimelineCookieClicker, devTimelineFpsShooter,
+  devTimelineLiveJinja, devTimelineGridVisualizer, devTimelineVfSimMcp,
+  devTimelineAxon, devTimelineVfCopilot,
+  devTimelineMinecraft, devTimelineChainReaction, devTimelineZenNotes,
+  devTimelineOthello, devTimelineZoomClone, devTimelineWavesToSound,
+  devTimelineParticleLife, devTimelineChess, devTimelineFizzi, devTimelineDrawCalc,
+  // VerbFlo detailed contributions
+  vfContributionsOverview, vfContributionsAiBackend, vfContributionsCopilot,
+  vfContributionsSimulation, vfContributionsPlayground, vfContributionsTracing,
   personalityOptimization, personalityGaming, personalitySpace, personalityDinosaurs, personalityMusic,
   workStyle, opinionsPhilosophy, whatHeAvoids, careerOutlook,
   techAiAgents, techModels, techData, techObservability, techFrontend, techBackend, techDesktop,

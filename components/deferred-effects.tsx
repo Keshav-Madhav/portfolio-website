@@ -20,6 +20,7 @@ const VelocityTilt = dynamic(() => import("./ui/velocity-tilt"), {
 const KeyboardNav = dynamic(() => import("./ui/keyboard-nav"), { ssr: false });
 const Konami = dynamic(() => import("./ui/konami"), { ssr: false });
 const Multiplayer = dynamic(() => import("./ui/multiplayer"), { ssr: false });
+const ChatWidget = dynamic(() => import("./ui/chat-widget"), { ssr: false });
 // Toaster is rarely needed in the first frame (only fires after a contact
 // form submit / copy-email click). Pull it out of the critical bundle.
 const Toaster = dynamic(
@@ -60,6 +61,7 @@ export default function DeferredEffects() {
       <KeyboardNav />
       <Konami />
       <Multiplayer />
+      <ChatWidget />
       <Toaster
         position="bottom-right"
         toastOptions={{

@@ -15,6 +15,7 @@ While scrolling:
 - Scroll fast → the `<main>` skews subtly via a CSS transform driven by a `data-fast-scroll` attribute set by `components/ui/velocity-tilt.tsx`.
 - A glowing companion orb (the **Spirit Guide**) drifts around the cursor, expresses emotions through color and faces, runs a tour of interactive elements on idle, and reacts to fast scrolls and idle gestures (`components/ui/spirit-guide.tsx`).
 - If anyone else is on the site, you see their cursor and they see yours; press `1`–`9` to send floating emoji reactions (`components/ui/multiplayer.tsx`, Ably-backed).
+- A floating "Ask about Keshav" chat bubble bottom-left opens a streaming first-person chat — answers as Keshav from a curated knowledge base + live GitHub data, accepts JD uploads (PDF/DOCX/TXT/MD) for tailored pitches (`components/ui/chat-widget.tsx`, Groq Llama 3.3 70B backed).
 - `g h/a/w/p/s/c` are two-key keyboard shortcuts; `?` shows the help modal (`components/ui/keyboard-nav.tsx`).
 - `↑↑↓↓←→←→ b a` triggers a Konami flash + emoji burst (`components/ui/konami.tsx`).
 
@@ -26,8 +27,10 @@ app/                        Next.js App Router
 ├── page.tsx                Home (force-static): Hero → About → Experience → Projects → Stack → Contact
 ├── about/                  /about — faux IDE rendering content from lib/data.ts as synthetic markdown
 └── api/
-    ├── contact/route.ts    POST — Resend email (RESEND_API_KEY)
-    └── ably/token/route.ts GET  — mints Ably token (ABLY_API_KEY, never client-exposed)
+    ├── contact/route.ts          POST — Resend email (RESEND_API_KEY)
+    ├── ably/token/route.ts       GET  — mints Ably token (ABLY_API_KEY, never client-exposed)
+    ├── chat/route.ts             POST — streaming chat (Groq, GROQ_API_KEY)
+    └── chat/parse-file/route.ts  POST — extracts text from uploaded PDF/DOCX/TXT/MD
 
 components/                 Sections + providers + ui/
 ├── deferred-effects.tsx    Mounts heavy/decorative effects on requestIdleCallback (THE perf lever)
@@ -37,9 +40,11 @@ components/                 Sections + providers + ui/
 └── ui/                     Atoms, decorative effects, spirit guide, multiplayer
 
 lib/                        data, types, hooks, utils — single source of truth for content
+                            keshav-context.ts is the chat assistant's knowledge base
 context/                    Active-section context (only global state)
 email/                      React Email template for the contact form
 public/                     Static images (imported into lib/data.ts for fingerprinting)
+scripts/fetch-github.mjs    Prebuild step — bakes top GitHub repos into chat context
 ```
 
 ## The deferred-effects pattern (the performance story)

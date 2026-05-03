@@ -3,10 +3,23 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
+import { useIsMobile } from "@/lib/use-is-mobile";
+
 // Code-split the heavy decorative components into their own JS chunks and
 // defer their mount until the browser is idle (or after 800ms fallback).
 // This lets LCP, hydration, and first interaction land before any canvas
 // loops or DOM-watching effects start eating frame budget.
+//
+// On mobile / coarse-pointer devices we additionally **skip** every effect
+// that's either cursor-driven (spirit guide, particle/flow field cursor
+// glow, click sparks, multiplayer cursors), keyboard-driven (keyboard nav,
+// konami, multiplayer reactions), or just expensive-enough that it's not
+// worth the battery on a phone (Lenis smooth-scroll, the canvas fields,
+// velocity tilt). These dynamic imports never even run in that branch, so
+// their JS chunks aren't downloaded.
+//
+// Functional, content-bearing effects (chat widget, toaster) stay on for
+// everyone.
 
 const FlowField = dynamic(() => import("./ui/flow-field"), { ssr: false });
 const ParticleField = dynamic(() => import("./ui/particle-field"), {
@@ -31,6 +44,7 @@ const LenisProvider = dynamic(() => import("./lenis-provider"), { ssr: false });
 
 export default function DeferredEffects() {
   const [ready, setReady] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const w = window as Window & {
@@ -52,15 +66,19 @@ export default function DeferredEffects() {
 
   return (
     <>
-      <LenisProvider />
-      <FlowField />
-      <ParticleField />
-      <VelocityTilt />
-      <ClickSpark />
-      <SpiritGuide />
-      <KeyboardNav />
-      <Konami />
-      <Multiplayer />
+      {!isMobile && (
+        <>
+          <LenisProvider />
+          <FlowField />
+          <ParticleField />
+          <VelocityTilt />
+          <ClickSpark />
+          <SpiritGuide />
+          <KeyboardNav />
+          <Konami />
+          <Multiplayer />
+        </>
+      )}
       <ChatWidget />
       <Toaster
         position="bottom-right"

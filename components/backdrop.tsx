@@ -6,12 +6,15 @@ import { useEffect, useRef } from "react";
 /**
  * Backdrop with aurora blobs that scroll WITH content.
  *
- * Two perf decisions:
+ * Three perf decisions:
  * 1. The container's parallax translate is driven imperatively via a ref-RAF
  *    that self-suspends when scroll settles (no React re-renders during scroll).
  * 2. The 8 blob breathing animations are pure CSS @keyframes — moves them off
  *    framer-motion's animation runtime onto the browser compositor (GPU). On
  *    a slow CPU this saves ~8 rAF ticks/frame doing JS interpolation.
+ * 3. On small viewports we hide every other blob (`hidden sm:block`) and use
+ *    a smaller blur radius. 130–160px blur over a full-screen layer is one
+ *    of the most expensive things a phone GPU can be asked to do at 60fps.
  */
 export default function Backdrop() {
   const reduce = useReducedMotion();
@@ -96,7 +99,7 @@ export default function Backdrop() {
       <div ref={containerRef} className="absolute inset-0 will-change-transform">
         <div
           aria-hidden
-          className="absolute -top-40 left-1/2 h-[40rem] w-[60rem] rounded-full blur-[140px] will-change-transform"
+          className="absolute -top-40 left-1/2 h-[40rem] w-[60rem] rounded-full blur-[70px] will-change-transform sm:blur-[140px]"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(258 85% 60% / 0.35), transparent 65%)",
@@ -107,7 +110,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
-          className="absolute top-[20vh] -right-32 h-[36rem] w-[48rem] rounded-full blur-[130px] will-change-transform"
+          className="absolute top-[20vh] -right-32 hidden h-[36rem] w-[48rem] rounded-full blur-[130px] will-change-transform sm:block"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(190 90% 50% / 0.30), transparent 65%)",
@@ -117,7 +120,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
-          className="absolute top-[85vh] -left-32 h-[32rem] w-[44rem] rounded-full blur-[120px] will-change-transform"
+          className="absolute top-[85vh] -left-32 h-[32rem] w-[44rem] rounded-full blur-[60px] will-change-transform sm:blur-[120px]"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(160 80% 45% / 0.28), transparent 65%)",
@@ -127,7 +130,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
-          className="absolute top-[170vh] right-[5%] h-[28rem] w-[36rem] rounded-full blur-[150px] will-change-transform"
+          className="absolute top-[170vh] right-[5%] hidden h-[28rem] w-[36rem] rounded-full blur-[150px] will-change-transform sm:block"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(320 70% 55% / 0.22), transparent 70%)",
@@ -137,7 +140,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
-          className="absolute top-[250vh] left-[10%] h-[30rem] w-[40rem] rounded-full blur-[160px] will-change-transform"
+          className="absolute top-[250vh] left-[10%] h-[30rem] w-[40rem] rounded-full blur-[80px] will-change-transform sm:blur-[160px]"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(240 75% 50% / 0.24), transparent 70%)",
@@ -147,7 +150,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
-          className="absolute top-[340vh] -right-20 h-[34rem] w-[46rem] rounded-full blur-[130px] will-change-transform"
+          className="absolute top-[340vh] -right-20 hidden h-[34rem] w-[46rem] rounded-full blur-[130px] will-change-transform sm:block"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(185 85% 48% / 0.26), transparent 65%)",
@@ -157,7 +160,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
-          className="absolute top-[430vh] left-1/2 h-[36rem] w-[50rem] rounded-full blur-[140px] will-change-transform"
+          className="absolute top-[430vh] left-1/2 h-[36rem] w-[50rem] rounded-full blur-[70px] will-change-transform sm:blur-[140px]"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(270 80% 55% / 0.28), transparent 65%)",
@@ -168,7 +171,7 @@ export default function Backdrop() {
         />
         <div
           aria-hidden
-          className="absolute top-[520vh] -left-20 h-[32rem] w-[42rem] rounded-full blur-[140px] will-change-transform"
+          className="absolute top-[520vh] -left-20 hidden h-[32rem] w-[42rem] rounded-full blur-[140px] will-change-transform sm:block"
           style={{
             background:
               "radial-gradient(ellipse at center, hsl(175 80% 45% / 0.24), transparent 65%)",

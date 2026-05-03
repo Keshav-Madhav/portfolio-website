@@ -53,7 +53,9 @@ The site is tuned aggressively for LCP. `app/layout.tsx` mounts the smallest pos
 
 The first ~800ms of scrolling uses native browser scroll. Then Lenis takes over seamlessly. The hero's lede paragraph deliberately renders without entrance animation so it can serve as the LCP element (the original animated entrance was costing ~1300ms on LCP audits).
 
-**Cross-cutting rule**: never add a new globally-mounted client effect to `app/layout.tsx`. Add it to `components/deferred-effects.tsx`. The two effects mounted eagerly (`Backdrop`, `ScrollProgress`) are intentional exceptions.
+**On mobile / touch-only devices** (`(pointer: coarse)`), the entire decoration layer is gated off via `useIsMobile()` from `lib/use-is-mobile.ts`. Only the chat widget and toaster mount — none of the canvas effects, the spirit guide, Lenis, multiplayer, keyboard nav, or Konami are even downloaded. The `Backdrop` (eager) also collapses to 4 of its 8 aurora blobs with smaller blur radii on `< sm` viewports. See `components/CLAUDE.md` for the full rationale.
+
+**Cross-cutting rule**: never add a new globally-mounted client effect to `app/layout.tsx`. Add it to `components/deferred-effects.tsx`. The two effects mounted eagerly (`Backdrop`, `ScrollProgress`) are intentional exceptions. If the new effect should also run on phones (functional, not decorative), put it outside the `!isMobile` block.
 
 ## The `data-spirit` attribute system
 
@@ -70,7 +72,7 @@ If you add a clickable card or button and want the orb to react, just add the at
 
 ## The multiplayer layer (Ably)
 
-`components/ui/multiplayer.tsx` hooks into Ably + `@ably/spaces` for live cursors and emoji reactions. Disabled when `NEXT_PUBLIC_MULTIPLAYER_ENABLED !== "1"` or on touch-only devices.
+`components/ui/multiplayer.tsx` hooks into Ably + `@ably/spaces` for live cursors and emoji reactions. Disabled when `NEXT_PUBLIC_MULTIPLAYER_ENABLED !== "1"` or on touch-only devices (the `deferred-effects.tsx` mobile gate now also prevents the JS chunk from being downloaded at all in that case).
 
 - The browser **never sees `ABLY_API_KEY`** — it's gated behind `app/api/ably/token/route.ts` which mints short-lived token requests.
 - Cursors are published in **page coordinates** (not viewport). The cursor/reaction layer wrappers apply `translate3d(0, -scrollY, 0)` imperatively via RAF — zero React re-renders during scroll, no matter how many remote cursors are on screen.

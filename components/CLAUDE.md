@@ -96,22 +96,34 @@ Distinguishes between "page" entries (e.g. About, marked `isPage: true` in `nav`
 
 ### `deferred-effects.tsx`
 
-The orchestration point for everything heavy. Already covered above; the file is short (75 lines). The exact mount order in the rendered fragment is:
+The orchestration point for everything heavy. Already covered above. The exact mount order in the rendered fragment is:
 
 ```
-<LenisProvider />     ← takes over native scroll
-<FlowField />         ← canvas: parallax particles + cursor glow
-<ParticleField />     ← canvas: particle network with O(n²) connections
-<VelocityTilt />      ← invisible; sets data-fast-scroll on <html>
-<ClickSpark />        ← canvas: burst on every click
-<SpiritGuide />       ← the companion orb
-<KeyboardNav />       ← g-prefix shortcuts + ? help modal
-<Konami />            ← ↑↑↓↓←→←→BA easter egg
-<Multiplayer />       ← Ably cursors + reactions
-<Toaster />           ← react-hot-toast (lazy-imported)
+{!isMobile && (
+  <LenisProvider />     ← takes over native scroll
+  <FlowField />         ← canvas: parallax particles + cursor glow
+  <ParticleField />     ← canvas: particle network with O(n²) connections
+  <VelocityTilt />      ← invisible; sets data-fast-scroll on <html>
+  <ClickSpark />        ← canvas: burst on every click
+  <SpiritGuide />       ← the companion orb
+  <KeyboardNav />       ← g-prefix shortcuts + ? help modal
+  <Konami />            ← ↑↑↓↓←→←→BA easter egg
+  <Multiplayer />       ← Ably cursors + reactions
+)}
+<ChatWidget />          ← floating "Ask about Keshav" chat (always on)
+<Toaster />             ← react-hot-toast (always on, lazy-imported)
 ```
 
 Each is `dynamic(..., { ssr: false })` so it gets its own JS chunk. Order matters only for z-index stacking; the multiplayer layer uses `z-[80]/[81]/[82]` to sit on top.
+
+`isMobile` comes from `useIsMobile()` in `lib/use-is-mobile.ts` — true on `(pointer: coarse)` devices (phones, most tablets). On those devices the entire decoration layer is skipped: the chunks are never even fetched. **Only the chat widget and the toaster mount on phones**. Rationale:
+
+- Cursor-driven effects (spirit guide, particle/flow field cursor glow, click sparks, multiplayer cursors) have nothing to track on a touch device.
+- Keyboard-driven effects (keyboard nav, Konami, multiplayer reactions) are unreachable.
+- Lenis smooth-scroll and the fixed-position canvases burn battery and main-thread time on phones for marginal visual gain — native scroll is smoother on iOS WebKit anyway.
+- `Backdrop` (eager) drops down to 4 of its 8 blobs and uses smaller blur radii on `< sm` viewports via Tailwind classes.
+
+If you add a new always-on functional widget (e.g. a future feedback prompt), put it outside the `!isMobile` block. Anything decorative goes inside.
 
 ### `submit-btn.tsx`
 

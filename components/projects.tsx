@@ -13,6 +13,7 @@ import SectionHeading from "./ui/section-heading";
 import TiltedCard from "./ui/tilted-card";
 import ImageCycler from "./ui/image-cycler";
 import ShinyText from "./ui/shiny-text";
+import AskMeButton from "./ui/ask-me-button";
 import { projects } from "@/lib/data";
 import { accentMap, cn } from "@/lib/cn";
 import { useSectionInView } from "@/lib/hooks";
@@ -20,6 +21,15 @@ import { useCachedRect } from "@/lib/use-cached-rect";
 import type { AccentColor } from "@/lib/types";
 
 type Proj = (typeof projects)[number];
+
+// Question phrasing the visitor "asks" when they tap the Ask Me pill on a
+// project card. Written in 2nd person so the chat (which speaks in 1st)
+// reads naturally back. The "deep" flag in the API tells GPT-4o-mini to
+// produce a 250-450 word structured answer covering timeline, decisions,
+// and what was hard — using the project deep-dive + dev-timeline RAG chunks.
+function buildProjectQuestion(project: Proj): string {
+  return `Walk me through your ${project.title} project — the full story. What it is, why you built it, how it evolved over time (timeline), the key technical decisions you made, and what was actually hard about it. Be specific and pull from any deep-dive notes or commit history you have.`;
+}
 
 export default function Projects() {
   const { ref } = useSectionInView("Projects", 0.1);
@@ -244,27 +254,30 @@ function FeaturedCard({
             ))}
           </ul>
 
-{project.links.length > 0 && (
-                            <div className="mt-4 flex flex-wrap gap-2">
-                              {project.links.map((l, idx) => (
-                                <a
-                                  key={l.href}
-                                  href={l.href}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={cn(
-                                    "group/l inline-flex min-h-[44px] items-center gap-1 rounded-full border px-4 py-2 font-mono text-[0.65rem] uppercase tracking-wider transition sm:min-h-0 sm:px-3 sm:py-1",
-                                    idx === 0
-                                      ? "border-ink/70 bg-ink/10 text-ink hover:bg-ink/20"
-                                      : "border-edge bg-canvas/40 text-muted hover:border-edge/40 hover:text-ink"
-                                  )}
-                                >
-                                  {l.label}
-                                  <ArrowUpRight className="h-3 w-3 transition group-hover/l:-translate-y-0.5 group-hover/l:translate-x-0.5" />
-                                </a>
-                              ))}
-                            </div>
-                          )}
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {project.links.map((l, idx) => (
+              <a
+                key={l.href}
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  "group/l inline-flex min-h-[44px] items-center gap-1 rounded-full border px-4 py-2 font-mono text-[0.65rem] uppercase tracking-wider transition sm:min-h-0 sm:px-3 sm:py-1",
+                  idx === 0
+                    ? "border-ink/70 bg-ink/10 text-ink hover:bg-ink/20"
+                    : "border-edge bg-canvas/40 text-muted hover:border-edge/40 hover:text-ink",
+                )}
+              >
+                {l.label}
+                <ArrowUpRight className="h-3 w-3 transition group-hover/l:-translate-y-0.5 group-hover/l:translate-x-0.5" />
+              </a>
+            ))}
+            <AskMeButton
+              question={buildProjectQuestion(project)}
+              label={`Ask me about ${project.title}`}
+              size="md"
+            />
+          </div>
         </div>
 
         {/* Abstract corner art for text-only cards WITHOUT a stat (rare) */}
@@ -401,9 +414,9 @@ function CompactCard({
             ))}
           </div>
 
-          {project.links.length > 1 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {project.links.map((l, idx) => (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {project.links.length > 1 &&
+              project.links.map((l, idx) => (
                 <a
                   key={l.href}
                   href={l.href}
@@ -413,15 +426,18 @@ function CompactCard({
                     "inline-flex min-h-[40px] items-center gap-1 rounded-full border px-3 py-1.5 font-mono text-[0.58rem] uppercase tracking-wider transition sm:min-h-0 sm:px-2 sm:py-0.5",
                     idx === 0
                       ? "border-ink/60 bg-ink/10 text-ink hover:bg-ink/20"
-                      : "border-edge bg-canvas/40 text-muted hover:border-edge/40 hover:text-ink"
+                      : "border-edge bg-canvas/40 text-muted hover:border-edge/40 hover:text-ink",
                   )}
                 >
                   {l.label}
                   <ArrowUpRight className="h-2.5 w-2.5" />
                 </a>
               ))}
-            </div>
-          )}
+            <AskMeButton
+              question={buildProjectQuestion(project)}
+              label="Ask me"
+            />
+          </div>
         </div>
       </TiltedCard>
     </m.div>

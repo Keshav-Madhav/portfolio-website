@@ -18,6 +18,7 @@ import {
   FileText,
   Loader2,
 } from "lucide-react";
+import { onAskKeshav } from "@/lib/chat-trigger";
 
 // =============================================================================
 // CHAT WIDGET — floating bubble bottom-left, expandable panel.
@@ -150,7 +151,7 @@ export default function ChatWidget() {
   const introFiredRef = useRef(false);
 
   const sendMessage = useCallback(
-    async (text: string, opts: { hidden?: boolean } = {}) => {
+    async (text: string, opts: { hidden?: boolean; deep?: boolean } = {}) => {
       const trimmed = text.trim();
       if (!trimmed || streaming) return;
 
@@ -176,6 +177,7 @@ export default function ChatWidget() {
           body: JSON.stringify({
             messages: baseHistory.map(({ role, content }) => ({ role, content })),
             jdText: attachment?.text,
+            deep: opts.deep,
           }),
           signal: controller.signal,
         });
@@ -253,6 +255,18 @@ export default function ChatWidget() {
     introFiredRef.current = true;
     sendMessage(INTRO_TRIGGER, { hidden: true });
   }, [open, messages.length, sendMessage]);
+
+  // Listen for "Ask me about this" buttons elsewhere in the app. We open
+  // the panel and immediately fire the question. Marking introFiredRef
+  // prevents the auto-intro from racing the user's question on first open.
+  useEffect(() => {
+    return onAskKeshav((detail) => {
+      if (streaming) return; // ignore while a response is streaming
+      introFiredRef.current = true;
+      setOpen(true);
+      sendMessage(detail.question, { deep: detail.deep });
+    });
+  }, [sendMessage, streaming]);
 
   const onUploadFile = useCallback(async (file: File) => {
     setUploadingFile(true);

@@ -279,6 +279,12 @@ async function streamGroq(
 type ChatBody = {
   messages: ChatMessage[];
   jdText?: string;
+  /**
+   * "Deep dive" mode — fired by the "Ask me about this" buttons on
+   * project / experience cards. Bumps max_tokens and asks the model
+   * to produce a comprehensive, structured answer.
+   */
+  deep?: boolean;
 };
 
 export async function POST(req: Request) {
@@ -323,6 +329,7 @@ export async function POST(req: Request) {
   if (!lastUser) return new Response("No user message", { status: 400 });
 
   const isIntro = lastUser.content.trim() === INTRO_TRIGGER;
+  const isDeep = !!body.deep && !isIntro;
   const jdText = body.jdText?.slice(0, 20_000) ?? "";
   const hasJD = jdText.trim().length > 0;
 
@@ -354,7 +361,7 @@ export async function POST(req: Request) {
         .slice(0, 500);
 
       retrieval = await ragSearch(recentUserMessages);
-      systemPrompt = buildRagSystemPrompt(retrieval.context);
+      systemPrompt = buildRagSystemPrompt(retrieval.context, { deep: isDeep });
     } catch (err) {
       console.warn("[chat] RAG failed, using static prompt:", err);
       systemPrompt = await buildSystemPrompt();
@@ -374,7 +381,7 @@ export async function POST(req: Request) {
   const openai = openaiKey ? new OpenAI({ apiKey: openaiKey }) : null;
   const groq = groqKey ? new Groq({ apiKey: groqKey }) : null;
 
-  const maxTokens = isIntro ? 200 : 1024;
+  const maxTokens = isIntro ? 200 : isDeep ? 1800 : 1024;
   let streamResult: StreamResult | null = null;
   let lastError: unknown = null;
 

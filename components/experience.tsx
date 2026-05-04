@@ -4,8 +4,22 @@ import { m } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import SectionHeading from "./ui/section-heading";
 import VfInternal from "./vf-internal";
+import AskMeButton from "./ui/ask-me-button";
 import { experience } from "@/lib/data";
 import { useSectionInView } from "@/lib/hooks";
+
+// Per-company question phrasing. Maps to the contributions-overview /
+// vfContributions* RAG chunks (and the PrudentBit deep-dive chunks) so
+// the deep-dive answer is grounded in commit research, not invented.
+function buildExperienceQuestion(company: string): string {
+  if (company === "VerbaFlo") {
+    return "Walk me through your time at VerbaFlo as an AI engineer — start to present. What you own day-to-day, the four big internal systems you've built (vf-ai, copilot, simulation, playground), key contributions and decisions across them (with timeline if you have it), and what you've learned. Be specific.";
+  }
+  if (company === "PrudentBit") {
+    return "Walk me through your time at PrudentBit as the founding front-end engineer. What you built across the Immune product suite, the Next.js 14 SSR migration, the live admin dashboard, the cross-platform integrations, the timeline, and what that role taught you. Be specific.";
+  }
+  return `Walk me through your time at ${company} — your role, what you built, the timeline, and what you learned.`;
+}
 
 export default function Experience() {
   const { ref } = useSectionInView("Work", 0.15);
@@ -85,6 +99,14 @@ function ExperienceEntry({
       <p className="mt-5 max-w-3xl text-base leading-relaxed text-muted">
         {entry.summary}
       </p>
+
+      <div className="mt-4">
+        <AskMeButton
+          question={buildExperienceQuestion(entry.company)}
+          label={`Ask me about ${entry.company}`}
+          size="md"
+        />
+      </div>
 
       {/* Small highlights */}
       <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2">

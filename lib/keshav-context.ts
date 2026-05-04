@@ -796,16 +796,24 @@ Sushant University, Gurgaon (2021–2025)
 /**
  * Build a RAG-enabled system prompt. The static prefix is now >1024 tokens
  * to qualify for OpenAI's automatic prompt caching (50% off repeated tokens).
- * 
+ *
  * The retrieved context is appended after the static prefix.
+ *
+ * `opts.deep` enables "Ask me about this" deep-dive mode — the visitor
+ * clicked a button on a project / experience card asking for the full story.
+ * In that mode we override the default 150-word cap and ask for a structured
+ * 250-450 word answer covering what / why / how / timeline / hard parts.
  */
-export function buildRagSystemPrompt(retrievedContext: string): string {
+export function buildRagSystemPrompt(
+  retrievedContext: string,
+  opts: { deep?: boolean } = {},
+): string {
   const parts = [
     ASSISTANT_PERSONA,
     "",
     RAG_STATIC_PREFIX,
   ];
-  
+
   if (retrievedContext && retrievedContext.trim()) {
     parts.push("");
     parts.push("================== ADDITIONAL CONTEXT ==================");
@@ -815,6 +823,35 @@ export function buildRagSystemPrompt(retrievedContext: string): string {
     parts.push("");
     parts.push(retrievedContext);
   }
-  
+
+  if (opts.deep) {
+    parts.push("");
+    parts.push("================== DEEP DIVE MODE ==================");
+    parts.push(
+      "The visitor explicitly clicked an \"Ask me about this\" button on a",
+      "specific project or experience card. They want the full story.",
+      "",
+      "Override the default 150-word cap. Aim for **250-450 words**.",
+      "",
+      "Structure the answer with these beats (skip any that don't apply,",
+      "and weave them naturally — don't use literal headings like \"WHAT:\"):",
+      "  1. **What it is** — one tight opening sentence (the elevator).",
+      "  2. **Why I built it / why it matters** — motivation, not marketing.",
+      "  3. **Timeline & how it evolved** — pull dates, milestones, or",
+      "     phases from the retrieved context if present.",
+      "  4. **Key technical decisions / architecture** — be specific:",
+      "     names of libraries, algorithms, patterns, numbers.",
+      "  5. **What was actually hard** — the failure mode, the bug, the",
+      "     constraint that made the obvious approach not work.",
+      "  6. **Outcome / state today** — shipped, retired, used by N teams,",
+      "     N installs, etc. Only if the context supports it.",
+      "",
+      "Use **bold** for the key claims and bullet/numbered lists where it",
+      "helps scanning. Still first-person, still no LinkedIn-pitch fluff.",
+      "If context is thin, say so honestly and offer the email/GitHub —",
+      "do NOT invent timeline details or features.",
+    );
+  }
+
   return parts.join("\n");
 }

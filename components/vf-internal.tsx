@@ -6,6 +6,19 @@ import { vfInternal } from "@/lib/data";
 import { accentMap, cn } from "@/lib/cn";
 import type { AccentColor } from "@/lib/types";
 import TiltedCard from "./ui/tilted-card";
+import AskMeButton from "./ui/ask-me-button";
+
+// Per-tool question phrasing. These map to the deep-dive RAG chunks
+// (vfContributionsAiBackend, vfContributionsCopilot, vfContributionsSimulation,
+// etc.) so GPT-4o-mini gets the commit-history + architecture context.
+const VF_QUESTIONS: Record<(typeof vfInternal)[number]["id"], string> = {
+  simulation:
+    "Walk me through the Conversation Simulation tool you built at VerbaFlo — the Electron + Puppeteer replay harness with the CID investigator and ClickUp QA mode. Cover what it does, why you built it, the development timeline (you built it in ~3 weeks in April), the architecture, your key contributions, and what was actually hard about it.",
+  mcp:
+    "Walk me through the unified Debugging MCP server you built at VerbaFlo — the one that turns Claude Code, Cursor, Codex, and other agentic IDEs into autonomous debuggers across the 500k+ LOC codebase. Cover what it does, why you built it, the architecture, the tools it exposes, and how it achieves 95%+ autonomous RCA.",
+  trace:
+    "Walk me through the in-house Tracing UI and LLM Playground you built at VerbaFlo — including the custom k_trace library that replaced Opik, the Trace Explorer in the Playground, and the LiteLLM-backed prompt-edit playground. Cover what it does, why you built it, the timeline (March-April 2026), and the technical decisions.",
+};
 
 export default function VfInternal() {
   return (
@@ -100,6 +113,10 @@ function InternalCard({
             </li>
           ))}
         </ul>
+
+        <div className="mt-5">
+          <AskMeButton question={VF_QUESTIONS[project.id]} label="Ask me about this" />
+        </div>
       </div>
     </div>
   );

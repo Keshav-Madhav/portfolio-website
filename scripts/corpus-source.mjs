@@ -31,12 +31,16 @@ const overview = {
   content: `
 Topics covered here: tell me about yourself, give me an overview, who are
 you, introduce yourself, summarize yourself, what should I know about you,
-quick intro, elevator pitch, brief summary, background summary.
+quick intro, elevator pitch, brief summary, background summary, applied AI,
+applied machine learning, AI capabilities, what AI work I do, applied LLM
+work, AI engineering day-to-day.
 
 Keshav Madhav is a 22-23 year old AI engineer at VerbaFlo, an AI SaaS
 startup in Gurgaon, India. He builds production AI runtimes — custom
 multi-agent orchestrators, retrieval pipelines, text-to-SQL, and the
-desktop/IDE/observability tooling that teams debug against.
+desktop/IDE/observability tooling that teams debug against. In short:
+applied AI is his job — agentic systems, RAG, evals, and reliability
+work for LLM calls, all in production with real customers.
 
 CAREER TIMELINE:
 - Aug 2025 – present: AI Engineer (SDE-1) at VerbaFlo
@@ -84,7 +88,8 @@ const identity = {
 Topics covered here: who is Keshav, introduction, background overview,
 where is Keshav based, where does Keshav live, location, nationality,
 age, education, current role, basic bio, his name, his handle, Keshav
-Madhav biography, at a glance.
+Madhav biography, at a glance, applied AI engineer, applied machine
+learning, what does Keshav do, AI capabilities.
 
 Keshav Madhav is an AI engineer at VerbaFlo (AI SaaS startup, Gurgaon, India).
 His full name is Keshav Madhav. He goes by Keshav. His GitHub / online
@@ -307,8 +312,14 @@ const verbafloOverview = {
   id: "verbaflo-overview",
   title: "VerbaFlo — role and overall scope",
   content: `
+Topics covered here: VerbaFlo role, what does Keshav do at VerbaFlo,
+applied AI work, applied machine learning, AI engineering, AI capabilities,
+production AI work, what AI stuff has Keshav built, day-to-day at VerbaFlo.
+
 Keshav joined VerbaFlo (https://www.verbaflo.ai/) in August 2025 as
-AI Engineer, SDE-1. Based in Gurgaon, India (hybrid).
+AI Engineer, SDE-1. Based in Gurgaon, India (hybrid). This role is
+**pure applied AI** — production systems with SLAs, not research or
+prompt-tweaking-as-hobby.
 
 VerbaFlo is an AI SaaS company. The core product is a conversational AI
 bot for property management and real estate — a multi-stage LLM pipeline
@@ -4571,7 +4582,9 @@ const vfContributionsOverview = {
   title: "Keshav's VerbFlo Contributions — Overview of 6 Months of Work",
   content: `
 Topics covered here: verbaflo contributions, what keshav built at verbaflo,
-verbaflo experience, keshav's work, ai engineer contributions, verbaflo role.
+verbaflo experience, keshav's work, ai engineer contributions, verbaflo role,
+applied AI work, applied machine learning, AI capabilities, applied LLM
+work, what AI stuff has Keshav built in production.
 
 **Keshav joined VerbaFlo in late 2025** and has made **200+ commits** across
 four major codebases in 6 months. Here's the high-level impact:

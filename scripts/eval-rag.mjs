@@ -77,6 +77,26 @@ const queries = [
   { q: "Where did you study?", expect: "origin-college" },
   { q: "What are you learning right now?", expect: "learning-approach" },
 
+  // ---- Applied AI / vague AI queries (regression: vocabulary mismatch) ----
+  // Vocab is sprinkled into overview/identity/verbaflo-overview/vf-contributions-overview
+  // rather than living in a dedicated chunk — any of those is a valid retrieval hit.
+  {
+    q: "Applied AI",
+    expect: ["overview", "identity", "verbaflo-overview", "vf-contributions-overview"],
+  },
+  {
+    q: "Tell me about AI applied capabilities",
+    expect: ["overview", "verbaflo-overview", "vf-contributions-overview"],
+  },
+  {
+    q: "What applied AI work have you done?",
+    expect: ["verbaflo-overview", "vf-contributions-overview", "overview"],
+  },
+  {
+    q: "Applied AI bhai",
+    expect: ["overview", "identity", "verbaflo-overview"],
+  },
+
   // ---- VerbaFlo ----
   { q: "What do you do at VerbaFlo?", expect: ["verbaflo-overview", "verbaflo-copilot"] },
   { q: "Tell me about the Copilot you built", expect: "verbaflo-copilot" },

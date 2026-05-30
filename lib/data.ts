@@ -331,6 +331,29 @@ export const projects = [
     ],
   },
   {
+    slug: "minecraft-clone",
+    title: "Minecraft Clone",
+    kind: "Game · 3D · Procedural",
+    description:
+      "An infinite Minecraft built in the browser with Three.js. Web workers generate AND greedily mesh each chunk off the main thread (deterministic ghost-cell borders, so every chunk meshes exactly once), a second worker drives a slippy-map minimap, plus fixed-timestep physics, mining/building, biomes, and uncapped FPS via a MessageChannel scheduler.",
+    stack: ["Three.js", "TypeScript", "Web Workers", "WebGL", "Vite"],
+    accent: "emerald",
+    featured: true,
+    stat: { label: "Procedural world", value: "∞" },
+    image: null,
+    gallery: [],
+    links: [
+      {
+        label: "Live",
+        href: "https://keshav-madhav.github.io/minecraft-JS/",
+      },
+      {
+        label: "GitHub",
+        href: "https://github.com/Keshav-Madhav/minecraft-JS",
+      },
+    ],
+  },
+  {
     slug: "axon",
     title: "Axon",
     kind: "Open Source · Contributor",

@@ -2558,81 +2558,78 @@ const projectMinecraftJsDeepDive = {
   title: "Minecraft JS — Voxel Engine in the Browser (Deep Dive)",
   content: `
 Topics covered here: minecraft js, voxel engine, voxel rendering, three.js,
-greedy meshing, chunked world, procedural terrain, perlin noise, block
-placing, infinite world, webgl 3d.
+greedy meshing, chunked world, procedural terrain, simplex noise, biomes,
+block placing, infinite world, web workers, off-main-thread meshing, slippy-map
+minimap, fixed-timestep physics, uncapped fps, webgl 3d.
 
-**Minecraft JS** is a browser-based voxel world with procedural terrain,
-block interaction, and infinite chunks — built with Three.js.
+**Minecraft JS** is a browser-based voxel world with procedural terrain, biomes,
+block interaction, and infinite chunks — built with Three.js and TypeScript
+(Vite). After a large optimization pass it now does most of its heavy work off
+the main thread and holds steady FPS on much bigger view distances.
 
 **The Voxel Challenge:**
-A naive approach: render each block as a cube (6 faces, 12 triangles).
-A 16×16×256 chunk = 65,536 blocks = 786,432 triangles. That's just one chunk.
-With 9 loaded chunks (3×3 around player), you're at 7+ million triangles.
-WebGL chokes.
+A naive approach renders each block as a cube (6 faces, 12 triangles). A
+16-wide, 256-tall chunk is tens of thousands of blocks = millions of triangles,
+for just one chunk. With a 3×3+ ring of loaded chunks around the player, WebGL
+chokes.
 
-**Greedy Meshing:**
-The solution: merge adjacent faces of the same block type into larger quads.
-A flat ground of 16×16 stone blocks becomes 1 face instead of 256.
+**Greedy Meshing (real, in a worker):**
+\`chunkMesh.ts\` is a pure greedy mesher — deliberately free of Three.js and the
+DOM so it runs inside a Web Worker. It merges adjacent faces of the same block
+type into larger quads (a flat 16×16 stone floor becomes 1 quad, not 256), and
+splits output into shadow-casters vs non-casters (leaves/clouds) so the shadow
+pass stays cheap. Indices pack into Uint16 when a group fits under 65,535 verts
+(half the index VRAM/upload bandwidth across thousands of streamed chunks),
+falling back to Uint32 only for a pathological fully-exposed chunk.
 
-\`\`\`javascript
-function greedyMesh(chunk) {
-  for each axis (X, Y, Z):
-    for each slice:
-      mask = create 2D mask of faces on this slice
-      for each cell in mask:
-        if face exists:
-          expand width while same material
-          expand height while same material
-          create one quad for entire region
-          clear mask for merged region
-}
-\`\`\`
+**Off-main-thread generation + meshing (the headline optimization):**
+A pool of stateless gen+mesh Web Workers each takes a chunk coordinate, runs the
+deterministic Simplex-noise terrain function, AND greedily meshes the result —
+all off the render thread. The trick that makes this clean: cross-chunk border
+faces are culled by *sampling the neighbour's deterministic surface height* (a
+1-block "ghost-cell" apron) rather than waiting for the neighbour chunk to load.
+So each chunk meshes EXACTLY ONCE, correctly, with no cache and no neighbour
+re-mesh. Only player-edited borders get re-meshed on the main thread (which has
+the real edited data). Being stateless makes the workers trivially poolable.
 
-**Chunked World:**
-\`\`\`
-World
-  ├── Chunk (0, 0) — 16×16×256 blocks
-  ├── Chunk (1, 0)
-  ├── Chunk (0, 1)
-  └── ...
-\`\`\`
+**Chunked, infinite world:**
+- Only chunks within view distance are loaded; far chunks are unloaded.
+- Chunk-gen requests in flight to the worker pool are capped per frame, and
+  finished worker results are turned into THREE meshes on a per-frame budget, so
+  a teleport into fresh terrain never freezes the frame.
+- Three.js frustum-culls every chunk mesh automatically (no custom culling).
 
-- Only chunks near player are loaded
-- Chunks beyond view distance are unloaded
-- Chunk boundaries require special handling (faces between chunks)
+**Procedural terrain + biomes:**
+Seeded Simplex noise (not Perlin) drives surface height, with separate octaves
+for base terrain and hills, plus resource/ore generation, trees, water level,
+and clouds. Biomes apply a vertex tint and per-biome water color; biome-aware
+lighting is a toggle.
 
-**Procedural Terrain:**
-\`\`\`javascript
-function getHeight(x, z) {
-  const baseHeight = 64;
-  const noise = perlin2D(x * 0.02, z * 0.02);
-  const hills = perlin2D(x * 0.005, z * 0.005) * 20;
-  return baseHeight + noise * 10 + hills;
-}
-\`\`\`
+**The slippy-map minimap (a second worker):**
+A separate Web Worker renders minimap tiles at 128px and caches them with an LRU
+cap. It uses multiple world-size "zoom levels" (128 → 16384) like a slippy map,
+so the number of visible tiles stays bounded at ANY zoom — without that, zooming
+out needed thousands of tiles and thrashed the cache. Tile world-size is chosen
+so each tile draws ~1 tile-pixel per screen-pixel (crisp, never upscaled).
 
-**Block Interaction:**
-- Raycasting from camera to find target block
-- Place block on face of target
-- Break block at target
-- Block types: grass, dirt, stone, water, wood, leaves
+**Physics + interaction:**
+- Fixed-timestep AABB-vs-voxel physics (200 Hz sim rate, gravity, accumulator)
+  decoupled from the render rate.
+- Raycast from the camera to find the target block; place on its face or break it.
+- Pickaxe tool with a mining animation, a toolbar of block types, and save/load
+  of player-edited blocks via a DataStore.
 
-**Lighting:**
-- Ambient occlusion on block edges
-- Sky light propagates down
-- Block light (torches) propagates outward
+**Uncapped FPS:**
+requestAnimationFrame is hard-locked to the display refresh rate, which hides FPS
+differences. To render uncapped, the loop is driven by a \`MessageChannel\`
+(no minimum-delay clamp the way \`setTimeout(0)\` has), toggled by an "uncap FPS"
+setting in the GUI.
 
-**Performance Optimizations:**
-- Only re-mesh chunks that changed
-- Frustum culling (don't render chunks behind camera)
-- LOD: distant chunks could use simpler meshes (not implemented)
-- Object pooling for chunk geometry
-
-**What Made This Hard:**
-- Greedy meshing edge cases (block type boundaries, transparent blocks)
-- Chunk boundary rendering (seams between chunks)
-- Performance tuning (tried many approaches before greedy mesh)
-- Water transparency (requires special rendering order)
+**What made this hard:**
+- Border culling without neighbour data (solved with deterministic ghost cells).
+- Keeping meshing off the main thread while edits still feel instant.
+- Bounding minimap tile counts across many zoom levels.
+- Water transparency and z-fighting at distance (the thin sliver above water).
 
 Live: https://keshav-madhav.github.io/minecraft-JS/
 GitHub: https://github.com/Keshav-Madhav/minecraft-JS
@@ -3973,23 +3970,38 @@ Sep 4:
 
 **Technical Challenges Solved:**
 
-1. **Greedy Meshing** (implied by performance):
-   Instead of 6 faces per block, merge adjacent same-type faces.
-   Flat ground: 256 faces → 1 face
+1. **Greedy Meshing:**
+   Instead of 6 faces per block, merge adjacent same-type faces into quads.
+   Flat ground: 256 faces → 1 face.
 
 2. **Chunk Boundaries:**
-   When blocks span chunks, need to update BOTH chunk meshes.
-   Edge case hell.
+   Faces along shared chunk borders need the neighbour's blocks to cull
+   correctly. Solved deterministically with ghost-cell border sampling.
 
 3. **Collision in Voxel World:**
    Can't use standard physics. Need to check block occupancy at player position.
-   Implemented AABB vs voxel grid collision.
+   Implemented fixed-timestep AABB-vs-voxel grid collision.
 
 4. **Procedural Trees:**
    Random but natural-looking. Trunk + layers of leaves with variance.
 
-**Result:** Playable Minecraft in browser with infinite world, block interaction,
-save/load, and decent performance.
+**THE BIG OPTIMIZATION PASS (later rework):**
+The original build leaned on InstancedMesh and main-thread chunk work. A major
+overhaul reworked the engine for far better FPS, rendering, and lighting:
+- Moved BOTH chunk generation AND greedy meshing into a pool of stateless Web
+  Workers, off the render thread, with each chunk meshed exactly once via
+  deterministic ghost-cell border culling (no cache, no neighbour re-mesh).
+- Packed indices into Uint16 where possible and split geometry into shadow
+  casters vs non-casters to keep the shadow pass cheap.
+- Added a second Web Worker driving a slippy-map minimap with an LRU tile cache
+  and multiple zoom levels so visible tile count stays bounded at any zoom.
+- Added biomes (vertex tint + per-biome water) and biome-aware lighting.
+- Drove the render loop via a MessageChannel for genuinely uncapped FPS (rAF is
+  hard-locked to the display refresh rate, which hides FPS differences).
+
+**Result:** Playable infinite-world Minecraft in the browser with block
+interaction, save/load, biomes, a minimap, and a heavily optimized,
+mostly-off-main-thread rendering pipeline.
 
 Live: https://keshav-madhav.github.io/minecraft-JS/
 GitHub: https://github.com/Keshav-Madhav/minecraft-JS

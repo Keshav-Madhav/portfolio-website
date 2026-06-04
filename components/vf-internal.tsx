@@ -12,6 +12,8 @@ import AskMeButton from "./ui/ask-me-button";
 // (vfContributionsAiBackend, vfContributionsCopilot, vfContributionsSimulation,
 // etc.) so GPT-4o-mini gets the commit-history + architecture context.
 const VF_QUESTIONS: Record<(typeof vfInternal)[number]["id"], string> = {
+  copilot:
+    "Walk me through the agentic Copilot (VerbaIQ) you rebuilt at VerbaFlo — how you turned a hardcoded multi-agent pipeline into a single self-directing brain with its own harness, parallel worker clones spawned via a delegate tool, a tool roster across MongoDB/Postgres/Milvus, a session scratch-workspace, and its own technical wiki. Cover why you rewrote it, the architecture, the read-only and tenant-isolation guarantees, the ~73% prompt-cache cost savings, and what was actually hard about it.",
   simulation:
     "Walk me through the Conversation Simulation tool you built at VerbaFlo — the Electron + Puppeteer replay harness with the CID investigator and ClickUp QA mode. Cover what it does, why you built it, the development timeline (you built it in ~3 weeks in April), the architecture, your key contributions, and what was actually hard about it.",
   mcp:
@@ -30,7 +32,7 @@ export default function VfInternal() {
         </span>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         {vfInternal.map((p, i) => (
           <m.div
             key={p.id}
@@ -130,6 +132,8 @@ function Visual({
   accent: AccentColor;
 }) {
   switch (id) {
+    case "copilot":
+      return <CopilotViz accent={accent} />;
     case "simulation":
       return <SimViz accent={accent} />;
     case "mcp":
@@ -137,6 +141,96 @@ function Visual({
     case "trace":
       return <TraceViz accent={accent} />;
   }
+}
+
+// A central "brain" that spawns task-scoped worker clones in parallel.
+function CopilotViz({ accent }: { accent: AccentColor }) {
+  const a = accentMap[accent];
+  const reduce = useReducedMotion();
+  // Worker clones fanned out below the brain, each spawned on a stagger.
+  const workers = [
+    { x: 60, label: "mongo" },
+    { x: 125, label: "sql" },
+    { x: 195, label: "faq" },
+    { x: 260, label: "wiki" },
+  ];
+
+  return (
+    <div className="relative h-full w-full">
+      <div className="absolute inset-0 bg-grid opacity-60" />
+      <svg
+        viewBox="0 0 320 112"
+        className={cn("absolute inset-0 h-full w-full", a.text)}
+      >
+        {/* The brain — a pulsing hub at top center */}
+        <m.circle
+          cx={160}
+          cy={24}
+          r={13}
+          fill="currentColor"
+          opacity={0.18}
+          animate={reduce ? undefined : { r: [12, 16, 12], opacity: [0.14, 0.26, 0.14] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <circle cx={160} cy={24} r={5.5} fill="currentColor" />
+        <text
+          x={160}
+          y={11}
+          textAnchor="middle"
+          className="fill-current font-mono"
+          style={{ fontSize: 5.5, opacity: 0.85 }}
+        >
+          brain
+        </text>
+
+        {workers.map((w, i) => (
+          <g key={w.label}>
+            {/* delegate link, drawn from the brain to the worker */}
+            <m.line
+              x1={160}
+              y1={30}
+              x2={w.x}
+              y2={78}
+              stroke="currentColor"
+              strokeWidth={0.8}
+              strokeDasharray="2 3"
+              animate={reduce ? undefined : { opacity: [0.15, 0.8, 0.15] }}
+              transition={{
+                duration: 2.2,
+                delay: i * 0.28,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            {/* worker clone, scaling in as if just spawned */}
+            <m.circle
+              cx={w.x}
+              cy={82}
+              r={4}
+              fill="currentColor"
+              opacity={0.85}
+              animate={reduce ? undefined : { r: [3, 4.6, 3] }}
+              transition={{
+                duration: 2.2,
+                delay: i * 0.28,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <text
+              x={w.x}
+              y={98}
+              textAnchor="middle"
+              className="fill-current font-mono"
+              style={{ fontSize: 5, opacity: 0.7 }}
+            >
+              {w.label}
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
 }
 
 // ----------- Animated SVG visuals (CSS/framer-motion only) -----------

@@ -93,27 +93,18 @@ export default function Projects() {
   );
 }
 
-// Bento layout for 5 featured slots on a 6-col grid:
+// Bento layout for 6 featured slots on a 6-col grid — three 4+2 rows:
 //   0: Grid Math          — col-span-4 row-span-2 (big hero, top-left)
 //   1: Live Jinja         — col-span-2 row-span-2 (tall stat, top-right)
 //   2: Cookie Clicker     — col-span-4 row-span-2 (big hero, middle-left)
 //   3: Space Sandbox      — col-span-2 row-span-2 (tall, middle-right)
-//   4: Axon               — col-span-6         (wide stat at bottom)
+//   4: Minecraft Clone    — col-span-4 row-span-2 (big hero, bottom-left)
+//   5: Axon               — col-span-2 row-span-2 (tall stat, bottom-right)
 function featuredLayout(i: number): string {
-  switch (i) {
-    case 0:
-      return "sm:col-span-4 sm:row-span-2";
-    case 1:
-      return "sm:col-span-2 sm:row-span-2";
-    case 2:
-      return "sm:col-span-4 sm:row-span-2";
-    case 3:
-      return "sm:col-span-2 sm:row-span-2";
-    case 4:
-      return "sm:col-span-6";
-    default:
-      return "sm:col-span-3";
-  }
+  // Even slots are the wide 2/3 heroes; odd slots are the narrow 1/3 cards.
+  return i % 2 === 0
+    ? "sm:col-span-4 sm:row-span-2"
+    : "sm:col-span-2 sm:row-span-2";
 }
 
 function FeaturedCard({

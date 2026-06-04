@@ -25,6 +25,14 @@ import cookieMinigames from "@/public/cookie-minigames.png";
 import cookieTutorial from "@/public/cookie-tutorial.png";
 import cookieEasterEgg from "@/public/cookie-easter-egg.png";
 
+import minecraftDesert from "@/public/minecraft-desert.png";
+import minecraftMap from "@/public/minecraft-map.png";
+import minecraftForest from "@/public/minecraft-forest.png";
+import minecraftCherry from "@/public/minecraft-cherry.png";
+
+import raycasterFps from "@/public/raycaster-fps.png";
+import liveJinjaWeb from "@/public/live-jinja-web.png";
+
 export const nav = [
   { name: "Me", hash: "/#home" },
   { name: "About", hash: "/about", isPage: true },
@@ -111,15 +119,28 @@ export const profile = {
 // These live INSIDE the Experience section (not the public projects grid).
 export const vfInternal = [
   {
+    id: "copilot",
+    title: "Agentic Copilot",
+    subtitle: "A custom agent harness with full freedom over our data",
+    description:
+      "I built the agent harness from scratch — no LangGraph, no CrewAI — that drops a reasoning model into a safe, read-only sandbox and gives it real freedom: it thinks, writes its own task list, spawns parallel sub-agents, researches its own data paths, and streams a cited answer across MongoDB, Postgres, and Milvus.",
+    bullets: [
+      "Custom harness: extended thinking, a self-managed task plan, and a delegate tool that spawns up to 8 parallel sub-agents",
+      "Read-only, tenant-isolated sandbox — ~25 tools, a scratch-workspace, and its own technical wiki it can grep",
+      "Cut warm-turn LLM cost ~73% via prompt-cache placement (83–95% cache reads)",
+    ],
+    accent: "indigo",
+  },
+  {
     id: "simulation",
     title: "Conversation Simulation",
     subtitle: "Desktop replay harness for thousands of real conversations",
     description:
       "An Electron + Puppeteer replay engine that drives live widgets with LLM-powered user personas, runs conversations through our full pipeline, and catches regressions before prod. Also the team's investigation tool for customer issues.",
     bullets: [
-      "Parallel replay of thousands of transcripts against any branch",
-      "Stage-level diffs with latency breakdown",
-      "ClickUp QA mode + customer investigation in the same shell",
+      "Single-pool Chrome: 8 concurrent replays from ~7.9 GB → 2.5 GB RAM",
+      "Built-in MCP server exposes transcripts + traces to Claude Code / Cursor for AI-assisted RCA",
+      "ClickUp QA mode, S3 auto-update, and Google-OAuth admin in one shell",
     ],
     accent: "violet",
   },
@@ -138,14 +159,14 @@ export const vfInternal = [
   },
   {
     id: "trace",
-    title: "In-house Tracing + LLM Playground",
-    subtitle: "Purpose-built observability for our pipeline",
+    title: "LLM Engineering Platform",
+    subtitle: "Observability, replay & evaluation for our agents",
     description:
-      "Our own tracing stack: span-level querying, run-over-run diffs, and a playground that replays any trace through any model with prompt edits.",
+      "An end-to-end platform for the AI team (~170K LOC, 236 API endpoints): a trace explorer over Elasticsearch, a playground that compares models side-by-side across 14 providers, a replay engine that re-fires production traffic against live deploys, Git-Sync that commits prompt edits straight to PRs, and a tool-using AI assistant that can investigate the whole system.",
     bullets: [
-      "Span search and filtering, no third-party UI lag",
-      "Prompt-edit playground: rerun production calls with changes",
-      "Unified model access via custom LiteLLM wrapper",
+      "Side-by-side compare across 14 providers; bulk-replay 5–500 traces scored by an LLM judge",
+      "Service Replay: up to 20,000 production traces against a live deploy in one sweep",
+      "Git-Sync prompts → PR, a saved-trace Vault, and a tool-using AI assistant with its own toolset",
     ],
     accent: "emerald",
   },
@@ -335,13 +356,18 @@ export const projects = [
     title: "Minecraft Clone",
     kind: "Game · 3D · Procedural",
     description:
-      "An infinite Minecraft built in the browser with Three.js. Web workers generate AND greedily mesh each chunk off the main thread (deterministic ghost-cell borders, so every chunk meshes exactly once), a second worker drives a slippy-map minimap, plus fixed-timestep physics, mining/building, biomes, and uncapped FPS via a MessageChannel scheduler.",
+      "An infinite Minecraft built in the browser with Three.js — 8.7M triangles and 4,000+ chunks in view. A pool of web workers generates AND greedily meshes each chunk off the main thread (deterministic ghost-cell borders, so every chunk meshes exactly once), a second worker drives a slippy-map minimap, plus fixed-timestep physics, mining/building, biomes (desert, forest, cherry-blossom, snow), and uncapped FPS via a MessageChannel scheduler.",
     stack: ["Three.js", "TypeScript", "Web Workers", "WebGL", "Vite"],
     accent: "emerald",
     featured: true,
-    stat: { label: "Procedural world", value: "∞" },
-    image: null,
-    gallery: [],
+    stat: { label: "Triangles in view", value: "8.7M" },
+    image: minecraftDesert,
+    gallery: [
+      { src: minecraftDesert, caption: "Savanna → desert · 5.6M tris, 4,225 chunks" },
+      { src: minecraftMap, caption: "Full-world slippy map · drag, zoom, click to teleport" },
+      { src: minecraftForest, caption: "Dense forest biome · 8.7M triangles in view" },
+      { src: minecraftCherry, caption: "Cherry-blossom grove with a stone spire" },
+    ],
     links: [
       {
         label: "Live",
@@ -446,12 +472,12 @@ export const projects = [
     title: "Raycaster FPS",
     kind: "Game · Graphics",
     description:
-      "Wolfenstein-style raycast shooter in vanilla JS. Custom fog-of-war, dynamic lighting. Pure Canvas.",
+      "Wolfenstein-style raycast shooter in vanilla JS. Textured walls, floor/ceiling casting, a live minimap, and dynamic lighting at 120+ fps. Pure Canvas, no engine.",
     stack: ["Canvas", "Vanilla JS", "Raycasting"],
     accent: "amber",
     featured: false,
     stat: null,
-    image: null,
+    image: raycasterFps,
     gallery: [],
     links: [
       {
@@ -484,12 +510,12 @@ export const projects = [
     title: "Live Jinja (Web)",
     kind: "Open Source · Tool",
     description:
-      "Web version of the VS Code extension. Edit Jinja2 templates and variables side-by-side with instant rendering via Pyodide.",
+      "Web version of the VS Code extension. Edit Jinja2 templates and variables side-by-side with instant rendering via Pyodide. Variable extraction, form mode, and whitespace control.",
     stack: ["TypeScript", "Pyodide", "Jinja2"],
     accent: "amber",
     featured: false,
     stat: null,
-    image: null,
+    image: liveJinjaWeb,
     gallery: [],
     links: [
       { label: "Live", href: "https://keshav-madhav.github.io/live_jinja/" },

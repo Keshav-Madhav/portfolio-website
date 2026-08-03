@@ -56,55 +56,56 @@ export const profile = {
   linkedin: "https://www.linkedin.com/in/keshav-madhav/",
   twitter: "",
   tagline:
-    "Building production AI systems. Custom orchestrators, retrieval pipelines, and internal tooling.",
-  bio: "I build production AI systems: multi-agent orchestrators, retrieval pipelines, text-to-SQL, and the tooling my team debugs against. Started as a founding front-end engineer, now I work across the full stack from WebGL to Kubernetes.",
+    "Building the infrastructure behind production AI: orchestration, retrieval, observability, and developer tooling.",
+  bio: "I build the systems production AI runs on: agent orchestration, retrieval pipelines, text-to-SQL, and the observability tooling my team debugs against. Started as a founding front-end engineer, now I work across the full stack from WebGL to Kubernetes.",
   extendedBio: {
     intro:
-      "I'm Keshav Madhav, an AI engineer who ships full systems, not just prompts. Custom orchestrators, retrieval infra, and the tooling that makes LLM pipelines debuggable.",
+      "I'm Keshav Madhav, an AI engineer who builds the systems around the model: orchestration platforms, retrieval infrastructure, and the tooling that makes LLM pipelines debuggable.",
     current:
-      "At VerbaFlo, I own core pieces of our AI stack: a multi-agent orchestrator with parallel tool-calling, retrieval pipelines with hybrid search, text-to-SQL across MongoDB and Postgres, and a company-wide MCP debugger the team uses daily.",
+      "At VerbaFlo, I designed and built core pieces of the AI stack: a multi-agent orchestrator with parallel tool-calling, retrieval doing hybrid search over ~4M vector chunks for 70+ client portfolios, text-to-SQL across MongoDB and Postgres, and a company-wide MCP debugger I built and maintain — the team runs it daily.",
     past: "Before that, I was the founding front-end engineer at PrudentBit, where I built the Immune product suite from scratch. End-to-end encrypted storage and sharing, plus a Next.js 14 migration that cut load times in half.",
     sideProjects:
-      "I've shipped 90+ public repos: games, simulations, creative coding, and dev tools. Highlights are a VS Code extension for live Jinja2 rendering (10K+ installs), an N-body gravity sandbox, and a Cookie Clicker remake that got out of hand.",
+      "Outside work I ship developer tooling and simulations people actually use: a VS Code extension for live Jinja2 rendering (10K+ installs), an N-body gravity sandbox that pushes 21k bodies, and a Cookie Clicker remake that got out of hand — 90+ public repos in all.",
     philosophy:
-      "The best AI systems are the ones you can actually see thinking. That's why I spend as much time on tracing and debuggable UIs as I do on the pipelines.",
+      "If you can't see what a pipeline did, you can't fix it. Most of my time goes into tracing, replay, and eval harnesses — the unglamorous infrastructure that makes LLM systems debuggable.",
   },
   stats: [
-    { label: "Years shipping", value: "3+" },
-    { label: "AI pipeline stages owned", value: "6" },
-    { label: "VS Code ext. installs", value: "10K+" },
-    { label: "Side projects", value: "90+" },
+    { label: "LLM cost reduction", value: "73%" },
+    { label: "Extension installs", value: "10K+" },
+    { label: "Traces replayed per sweep", value: "20K" },
+    { label: "LOC debugged via MCP", value: "500K+" },
   ],
-  headline: "I build production AI systems and the tools teams debug them with.",
+  headline:
+    "I build the systems behind production AI: orchestration, retrieval, observability, and developer tooling.",
   proofPoints: [
-    { label: "Autonomous RCA", value: "95%+", detail: "across 500k+ LOC" },
-    { label: "Agent orchestrator", value: "12 agents", detail: "parallel, streaming" },
-    { label: "VS Code installs", value: "10K+", detail: "Live Jinja Renderer" },
-    { label: "Public repos", value: "90+", detail: "shipped" },
+    { label: "Retrieval scale", value: "4M chunks", detail: "from 20K+ docs across 70+ client portfolios" },
+    { label: "Root-cause accuracy", value: "95%", detail: "on internally benchmarked debugging tickets" },
+    { label: "Platform footprint", value: "170K LOC", detail: "LLM engineering platform, 236 API endpoints" },
+    { label: "OSS reach", value: "10K+", detail: "installs of Live Jinja Renderer" },
   ],
   capabilities: [
     {
-      title: "Multi-agent orchestrators",
+      title: "Agent orchestration",
       detail:
-        "12-agent parallel execution across MongoDB, Postgres, and Milvus. SSE streaming, semantic cache, query expansion. Custom runtime, not a framework wrapper.",
+        "A custom plan → delegate → reflect runtime that fans work out to parallel workers across MongoDB, Postgres, and Milvus and streams cited answers over SSE. Built from scratch, not a framework wrapper.",
       tag: "Runtime",
     },
     {
       title: "Retrieval and RAG",
       detail:
-        "Production vector stores with hybrid search, query expansion, reranking, and text-to-SQL on top.",
+        "Production vector retrieval: ~4M chunks from 20K+ documents, scraped content, and PMS data, serving 70+ client portfolios. Hybrid search, query expansion, reranking, and text-to-SQL on top.",
       tag: "Pipelines",
     },
     {
       title: "Internal tooling",
       detail:
-        "A unified MCP debugger for the whole team. Hand it a ticket, it walks the codebase and traces, then RCAs the bug.",
+        "A unified MCP debugger the whole team runs daily. Hand it a ticket and it walks code, traces, and databases to a root cause — 95% of internally benchmarked tickets, no human needed.",
       tag: "Tooling",
     },
     {
       title: "Full-stack surfaces",
       detail:
-        "Electron apps, VS Code extensions, tracing UIs, dashboards. I own the runtime and the interfaces.",
+        "Electron apps, VS Code extensions, tracing UIs, dashboards. I build the runtime and the interfaces.",
       tag: "Full-stack",
     },
   ],
@@ -117,6 +118,8 @@ export const profile = {
 
 // Highlighted, company-wide tools I shipped at VerbaFlo.
 // These live INSIDE the Experience section (not the public projects grid).
+// `challenges` are real problem → solution pairs pulled from the build logs —
+// they render as the "hard parts" block on each card.
 export const vfInternal = [
   {
     id: "copilot",
@@ -129,6 +132,21 @@ export const vfInternal = [
       "Read-only, tenant-isolated sandbox — ~25 tools, a scratch-workspace, and its own technical wiki it can grep",
       "Cut warm-turn LLM cost ~73% via prompt-cache placement (83–95% cache reads)",
     ],
+    challenges: [
+      {
+        problem: "The original 13-agent state machine couldn't plan — every new data source meant more hardcoded routing",
+        solution: "rewrote it as a single self-directing brain with a delegate() tool, shipped feature-flagged with the legacy pipeline as fallback",
+      },
+      {
+        problem: "Warm turns re-paid for the same context on every request",
+        solution: "reworked prompt-cache boundaries until cache reads hit 83–95%, cutting warm-turn cost from ≈$0.139 to ≈$0.037",
+      },
+      {
+        problem: "A free-roaming agent on production tenant data",
+        solution: "made safety environmental, not behavioral — DB-level read-only Postgres, Mongo write stages rejected, non-bypassable tenant filters",
+      },
+    ],
+    caseStudy: "/case-studies/agentic-copilot",
     accent: "indigo",
   },
   {
@@ -142,6 +160,17 @@ export const vfInternal = [
       "Built-in MCP server exposes transcripts + traces to Claude Code / Cursor for AI-assisted RCA",
       "ClickUp QA mode, S3 auto-update, and Google-OAuth admin in one shell",
     ],
+    challenges: [
+      {
+        problem: "8 concurrent Chrome replays ate ~7.9 GB of RAM and drove a 32% bot-timeout rate",
+        solution: "a single-pool Chrome architecture brought it to 2.5 GB and killed the timeouts",
+      },
+      {
+        problem: "End-to-end checks passed while FAQ quality quietly regressed",
+        solution: "stage-level diffs (Router / FAQ / SQL / Summary) so every change shows per-stage deltas",
+      },
+    ],
+    caseStudy: null,
     accent: "violet",
   },
   {
@@ -149,12 +178,23 @@ export const vfInternal = [
     title: "Unified Debugging MCP",
     subtitle: "Autonomous RCA across 500k+ LOC",
     description:
-      "An MCP server that turns any agentic IDE into an autonomous debugger. Hand it a ticket and it navigates the codebase, MongoDB, Elasticsearch traces, and metrics, then RCAs the bug. Resolves 95%+ of issues without human intervention.",
+      "An MCP server that turns any agentic IDE into an autonomous debugger. Hand it a ticket and it navigates the codebase, MongoDB, Elasticsearch traces, and metrics, then RCAs the bug. Found the root cause in 95% of internally benchmarked debugging tickets.",
     bullets: [
       "Ticket to full RCA in one shot: code, conversation, traces, DB",
       "Works in Claude Code, Cursor, Codex, Windsurf, any MCP client",
       "Custom tool routing and guardrails for reliable agent loops",
     ],
+    challenges: [
+      {
+        problem: "Standard MCP tools are too chatty and non-deterministic for agent loops",
+        solution: "custom tool routing, guardrails, and deterministic outputs tuned for agents",
+      },
+      {
+        problem: "Debugging a production bug meant logs, code, and Mongo across 3–4 windows",
+        solution: "one surface — ticket ID in, structured RCA report out",
+      },
+    ],
+    caseStudy: null,
     accent: "cyan",
   },
   {
@@ -168,6 +208,17 @@ export const vfInternal = [
       "Service Replay: up to 20,000 production traces against a live deploy in one sweep",
       "Git-Sync prompts → PR, a saved-trace Vault, and a tool-using AI assistant with its own toolset",
     ],
+    challenges: [
+      {
+        problem: "Off-the-shelf tracers were too slow for hundreds of thousands of conversations a week",
+        solution: "built the trace store + explorer in-house on Elasticsearch, modeled on our actual pipeline stages",
+      },
+      {
+        problem: "Prompt edits shipped on vibes",
+        solution: "bulk replay against historical traces with LLM-judge scoring; accepted edits become PRs via Git-Sync",
+      },
+    ],
+    caseStudy: null,
     accent: "emerald",
   },
 ] as const;
@@ -180,7 +231,7 @@ export const experience = [
     period: "Aug 2025 to Present",
     location: "Gurgaon, IN",
     summary:
-      "Own core pieces of the AI stack: orchestration, retrieval, evaluation, and the internal tooling the team debugs against.",
+      "Designed and built core pieces of the AI stack: orchestration, retrieval, evaluation, and the internal tooling the team debugs against.",
     highlights: [
       {
         title: "Agentic orchestrator",
@@ -190,12 +241,12 @@ export const experience = [
       {
         title: "Vector + RAG infra",
         detail:
-          "Manage Milvus vector stores backing our RAG pipeline: chunking, embedding, hybrid search, and reranking for FAQ retrieval.",
+          "Built and maintain the Milvus retrieval layer behind our RAG pipeline: ~4M chunks from 20K+ documents, scraped content, and PMS data across 70+ client portfolios — chunking, embedding, hybrid search, reranking.",
       },
       {
         title: "Automated campaigns",
         detail:
-          "Own the AI-driven campaign systems (call, WhatsApp, email) that let customers target thousands of users with personalized flows.",
+          "Built the AI-driven campaign systems (call, WhatsApp, email) that let customers target thousands of users with personalized flows.",
       },
     ],
   },
@@ -592,79 +643,60 @@ export const projects = [
   },
 ] as const;
 
-export const stack = [
+// The six areas I actually work in — each backed by something shipped above.
+// Kept deliberately small: the stack should support the portfolio, not dominate it.
+export const coreAreas = [
   {
-    group: "AI / Agents",
-    items: [
-      "Multi-agent orchestration",
-      "RAG pipelines",
-      "Text-to-SQL",
-      "Evals",
-      "MCP",
-      "LangGraph",
-      "LangChain",
-    ],
+    title: "Agent systems",
+    detail: "Custom orchestration runtimes: plan, delegate, parallel workers, guardrails.",
   },
   {
-    group: "Data",
+    title: "Retrieval & search",
+    detail: "Milvus at ~4M chunks, hybrid search, reranking, text-to-SQL.",
+  },
+  {
+    title: "Observability",
+    detail: "Tracing, trace replay, eval harnesses, regression deltas over vibes.",
+  },
+  {
+    title: "Developer tooling",
+    detail: "MCP servers, VS Code extensions, replay harnesses, internal platforms.",
+  },
+  {
+    title: "Performance engineering",
+    detail: "Prompt-cache placement, GPU rendering, web workers, LCP budgets.",
+  },
+  {
+    title: "Product surfaces",
+    detail: "Next.js, Electron, and real-time UIs that stream what agents are doing.",
+  },
+] as const;
+
+export const stack = [
+  {
+    group: "Technologies",
     items: [
+      "TypeScript",
+      "Python",
+      "Next.js",
+      "React",
+      "Node.js",
+      "FastAPI",
       "MongoDB",
       "PostgreSQL",
       "Milvus",
-      "Redis",
       "Elasticsearch",
-      "Snowflake",
+      "Redis",
       "Kafka",
-      "Supabase",
-    ],
-  },
-  {
-    group: "Observability",
-    items: [
-      "Prometheus",
-      "Grafana",
-      "Jaeger",
-      "OpenTelemetry",
-    ],
-  },
-  {
-    group: "Frontend",
-    items: [
-      "Next.js",
-      "React",
-      "TypeScript",
-      "Framer Motion",
-      "GSAP",
-      "ThreeJS",
-      "WebGL",
-    ],
-  },
-  {
-    group: "Backend",
-    items: [
-      "Python",
-      "FastAPI",
-      "Django",
-      "Node.js",
-    ],
-  },
-  {
-    group: "Desktop & Native",
-    items: [
-      "Electron",
-      "Puppeteer",
-      "WASM",
-      "VS Code extensions",
-      "Swift",
-    ],
-  },
-  {
-    group: "Infra",
-    items: [
       "Docker",
       "Kubernetes",
       "AWS",
-      "GCP",
+      "Electron",
+      "Three.js / WebGL",
+      "MCP",
+      "LiteLLM",
+      "OpenTelemetry",
+      "Grafana",
     ],
   },
 ] as const;

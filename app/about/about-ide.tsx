@@ -11,7 +11,7 @@ import {
   Eye,
 } from "lucide-react";
 import { useState, useCallback } from "react";
-import { profile, projects, experience, education, stack } from "@/lib/data";
+import { profile, projects, experience, education, stack, coreAreas } from "@/lib/data";
 
 type FileItem = {
   name: string;
@@ -1107,9 +1107,15 @@ function getProjectsContent(): string[] {
 function getStackContent(): string[] {
   return [
     `{`,
+    `  "core_areas": [`,
+    ...coreAreas.map(
+      (area, ai) =>
+        `    "${area.title}"${ai < coreAreas.length - 1 ? "," : ""}`
+    ),
+    `  ],`,
     ...stack.flatMap((group, gi) => [
       `  "${group.group.toLowerCase().replace(/ \/ /g, "_").replace(/ /g, "_")}": [`,
-      ...group.items.map((item, ii) => 
+      ...group.items.map((item, ii) =>
         `    "${item}"${ii < group.items.length - 1 ? "," : ""}`
       ),
       `  ]${gi < stack.length - 1 ? "," : ""}`,

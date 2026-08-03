@@ -111,9 +111,9 @@ export default function About() {
           </p>
         </div>
         <div className="hidden lg:flex lg:flex-col lg:items-end lg:gap-2">
-          <Quote tone="accent">Agent-centric</Quote>
-          <Quote>UI-sharp</Quote>
-          <Quote tone="accent">Infra-curious</Quote>
+          <Quote tone="accent">Systems &gt; prompts</Quote>
+          <Quote>Evals &gt; vibes</Quote>
+          <Quote tone="accent">Replay &gt; guesswork</Quote>
         </div>
       </m.div>
 

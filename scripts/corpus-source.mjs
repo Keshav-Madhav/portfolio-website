@@ -106,12 +106,12 @@ University, Gurgaon (2021 to 2025).
 
 He is 22-23 years old (born 2003, inferred from altEmail keshav2552003@gmail.com).
 
-Sentence-length self-description: "I build production AI runtimes — custom
-multi-agent orchestrators, retrieval pipelines, text-to-SQL, and the
-desktop / IDE / observability tooling teams debug against."
+Sentence-length self-description: "I build the systems behind production
+AI — orchestration, retrieval, observability, and the developer tooling
+teams debug against."
 
-Tagline on his site: "Building production AI runtimes — custom orchestrators,
-retrieval, and the tooling teams debug against."
+Tagline on his site: "Building the infrastructure behind production AI:
+orchestration, retrieval, observability, and developer tooling."
 
 He transitioned from a founding front-end engineer role into full-stack AI
 engineering. He is comfortable from WebGL and Electron up through Kubernetes
@@ -326,22 +326,25 @@ bot for property management and real estate — a multi-stage LLM pipeline
 that handles router logic, FAQ retrieval, text-to-SQL against MongoDB
 and Postgres, and bot response generation.
 
-Keshav owns core pieces of the agentic AI stack:
+Keshav designed and built core pieces of the agentic AI stack:
 - Multi-agent orchestrator with parallel tool-calling and SSE streaming
 - Retrieval pipelines on Milvus / Zilliz with hybrid search and query expansion
 - Pydantic-validated text-to-SQL across MongoDB and Postgres
 - Company-wide debugging surface: unified MCP server + custom tracing + LLM playground
 
 Specific headline accomplishments at VerbaFlo:
-- Led a production-ready agentic workflow with a custom parallelization
-  orchestrator for tool-calling agents. Ships text-to-SQL with Pydantic-
-  validated schemas that pulls live MongoDB analytics for business questions.
-- Manages and tunes Zilliz / Milvus vector stores that back a high-throughput
-  RAG pipeline (chunking, embedding, hybrid search, reranking) for FAQ and
-  knowledge retrieval.
-- Took ownership of the AI-driven campaign systems (call, WhatsApp, email)
-  letting customers target thousands of users with model-generated,
-  personalized flows.
+- Led development of a production-ready agentic workflow with a custom
+  parallelization orchestrator for tool-calling agents. Ships text-to-SQL
+  with Pydantic-validated schemas that pulls live MongoDB analytics for
+  business questions.
+- Built and maintains the Zilliz / Milvus vector stores that back a
+  high-throughput RAG pipeline (chunking, embedding, hybrid search,
+  reranking) for FAQ and knowledge retrieval. Real scale: roughly 4 million
+  chunks derived from 20,000+ documents plus scraped websites and PMS data,
+  serving 70+ real client portfolios.
+- Built the AI-driven campaign systems (call, WhatsApp, email) letting
+  customers target thousands of users with model-generated, personalized
+  flows.
 
 His biggest impact at VerbaFlo has been building TOOLING — the internal
 surfaces other engineers debug against daily. He calls the three main
@@ -423,6 +426,11 @@ Not a framework wrapper. Custom runtime — not LangGraph, not CrewAI. Models ar
 abstracted through LiteLLM + Instructor so it's multi-provider (swappable to
 GPT or Opus 4.8 with one env var), but Keshav wrote the orchestration loop
 himself.
+
+There is a full long-form engineering case study of this rebuild on the
+portfolio site at /case-studies/agentic-copilot — problem, constraints,
+architecture, tradeoffs, what went wrong, and measured results. Point
+visitors there if they want the deep version.
 `,
 };
 
@@ -510,9 +518,11 @@ navigates:
 - Metrics dashboards
 - Database schemas
 
-Then it does autonomous RCA (root cause analysis) end-to-end. Resolves
-95%+ of issues without a human stepping in — produces a structured RCA
-report the engineer just reviews.
+Then it does autonomous RCA (root cause analysis) end-to-end. In an
+internal benchmark across past debugging tickets, it identified the root
+cause in 95% of scenarios without a human stepping in — producing a
+structured RCA report the engineer just reviews. (Keshav frames this
+carefully: 95% on internally benchmarked tickets, not a marketing claim.)
 
 Key features:
 - ClickUp ticket → full RCA in one shot: code, conversation, traces,
@@ -6150,7 +6160,9 @@ Keshav's AI / Agents tech stack — what he actually uses day-to-day:
 - Custom multi-agent orchestrators (not a framework). His VerbaFlo
   Copilot is hand-written Python, not LangGraph or CrewAI. Off-the-shelf
   agent frameworks have too much overhead for sub-second latency targets.
-- Parallel tool-calling patterns (up to 12 agents running simultaneously)
+- Parallel tool-calling patterns (up to 8 worker clones spawned in
+  parallel via a delegate() tool, semaphore-bounded; the legacy pipeline
+  ran ~13 fixed agents)
 - SSE streaming for token-by-token output
 - Semantic caching for repeated queries
 - Schema pre-warming for cold-start avoidance
@@ -6652,6 +6664,11 @@ have that URL handy" rather than guess.**
 - GitHub: https://github.com/Keshav-Madhav
 - VerbaFlo company: https://www.verbaflo.ai/
 - PrudentBit company: https://prudentbit.com/
+
+**Agentic Copilot case study** (long-form engineering writeup on this
+portfolio site — problem, constraints, architecture, tradeoffs, failures,
+metrics):
+- On this site: /case-studies/agentic-copilot
 
 **Grid Math** (500k GPU points, flagship creative coding):
 - Live: https://keshav-madhav.github.io/grid-visualizer/

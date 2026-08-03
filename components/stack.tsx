@@ -3,7 +3,7 @@
 import { m } from "framer-motion";
 import SectionHeading from "./ui/section-heading";
 import Marquee from "./ui/marquee";
-import { stack, education, profile } from "@/lib/data";
+import { stack, coreAreas, education, profile } from "@/lib/data";
 import { useSectionInView } from "@/lib/hooks";
 import { GraduationCap, MapPin } from "lucide-react";
 
@@ -22,42 +22,60 @@ export default function Stack() {
         eyebrow="03 / Stack"
         title={
           <>
-            Tools I reach for, and the
-            <br /> systems I know cold.
+            Six areas, one
+            <br /> concise toolbox.
           </>
         }
-        description="I'm not precious about the stack. I'll use whatever's right. But these are the ones I've actually shipped with."
+        description="I'm not precious about the stack. I'll use whatever's right. These are the areas I work in and the tools I've actually shipped with."
       />
 
-      {/* Groups */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {stack.map((group, gi) => (
+      {/* Core areas — the six things the work above is made of */}
+      <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+        {coreAreas.map((area, ai) => (
           <m.div
-            key={group.group}
+            key={area.title}
             data-spirit
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: gi * 0.05 }}
+            transition={{ duration: 0.6, delay: ai * 0.05 }}
             className="group rounded-xl border border-edge bg-surface/40 p-4 backdrop-blur transition hover:border-violet-500/30 sm:rounded-2xl sm:p-5"
           >
-            <h3 className="mb-3 flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-muted">
+            <h3 className="flex items-center gap-2 font-display text-base font-semibold text-ink sm:text-lg">
               <span className="h-1 w-1 rounded-full bg-violet-400" />
-              {group.group}
+              {area.title}
             </h3>
-            <ul className="flex flex-wrap gap-1.5 sm:gap-2">
-              {group.items.map((item) => (
-                <li
-                  key={item}
-                  className="rounded-full border border-edge/80 bg-canvas/60 px-3 py-1.5 font-mono text-[0.65rem] text-ink/90 transition hover:border-accent/40 hover:text-accent sm:px-2.5 sm:py-1 sm:text-[0.68rem]"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <p className="mt-2 text-xs leading-relaxed text-muted sm:text-sm">
+              {area.detail}
+            </p>
           </m.div>
         ))}
       </div>
+
+      {/* Technologies — one concise list, not seven walls of pills */}
+      <m.div
+        data-spirit
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        className="mt-4 rounded-xl border border-edge bg-surface/40 p-4 backdrop-blur sm:rounded-2xl sm:p-5"
+      >
+        <h3 className="mb-3 flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-muted">
+          <span className="h-1 w-1 rounded-full bg-violet-400" />
+          Technologies
+        </h3>
+        <ul className="flex flex-wrap gap-1.5 sm:gap-2">
+          {pills.map((item) => (
+            <li
+              key={item}
+              className="rounded-full border border-edge/80 bg-canvas/60 px-3 py-1.5 font-mono text-[0.65rem] text-ink/90 transition hover:border-accent/40 hover:text-accent sm:px-2.5 sm:py-1 sm:text-[0.68rem]"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      </m.div>
 
       {/* Marquee strip */}
       <div className="mt-12 space-y-3">

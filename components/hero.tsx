@@ -13,11 +13,11 @@ import { profile } from "@/lib/data";
 import { useSectionInView } from "@/lib/hooks";
 
 const rotating = [
-  "agentic orchestration",
-  "text-to-SQL pipelines",
-  "retrieval over vector stores",
-  "LLM tracing + eval harnesses",
-  "dashboards that never stutter",
+  "agent orchestration",
+  "retrieval infrastructure",
+  "LLM observability",
+  "prompt-cache economics",
+  "developer tooling",
 ];
 
 export default function Hero() {
@@ -88,10 +88,11 @@ export default function Hero() {
       <p
         className="mt-8 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl"
       >
-        I&apos;m an AI engineer building the agentic stack at{" "}
-        <span className="text-ink">VerbaFlo</span>: orchestrators, retrieval,
-        tracing, and the tooling that makes all of it debuggable. Previously
-        founding front-end at <span className="text-ink">PrudentBit</span>.
+        I&apos;m an AI engineer at <span className="text-ink">VerbaFlo</span>{" "}
+        building the systems around the models: agent orchestration, retrieval
+        infrastructure, observability, and the tooling that makes all of it
+        debuggable. Previously founding front-end at{" "}
+        <span className="text-ink">PrudentBit</span>.
       </p>
 
       {/* Decrypted rotating sub-line */}

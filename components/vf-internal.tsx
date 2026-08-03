@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { m, useReducedMotion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { vfInternal } from "@/lib/data";
 import { accentMap, cn } from "@/lib/cn";
 import type { AccentColor } from "@/lib/types";
@@ -17,7 +18,7 @@ const VF_QUESTIONS: Record<(typeof vfInternal)[number]["id"], string> = {
   simulation:
     "Walk me through the Conversation Simulation tool you built at VerbaFlo — the Electron + Puppeteer replay harness with the CID investigator and ClickUp QA mode. Cover what it does, why you built it, the development timeline (you built it in ~3 weeks in April), the architecture, your key contributions, and what was actually hard about it.",
   mcp:
-    "Walk me through the unified Debugging MCP server you built at VerbaFlo — the one that turns Claude Code, Cursor, Codex, and other agentic IDEs into autonomous debuggers across the 500k+ LOC codebase. Cover what it does, why you built it, the architecture, the tools it exposes, and how it achieves 95%+ autonomous RCA.",
+    "Walk me through the unified Debugging MCP server you built at VerbaFlo — the one that turns Claude Code, Cursor, Codex, and other agentic IDEs into autonomous debuggers across the 500k+ LOC codebase. Cover what it does, why you built it, the architecture, the tools it exposes, and how it found the root cause in 95% of internally benchmarked debugging tickets.",
   trace:
     "Walk me through the in-house Tracing UI and LLM Playground you built at VerbaFlo — including the custom k_trace library that replaced Opik, the Trace Explorer in the Playground, and the LiteLLM-backed prompt-edit playground. Cover what it does, why you built it, the timeline (March-April 2026), and the technical decisions.",
 };
@@ -116,8 +117,38 @@ function InternalCard({
           ))}
         </ul>
 
-        <div className="mt-5">
+        {/* Hard parts — real problem → solution pairs from the build log.
+            Nothing ships right the first time; saying so is the credibility. */}
+        <div className="mt-5 rounded-xl border border-edge/70 bg-canvas/40 p-3">
+          <div className="font-mono text-[0.58rem] uppercase tracking-[0.2em] text-muted">
+            Hard parts
+          </div>
+          <ul className="mt-2 space-y-2">
+            {project.challenges.map((c, i) => (
+              <li key={i} className="text-xs leading-relaxed text-muted">
+                <span className="text-ink/80">{c.problem}</span>
+                <span className={cn("mx-1.5 font-mono", a.text)}>→</span>
+                {c.solution}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-2">
           <AskMeButton question={VF_QUESTIONS[project.id]} label="Ask me about this" />
+          {project.caseStudy && (
+            <Link
+              href={project.caseStudy}
+              data-spirit="button"
+              className={cn(
+                "group/cs inline-flex items-center gap-1.5 rounded-full border border-edge bg-canvas/40 px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-wider text-muted backdrop-blur transition",
+                "hover:border-edge/40 hover:text-ink"
+              )}
+            >
+              Read the case study
+              <ArrowUpRight className="h-3 w-3 transition group-hover/cs:-translate-y-0.5 group-hover/cs:translate-x-0.5" />
+            </Link>
+          )}
         </div>
       </div>
     </div>

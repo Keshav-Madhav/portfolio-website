@@ -1,0 +1,199 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.7in}
+\addtolength{\textwidth}{1.2in}
+\addtolength{\topmargin}{-.75in}
+\addtolength{\textheight}{1.5in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-6pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-6pt}]
+
+\pdfgentounicode=1
+
+% Custom commands...
+
+\newcommand{\resumeItem}[1]{
+  \item\small{{#1 \vspace{-2pt}}}
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-6pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-3pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{center}
+    {\Huge \scshape Keshav Madhav} \\ \vspace{1pt}
+    New Delhi, India - 110024\\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ +91 7827229447 ~
+    \href{mailto:keshav2552003@gmail.com}{\raisebox{-0.2\height}\faEnvelope\ \underline{keshav2552003@gmail.com}} ~
+    \href{https://www.linkedin.com/in/keshav-madhav/}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/keshav-madhav}} ~
+    \href{https://github.com/Keshav-Madhav}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/Keshav-Madhav}}
+    \vspace{-8pt}
+\end{center}
+
+\vspace{-10pt}
+
+%-----------PROGRAMMING SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages}{: Python, TypeScript, JavaScript, SQL, Java, Swift, HTML/CSS, AppsScript} \\
+     \textbf{AI / Agents}{: Multi-Agent Orchestration, RAG Pipelines, Text-to-SQL, Evals, MCP, LangGraph, LangChain, Pydantic, Claude/OpenAI/Gemini/Vertex AI/Cerebras/Together APIs} \\
+     \textbf{Libraries/Frameworks}{: React 19, Next.JS 15, Node.JS, FastAPI, Django, Electron, Puppeteer, TailWind, Framer-Motion, GSAP, ThreeJs, React-Fiber, Prisma, Clerk, Zustand, ShadCn, Jinja2} \\
+     \textbf{Databases \& Infra}{: MongoDB, PostgreSQL, Milvus/Zilliz, Redis, Elasticsearch, Snowflake, Kafka, Supabase, Firebase, Convex, Docker, Kubernetes, AWS, GCP} \\
+     \textbf{Observability \& Tools}{: Prometheus, Grafana, Jaeger, OpenTelemetry, Git, VS Code, Postman, Vercel, WASM, Figma, NPM/Pnpm/Yarn/Bun} \\
+    }}
+ \end{itemize}
+\vspace{-18pt}
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {\href{https://www.verbaflo.ai/}{\underline{VerbaFlo AI}}}
+      {August 2025 -- Current}
+      {AI Engineer SDE-1}{Gurgaon, Haryana}
+      \resumeItemListStart
+        \resumeItem{Built and own a production multi-agent orchestrator with a custom parallelization runtime for tool-calling agents, including Pydantic-validated text-to-SQL that pulls live MongoDB and PostgreSQL analytics to answer business questions in natural language.}
+        \resumeItem{Manage and optimize Milvus/Zilliz vector stores powering the RAG pipeline: chunking, embedding, hybrid search, and reranking for high-performance FAQ retrieval and semantic search.}
+        \resumeItem{Built a team-wide unified debugging MCP server that turns any agentic IDE into an autonomous debugger across code, MongoDB, and Elasticsearch traces, resolving \textbf{95\%+} of tickets across a \textbf{500k+ LOC} codebase with no human intervention.}
+        \resumeItem{Shipped internal AI tooling, an Electron + Puppeteer conversation-replay harness and an in-house tracing stack with an LLM playground, plus AI-driven call, WhatsApp, and email campaign systems reaching thousands of users.}
+    \resumeItemListEnd
+
+    \resumeSubheading
+      {\href{https://prudentbit.com/}{\underline{PrudentBit}}}
+      {August 2023 -- August 2025}
+      {Founding Front-End Engineer}{Noida, Uttar Pradesh (hybrid)}
+      \resumeItemListStart
+        \resumeItem{Guided development of the core products, {\href{https://www.immunefiles.com/}{\underline{Immunefiles}}}, {\href{https://www.immunevault.com/}{\underline{Immunevault}}}, {\href{https://www.immuneshare.com/}{\underline{ImmuneShare}}}.}
+        \resumeItem{Optimized application performance by migrating Immunefiles from ReactJS-18 to NextJS-14, improving load times and overall performance by 200\% using Server-Side Rendering (SSR), caching, and incremental revalidation.}
+        \resumeItem{Developed a real-time admin dashboard featuring 15+ interactive graphs, partial rendering, and live data streaming.}
+        \resumeItem{Integrated cross-platform solutions by building Immunefiles apps for Microsoft Teams, Outlook, and Gmail.}
+    \resumeItemListEnd
+
+\vspace{-10pt}
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \vspace{-8pt}
+    \resumeSubHeadingListStart
+
+        \resumeProjectHeading
+            {\textbf{Grid Math} ∣ \emph{Electron, WebGL, Web Audio API, Swift, JavaScript}}{}
+            \resumeItemListStart
+            \resumeItem{Built a cross-platform creative-coding engine rendering \textbf{500k GPU points at 60fps} with FFT audio reactivity and a live desktop-wallpaper mode.}
+            \resumeItem{Implemented native Swift audio capture on macOS feeding a WebGL render pipeline inside an Electron shell.}
+            \resumeItem{\href{https://keshav-madhav.github.io/grid-visualizer/}{\underline{https://keshav-madhav.github.io/grid-visualizer/}} \href{https://github.com/Keshav-Madhav/grid-visualizer}{\underline{Github}}}
+            \resumeItemListEnd
+            \vspace{-6pt}
+
+        \resumeProjectHeading
+            {\textbf{Live Jinja Renderer (VS Code Extension)} ∣ \emph{TypeScript, VS Code API, Pyodide, Jinja2}}{}
+            \resumeItemListStart
+            \resumeItem{Built an open-source VS Code extension that renders real Python Jinja2 templates in-editor via Pyodide (WASM Python), with JSON/YAML/TOML variable binding, IntelliSense for 50+ filters, and hover docs.}
+            \resumeItem{Achieved \textbf{10,000+ installations} across the VS Code Marketplace and Open VSX.}
+            \resumeItem{\href{https://marketplace.visualstudio.com/items?itemName=KilloWatts.live-jinja-renderer}{\underline{Marketplace}} \href{https://open-vsx.org/extension/KilloWatts/live-jinja-renderer}{\underline{Open-VSX}} \href{https://github.com/Keshav-Madhav/live-jinja-renderer}{\underline{Github}}}
+            \resumeItemListEnd
+            \vspace{-6pt}
+
+        \resumeProjectHeading
+            {\textbf{Axon (Open-Source Contributor)} ∣ \emph{TypeScript, Sigma.js, WebGL, MCP, Python}}{}
+            \resumeItemListStart
+            \resumeItem{Contributed physics and render improvements to a \textbf{669-star} knowledge-graph engine that indexes codebases into a structural graph exposed over MCP.}
+            \resumeItem{Improved the force-directed layout and WebGL rendering so large graphs stay readable and interactive at scale.}
+            \resumeItem{\href{https://github.com/harshkedia177/axon}{\underline{Github}} \href{https://github.com/harshkedia177/axon/commits?author=Keshav-Madhav}{\underline{My Commits}}}
+            \resumeItemListEnd
+            \vspace{-6pt}
+
+        \resumeProjectHeading
+            {\textbf{Zen Notes} ∣ \emph{NextJS, Cloudflare Workers, Clerk, LiveBlocks, Tailwind, Firebase}}{}
+            \resumeItemListStart
+            \resumeItem{Created a full-stack, real-time collaborative notes app with multi-cursor presence where users edit documents simultaneously.}
+            \resumeItem{Integrated AI capabilities via Cloudflare Workers for summarization, translation, and chat functionality.}
+            \resumeItem{\href{https://zen-notes-keshav.vercel.app/}{\underline{https://zen-notes-keshav.vercel.app/}} \href{https://github.com/Keshav-Madhav/zen-notes}{\underline{Github Main}} \href{https://github.com/Keshav-Madhav/empty-feather-df22}{\underline{Github Cloudflare}}}
+            \resumeItemListEnd
+            \vspace{-6pt}
+
+        \resumeProjectHeading
+            {\textbf{Other Projects} ∣ \emph{TypeScript, JavaScript, Three.js, Canvas, WebGL and more.}}{}
+            \resumeItemListStart
+            \resumeItem{\textbf{Systems \& Graphics}: Built an infinite browser {\href{https://keshav-madhav.github.io/minecraft-JS/}{\underline{Minecraft clone}}} (Three.js, multi-worker chunk generation + greedy meshing), an N-body {\href{https://keshav-madhav.github.io/Space-Simulation-HTML-CSS-JS/}{\underline{Space Sandbox}}} (21k bodies @ 30fps), and a {\href{https://keshav-madhav.github.io/Cookie-Clicker/}{\underline{Cookie Clicker}}} remake with a physics prestige tree and 15+ minigames.}
+            \resumeItem{\textbf{Performance}: Engineered a high-performance {\href{https://keshav-madhav.github.io/Making-BF2/}{\underline{Brainfuck interpreter}}} in JavaScript, processing over 1 billion operations in 6 seconds via a web worker, benchmarked on an i7 14650HX.}
+            \resumeItem{Shipped \textbf{90+ public repositories} spanning games, simulations, creative coding, and developer tools.}
+            \resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+\vspace{-14pt}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Sushant University}{Sep. 2021 -- May 2025}
+      {Bachelor of Technology in Computer Science (Specialization in AI/ML)}{Gurgaon, Haryana}
+  \resumeSubHeadingListEnd
+
+\end{document}

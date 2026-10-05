@@ -136,7 +136,7 @@ Primary ways to contact Keshav Madhav:
 - Phone: +91 78272 29447
 - LinkedIn: https://www.linkedin.com/in/keshav-madhav/
 - GitHub: https://github.com/Keshav-Madhav
-- Resume / CV: available at /Front_End_Resume.pdf on the portfolio site (click the "Résumé" button in the hero)
+- Resume / CV: available at /Keshav_Madhav_Resume.pdf on the portfolio site (click the "Résumé" button in the hero)
 
 Response time: typically under 24 hours on weekdays. Weekends are slower.
 
@@ -6733,7 +6733,7 @@ metrics):
 - Live: https://codepen-clone-dae8e.web.app/home
 - GitHub: https://github.com/Keshav-Madhav/codepen-clone
 
-**Resume**: /Front_End_Resume.pdf (on this portfolio site; click
+**Resume**: /Keshav_Madhav_Resume.pdf (on this portfolio site; click
 "Résumé" in the hero)
 `,
 };

@@ -51,7 +51,7 @@ export const profile = {
   email: "keshav.madhav@verbaflo.ai",
   altEmail: "keshav2552003@gmail.com",
   phone: "+91 78272 29447",
-  resume: "/Front_End_Resume.pdf",
+  resume: "/Keshav_Madhav_Resume.pdf",
   github: "https://github.com/Keshav-Madhav",
   linkedin: "https://www.linkedin.com/in/keshav-madhav/",
   twitter: "",

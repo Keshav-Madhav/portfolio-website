@@ -714,7 +714,7 @@ Personal email: keshav2552003@gmail.com
 Phone: +91 78272 29447
 LinkedIn: ${profile.linkedin}
 GitHub: ${profile.github}
-Resume: /Front_End_Resume.pdf (click "Résumé" on the portfolio site)
+Resume: /Keshav_Madhav_Resume.pdf (click "Résumé" on the portfolio site)
 
 # Career Timeline
 

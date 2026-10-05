@@ -36,9 +36,14 @@
 \setlength{\parindent}{0pt}
 \hyphenpenalty=10000 \exhyphenpenalty=10000
 
-\titleformat{\section}{\vspace{-4pt}\scshape\raggedright\large\bfseries}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+\titleformat{\section}{\vspace{2pt}\scshape\raggedright\large\bfseries}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
 
 \newcommand{\resumeItem}[1]{\item{#1}}
+% spacing tiers: bullets within one topic sit tight; a new topic adds a medium gap;
+% a new job adds the widest gap (sections keep their own spacing)
+\newcommand{\topicGap}{\vspace{3.5pt}}
+\newcommand{\jobGap}{\vspace{7pt}}
+\newcommand{\resumeTopic}[1]{\topicGap\item{#1}}
 \newcommand{\resumeSubheading}[4]{
   \vspace{-1pt}\item
     \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
@@ -55,8 +60,8 @@
 \renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
 \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeProjectListStart}{\begin{itemize}[leftmargin=0.0in, label={}, itemsep=0pt, topsep=1pt]}
-\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.18in, itemsep=0pt, topsep=3pt]}
+\newcommand{\resumeProjectListStart}{\begin{itemize}[leftmargin=0.0in, label={}, itemsep=5pt, topsep=1pt]}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.18in, itemsep=1pt, topsep=3pt]}
 \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-4pt}}
 
 \begin{document}
@@ -80,23 +85,23 @@
       {\href{https://www.verbaflo.ai/}{VerbaFlo AI} \normalfont\textit{-- AI leasing agents for 50+ student-housing \& build-to-rent operators}}{Aug 2025 -- Present}
       {AI Engineer (SDE-1)}{Gurgaon, India}
       \resumeItemListStart
-        \resumeItem{\textbf{VerbaIQ analytics agent:} Designed and built its engine, which 20+ clients use to query their CRM, property and FAQ data in plain English: a planner running up to 8 parallel sub-agents (text-to-SQL, RAG) under role-based access.}
-        \resumeItem{Cut LLM cost per follow-up question \textbf{73\%} (\$0.139 $\rightarrow$ \$0.037) by building prompts around the cache; built its eval pipeline (LLM-as-judge, a 1,000-question production run, BI cross-checks) tracing wrong answers to tools, model or data.}
-        \resumeItem{\textbf{LLM observability platform:} Built the AI team's in-house tracing, replay and eval platform (FastAPI, Next.js, Elasticsearch), replacing paid Opik; its SDK traces 4 production services at 350K+ spans a day for \textbf{17 engineers}.}
-        \resumeItem{Shipped its git-bisect tool that pinpoints the prompt change behind a regression, a playground that replays production LLM calls on models from 14 providers, and an MCP server for coding agents.}
-        \resumeItem{\textbf{Leasing agent platform:} Put 6 LLM providers behind one LiteLLM layer, so model swaps and failover are config changes, and added schema-validated outputs to 1,000+ prompt templates, serving \textbf{\textasciitilde50K LLM calls a day}.}
-        \resumeItem{\textbf{Data pipeline:} Designed and built a MongoDB $\rightarrow$ ClickHouse sync (resumable change streams, auto schema mapping, drift repair) that moved analytics off the production database into a 64M-row warehouse at \textbf{under 5s lag}.}
-        \resumeItem{\textbf{Conversation simulator:} Built its synthetic-user engine (Electron, Puppeteer, Claude tool calling): AI personas replay real leads against the live agent on 8 channels (web, voice, SMS, WhatsApp, email, Instagram, Facebook, WeChat).}
-        \resumeItem{\textbf{Ticket debugging:} Built an MCP server that lets coding agents (Claude Code, Cursor, Codex) pull a ticket's conversation, records and traces, and run checks and tests, root-causing \textbf{95\% of 200+} benchmarked tickets.}
-        \resumeItem{\textbf{Leadership:} Mentored 4 interns; coordinated VerbaIQ's production launch across backend, frontend, QA, security and DevOps owners; set up the shared workspace and docs that let the team's coding agents work across 20 repos.}
+        \resumeItem{\textbf{VerbaIQ analytics agent:} Designed and built the engine that lets \textbf{20+ clients} ask plain-English questions of their CRM, property and FAQ data and get back answers, charts and dashboard tiles.}
+        \resumeItem{Architected it as a self-exploring agent on an in-house harness: it loops through planning, querying and checking until it reaches an answer, spawning parallel workers only when a question needs them.}
+        \resumeItem{Assembled its \textbf{2.5M+ token} retrieval knowledge base from scraped codebases, databases and reports, alongside tenant-scoped text-to-SQL on ClickHouse and PostgreSQL.}
+        \resumeTopic{\textbf{LLM observability platform:} Built the AI team's in-house tracing and replay platform (FastAPI, Next.js, Elasticsearch), replacing paid Opik; \textbf{17 engineers} use it to debug 350K+ spans a day.}
+        \resumeTopic{\textbf{Data pipeline:} Designed and built a real-time MongoDB $\rightarrow$ ClickHouse sync that moved analytics off the production database into a 64M-row warehouse at \textbf{under 5s lag}.}
+        \resumeTopic{\textbf{Conversation simulator:} Built its synthetic-user engine, where AI personas replay real leads against the live agent on 8 channels to re-test bug reports.}
+        \resumeTopic{\textbf{Ticket debugging:} Built an MCP server that lets coding agents investigate a ticket's conversation and traces, root-causing \textbf{95\% of 200+} benchmarked tickets.}
+        \resumeTopic{\textbf{Leadership:} Mentored 4 interns and coordinated VerbaIQ's production launch across 5 teams.}
       \resumeItemListEnd
 
+    \jobGap
     \resumeSubheading
       {\href{https://prudentbit.com/}{PrudentBit} \normalfont\textit{-- encrypted file storage \& sharing}}{Aug 2023 -- Aug 2025}
       {Front-End Engineer (internship, converted to full-time)}{Noida, India (hybrid)}
       \resumeItemListStart
-        \resumeItem{First front-end hire; built \href{https://www.immunefiles.com/}{\underline{ImmuneFiles}}, ImmuneVault and \href{https://www.immuneshare.com/}{\underline{ImmuneShare}} (end-to-end encrypted file storage, vaulting and sharing) from scratch, plus their Microsoft Teams, Outlook and Gmail apps.}
-        \resumeItem{Halved ImmuneFiles' load times with a Next.js 14 migration; built a real-time admin console with 15+ live graphs.}
+        \resumeItem{First front-end hire; built the front-ends of \href{https://www.immunefiles.com/}{\underline{ImmuneFiles}}, ImmuneVault and \href{https://www.immuneshare.com/}{\underline{ImmuneShare}} (end-to-end encrypted storage, vaulting and sharing) from scratch, plus Microsoft Teams, Outlook and Gmail apps.}
+        \resumeItem{Halved ImmuneFiles' load times with a Next.js 14 migration and built a real-time admin console.}
       \resumeItemListEnd
 
   \resumeSubHeadingListEnd
@@ -108,23 +113,18 @@
       \resumeProjectHeading
           {\textbf{W.A.T.T.S., On-Device Personal AI Assistant} $|$ \emph{Swift, SwiftUI, MLX, SQLCipher, sqlite-vec}}{}
           \resumeItemListStart
-            \resumeItem{macOS assistant running a 30B mixture-of-experts vision-language model fully on-device (Qwen3-VL, MLX), with \textasciitilde40 tools, voice, dictation, encrypted hybrid-search memory and approval gates against prompt injection.}
-            \resumeItem{Built via a self-designed builder/blind-critic agent loop with test gates and human review of security changes.}
+            \resumeItem{macOS assistant running a 30B mixture-of-experts vision-language model fully on-device (MLX), with \textasciitilde40 tools, voice, encrypted hybrid-search memory and prompt-injection approval gates.}
+            \resumeItem{Built with a self-designed builder/blind-critic coding-agent loop and human review of security changes.}
           \resumeItemListEnd
       \resumeProjectHeading
           {\textbf{AI Portfolio Assistant} $|$ \emph{Next.js, OpenAI, Groq, Transformers.js}}{\href{https://www.keshav-madhav.com/}{\underline{Live}} ~ \href{https://github.com/Keshav-Madhav/portfolio-website}{\underline{GitHub}}}
           \resumeItemListStart
-            \resumeItem{Recruiter-facing chat that answers in first person via RAG over a 296-chunk career corpus, with a 3-model OpenAI/Groq fallback chain, JD uploads for tailored pitches and a 51-question retrieval regression suite.}
+            \resumeItem{Recruiter-facing chat that answers in first person via RAG over a 296-chunk career corpus, with a 3-model OpenAI/Groq fallback chain and JD uploads for tailored pitches.}
           \resumeItemListEnd
       \resumeProjectHeading
           {\textbf{Live Jinja Renderer} $|$ \emph{JavaScript, VS Code API, Pyodide (WASM)}}{\href{https://marketplace.visualstudio.com/items?itemName=KilloWatts.live-jinja-renderer}{\underline{Marketplace}} ~ \href{https://github.com/Keshav-Madhav/live-jinja-renderer}{\underline{GitHub}}}
           \resumeItemListStart
-            \resumeItem{VS Code extension rendering Python Jinja2 live via WebAssembly, with IntelliSense and AI test data; \textbf{15K+ installs}.}
-          \resumeItemListEnd
-      \resumeProjectHeading
-          {\textbf{Occulta} $|$ \emph{Next.js 16, Auth.js, Prisma, Turso, Gemini}}{\href{https://occulta.keshav-madhav.com/}{\underline{Live}}}
-          \resumeItemListStart
-            \resumeItem{Cicada 3301-style browser puzzle hunt: 40 levels across 4 games built on ciphers, audio and image steganography and interactive instruments, with server-side progression so no locked answer ever reaches the page.}
+            \resumeItem{VS Code extension that renders Python Jinja2 live via WebAssembly; \textbf{15K+ installs}.}
           \resumeItemListEnd
       \resumeProjectHeading
           {\textbf{Systems \& Graphics} $|$ \emph{Metal, Three.js, WebGL, Web Workers}}{\href{https://github.com/Keshav-Madhav}{\underline{GitHub}}}
@@ -132,14 +132,14 @@
             \resumeItem{500K-body Barnes-Hut gravity simulation on Metal GPU (\textasciitilde23 steps/s, M5 Pro) and a Three.js \href{https://keshav-madhav.github.io/minecraft-JS/}{\underline{voxel engine}}.}
           \resumeItemListEnd
     \resumeSubHeadingListEnd
-\vspace{-8pt}
+\vspace{-5pt}
 
 %-----------SKILLS-----------
 \section{Technical Skills}
  \begin{itemize}[leftmargin=0in, label={}]
     \item{
      \textbf{Languages}{: Python, TypeScript, JavaScript, Swift, SQL} \\
-     \textbf{AI / LLM}{: Agents \& tool calling, multi-agent orchestration, RAG, text-to-SQL, evals \& LLM-as-judge, prompt caching, MCP, LangChain/LangGraph, LiteLLM, Pydantic, PyTorch, vLLM, MLX, Anthropic/OpenAI/Gemini APIs} \\
+     \textbf{AI / LLM}{: Agents \& tool calling, multi-agent orchestration, RAG, text-to-SQL, evals \& LLM-as-judge, prompt caching, MCP, LangChain/LangGraph, LiteLLM, PyTorch, vLLM, MLX, OpenAI/Anthropic APIs} \\
      \textbf{Data \& Infra}{: ClickHouse, MongoDB, PostgreSQL, Elasticsearch, Milvus, Redis, Celery, Docker, Kubernetes, AWS} \\
      \textbf{Frameworks}{: FastAPI, React, Next.js, Node.js, Electron, Puppeteer, SwiftUI, Three.js}
     }
